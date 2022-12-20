@@ -39,7 +39,7 @@ public class RankingTask {
 
     Logger log = LoggerFactory.getLogger(RankingTask.class);
 
-    @Scheduled(cron = "0 */8 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     public void rankingTask() {
         try {
             String beginTime = DateUtils.dayBeginStr();

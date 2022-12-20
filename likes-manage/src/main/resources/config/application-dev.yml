@@ -54,25 +54,25 @@ spring:
 
 
 
-#  rabbitmq:
-#    host: 172.31.100.50
-#    port: 5672
-#    username: admin
-#    password: admin
-#    virtual-host: likes_dev
-#    # 消息失败重回队列
-#    publisher-returns: true
-#    publisher-confirms: true
-#    template:
-#      mandatory: true
-#    listener:
-#      simple:
-#        retry:
-#          enabled: true   #开启重试
-#          max-attempts: 3  # 最大重试次数
-#          initial-interval: 3000 #重试时间间隔
-#        # 手动签收模式
-#        acknowledge-mode: manual
+  rabbitmq:
+    host: 45.207.49.109
+    port: 5672
+    username: admin
+    password: a82768eb
+    virtual-host: likes_dev
+    # 消息失败重回队列
+    publisher-returns: true
+    publisher-confirms: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        retry:
+          enabled: true   #开启重试
+          max-attempts: 3  # 最大重试次数
+          initial-interval: 3000 #重试时间间隔
+        # 手动签收模式
+        acknowledge-mode: manual
   #        prefetch: 1  #消费者每次从队列中取几个消息
   #        default-requeue-rejected: false #消息消费失败后，重新进入消费队列中
 

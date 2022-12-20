@@ -64,7 +64,7 @@ public interface TaskOrderMapper extends Mapper<TaskOrder> {
             "\tchangetype = 200 \n" +
             "\tand create_time BETWEEN #{beginTime} AND #{endTime} \n" +
             "GROUP BY\n" +
-            "\taccno HAVING taskAmount > 10 \n" +
+            "\taccno HAVING taskAmount > 0.2 \n" +
             "\tORDER BY \tcreate_time DESC \n" +
             "\tlimit 50 \n" +
             "\t) a\n" +

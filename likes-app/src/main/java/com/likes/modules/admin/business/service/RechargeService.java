@@ -2,6 +2,7 @@ package com.likes.modules.admin.business.service;
 
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.dto.pay.SysThreePaysetDTO;
+import com.likes.common.model.request.RechargeUsdtRequest;
 import com.likes.common.model.request.TraRechargemealRequest;
 import com.likes.common.model.response.TraRechargemealResponse;
 
@@ -19,8 +20,13 @@ public interface RechargeService {
 
     Map<String, Object> doPayV1(LoginUser loginUserAPP, TraRechargemealRequest req);
 
+    Map<String, Object> doPayUsdt(LoginUser loginUserAPP, RechargeUsdtRequest req);
+
     /**
      * 获取在线充值设置
      */
     List<SysThreePaysetDTO> paySetInfo(LoginUser loginUserAPP, String wayType);
+
+
+   String getUsdtAddress(LoginUser loginUser);
 }

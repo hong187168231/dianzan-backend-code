@@ -52,6 +52,8 @@ public class RedisLock {
     public static final String FINANCE_APP_WITHDRAWAL_APPLY_LOCK = "FINANCE_APP_WITHDRAWAL_APPLY_LOCK_";
     public static final String FINANCE_APP_WITHDRAWAL_APPLY = "FINANCE_APP_WITHDRAWAL_APPLY_";
 
+    public static final String FINANCE_APP_USDT_APPLY_LOCK = "FINANCE_APP_USDT__APPLY_LOCK_";
+
     public static final String FINANCE_APP_YUEBAO_APPLY = "FINANCE_YUEBAO_APPLY_";
 
     public static final String FINANCE_APP_ASSET_APPLY = "FINANCE_APP_ASSET_APPLY";

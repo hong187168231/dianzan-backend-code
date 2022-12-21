@@ -56,8 +56,7 @@ public class RechargeOrderController extends BaseController {
     private RechargeOrderService rechargeOrderService;
     @Resource
     private RedissonClient redissonClient;
-    @Resource
-    private AWSS3Service s3Service;
+
 
     //-------------------------------------------公司入款订单----------------------------------------------------------
     @ResponseBody
@@ -119,7 +118,7 @@ public class RechargeOrderController extends BaseController {
                     return response;
                 }
             }
-            response.setData(s3Service.manyArticlePicFileUpload(files, Constants.LIVE_FILE));
+//            response.setData(s3Service.manyArticlePicFileUpload(files, Constants.LIVE_FILE));
             LoginUser loginUser = getLoginAdmin();
             LogUtils.logUserModifyOperates(getClass().getName() + ".manyBusinessPicFileUpload", null, loginUser);
         } catch (BusinessException e) {

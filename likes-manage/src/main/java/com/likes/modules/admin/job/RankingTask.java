@@ -39,7 +39,7 @@ public class RankingTask {
 
     Logger log = LoggerFactory.getLogger(RankingTask.class);
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(fixedDelay = 1000)
     public void rankingTask() {
         try {
             String beginTime = DateUtils.dayBeginStr();
@@ -49,10 +49,8 @@ public class RankingTask {
             List<RankDto> registerList = taskOrderMapper.registerGiveList(beginTime,endTime);
             rankList.addAll(taskList);
             rankList.addAll(registerList);
-            if(CollectionUtil.isNotEmpty(rankList) && rankList.size() > 25){
-                rankList.stream().sorted(Comparator.comparing(RankDto::getUserName)).collect(Collectors.toList());
-                RedisBaseUtil.set("likes_ranking2", rankList);
-            }
+            rankList.stream().sorted(Comparator.comparing(RankDto::getUserName)).collect(Collectors.toList());
+            RedisBaseUtil.set("likes_ranking2", rankList);
         } catch (Exception e) {
             log.error("执行自动审核定时任务错误 ：============》》 {}", e);
         }

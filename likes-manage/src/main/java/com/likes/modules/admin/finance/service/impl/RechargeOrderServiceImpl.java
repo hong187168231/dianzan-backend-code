@@ -378,15 +378,9 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
     @Override
     @DS("slave")
     public Map<String, Object> orderListReuslt(EntryOrderReq req, PageBounds page) {
-        Map result = RedisBusinessUtil.getRechargeUnLineOrder(req, page);
-        if (result != null && !result.isEmpty()) {
-            return result;
-        }
-
-        result = new HashMap<>();
+        Map result = new HashMap<>();
         result.put("pageInfo", orderList(req, page));
         result.put("totalInfo", orderListTotal(req));
-        RedisBusinessUtil.addRechargeUnLineOrder(req, page, result);
         return result;
     }
 
@@ -394,11 +388,11 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
 
     @Override
     public PageResult onlineOrderList(EntryOrderReq req, PageBounds page) {
-        if(req.getStartDate() != null && req.getStartDate() != ""){
-            req.setStartDate(req.getStartDate()+" 00:00:00");
+        if (req.getStartDate() != null && req.getStartDate() != "") {
+            req.setStartDate(req.getStartDate() + " 00:00:00");
         }
-        if(req.getEndDate() != null && req.getEndDate() != ""){
-            req.setEndDate(req.getEndDate()+" 23:59:59");
+        if (req.getEndDate() != null && req.getEndDate() != "") {
+            req.setEndDate(req.getEndDate() + " 23:59:59");
         }
         Page<EntryOrderResponse> list = traOrderinfomMapperService.onlineOrderList(req, page.toRowBounds());
         list.forEach(r -> {

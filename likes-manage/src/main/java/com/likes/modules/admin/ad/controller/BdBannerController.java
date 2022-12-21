@@ -8,12 +8,10 @@ import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
-import com.likes.common.mybatis.entity.BasInvestors;
 import com.likes.common.mybatis.entity.BdBannerpicinfo;
 import com.likes.common.mybatis.entity.BdBannerseat;
 import com.likes.common.util.LogUtils;
 import com.likes.modules.admin.ad.service.BannerService;
-import com.likes.modules.admin.common.service.AWSS3Service;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

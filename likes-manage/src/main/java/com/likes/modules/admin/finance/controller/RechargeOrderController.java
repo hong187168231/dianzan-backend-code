@@ -18,7 +18,6 @@ import com.likes.common.util.CommonFunction;
 import com.likes.common.util.JsonUtil;
 import com.likes.common.util.LogUtils;
 import com.likes.common.util.redis.RedisLock;
-import com.likes.modules.admin.common.service.AWSS3Service;
 import com.likes.modules.admin.finance.service.RechargeOrderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

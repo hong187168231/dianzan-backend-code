@@ -258,13 +258,15 @@ public class SysBusParamServiceImpl implements SysBusParamService {
     @Override
     public String getRandomHeadImg() {
         List<String> list =new LinkedList<>();
-        list.add("http://img.smart-parttime.com/picture/ec4dacce3f9b454a82a73c302bc81b87.png");
-        list.add("http://img.smart-parttime.com/picture/c7f3784618404e3d8ee86508e5e30823.png");
-        list.add("http://img.smart-parttime.com/picture/6b3bade9f77e452f9bc79d136767704a.png");
-        list.add("http://img.smart-parttime.com/picture/32a360a21b2b4844b5c04a3296adb591.png");
-        list.add("http://img.smart-parttime.com/picture/0fb8ab7fc77a4f7294d3a22b3fe47a7f.png");
-        list.add("http://img.smart-parttime.com/picture/02904f8ac17c4f8c97476a926b1d9898.png");
-
+        list.add("https://img.kxwwd.com/picture/headImage/1.png");
+        list.add("https://img.kxwwd.com/picture/headImage/2.png");
+        list.add("https://img.kxwwd.com/picture/headImage/3.png");
+        list.add("https://img.kxwwd.com/picture/headImage/4.png");
+        list.add("https://img.kxwwd.com/picture/headImage/5.png");
+        list.add("https://img.kxwwd.com/picture/headImage/6.png");
+        list.add("https://img.kxwwd.com/picture/headImage/7.png");
+        list.add("https://img.kxwwd.com/picture/headImage/8.png");
+        list.add("https://img.kxwwd.com/picture/headImage/9.png");
         if (!CollectionUtil.isEmpty(list)) {
             String sysBusparameter = list.get(RandomUtil.getRandomOne(0, list.size()));
             return sysBusparameter;

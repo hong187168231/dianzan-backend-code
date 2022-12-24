@@ -70,13 +70,8 @@ public class WebAppConfig implements WebMvcConfigurer {
 		return new ServerEndpointExporter();
 	}
 
-	/**
-	 * 配置默认servlet处理
-	 */
-	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		configurer.enable();
-	}
+
+
 //	@Bean
 //	public CorsFilter corsFilter() {
 //		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -133,24 +128,31 @@ public class WebAppConfig implements WebMvcConfigurer {
 		converters.add(jacksonMessageConverter);
 	}
 
+
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		// 多个拦截器组成一个拦截器链
-		// addPathPatterns 用于添加拦截规则
-		// excludePathPatterns 用户排除拦截
-		// registry.addInterceptor(authorizationInterceptor);
 		registry.addInterceptor(systemInterceptor).addPathPatterns("/**")
-				.excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**","/swagger-ui.html","/swagger**/**");
+				.excludePathPatterns("/js/**")
+				.excludePathPatterns("/swagger**/**")
+				.excludePathPatterns("/webjars/**")
+				.excludePathPatterns("/v3/**")
+				.excludePathPatterns("/swagger-ui.html/**")
+				.excludePathPatterns("/doc.html");
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// 将所有/static/** 访问都映射到classpath:/static/ 目录下
-		registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-		// swagger2
-		//registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-		//registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+		registry.addResourceHandler("/**").
+				addResourceLocations("classpath:/static/");
+		registry.addResourceHandler("swagger-ui.html")
+				.addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("doc.html")
+				.addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("/webjars/**")
+				.addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
+
 
 
 }

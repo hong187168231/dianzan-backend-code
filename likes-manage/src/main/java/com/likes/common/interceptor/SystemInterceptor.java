@@ -63,6 +63,12 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "sign, token, clientType, version");
+
+        //不是映射到方法不用拦截
+        if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
+
         //判断系统是否处于系统维护状态
         if (RedisBusinessUtil.exists(RedisKeys.LIVE_SYSTEM_MANAGE_MAINTENANCE_STATUS)) {
             BaseUtil.writerResponse(response, "500", "系统维护中，请等待系统维护完成再试");
@@ -210,4 +216,3 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
         return !CollectionUtils.isEmpty(result);
     }
 }
-

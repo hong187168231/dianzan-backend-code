@@ -309,9 +309,7 @@ public class RechargeServiceImpl implements RechargeService {
         traOrderinfom.setIsinvoice(9);
         traOrderinfom.setOrderstatus(Constants.ORDER_ORD04);
         traOrderinfom.setAccountstatus(Constants.ORDER_ACC04);
-        //线下客服微信
-        String weichat = getRandomWX();
-        traOrderinfom.setPaywechat(weichat);
+
         traOrderinfom.setOrdernote("用户[" + loginUserAPP.getNickname() + "]线下充值套餐");
         traOrderinfom.setCreateUser(loginUserAPP.getAccno());
         traOrderinfom.setUpdateUser(loginUserAPP.getAccno());
@@ -344,7 +342,6 @@ public class RechargeServiceImpl implements RechargeService {
         dataMap.put("orderno", traOrderinfom.getOrderno());
         dataMap.put("orderstatus", traOrderinfom.getOrderstatus());
         dataMap.put("realamt", tradeOffAmount);
-        dataMap.put("weichat", weichat);
         RedisBusinessUtil.delRechargeUnLineOrder();
         return dataMap;
     }

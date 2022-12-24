@@ -31,9 +31,6 @@ public class BdBannerController extends BaseController {
     @Resource
     private BannerService bannerService;
 
-    @Resource
-    private AWSS3Service s3Service;
-
     @ResponseBody
     @RequestMapping(name = "广告位管理", value = "/bannerseatList", method = RequestMethod.GET)
     public ResultInfo bannerseatList(PageBounds page, BdBannerseat req) {

@@ -1,6 +1,5 @@
 package com.likes.common.mybatis.entity;
 
-import com.sun.org.glassfish.gmbal.DescriptorFields;
 import lombok.Data;
 
 import javax.persistence.Column;

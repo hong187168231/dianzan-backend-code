@@ -1,6 +1,7 @@
 package com.likes.modules.admin.coin.controller;
 
 
+import com.github.pagehelper.PageInfo;
 import com.likes.common.BaseController;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -113,9 +114,9 @@ public class CoinDepositController extends BaseController {
     }
 
 
-    @ApiOperation("查询所有")
+    @ApiOperation(value = "查询所有",response = CoinDeposit.class)
     @GetMapping("/coinDepositList")
-    public ResultInfo coinDepositList(PageBounds page) {
+    public ResultInfo<PageInfo<CoinDeposit>> coinDepositList(PageBounds page) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {

@@ -112,7 +112,7 @@ public class RechargeServiceImpl implements RechargeService {
 
     @Override
     public Map<String, Object> getCoinDeposit(LoginUser loginUser) {
-        Map<String, Object> dataMap = getBankListCacheByLevel(loginUser.getLevelSeq());
+        Map<String, Object> dataMap = new HashMap<>();
 
         CoinDeposit coinDepositTrc = new CoinDeposit();
         coinDepositTrc.setCoinType("USDT-TRC20");

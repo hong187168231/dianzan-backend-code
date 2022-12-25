@@ -26,15 +26,15 @@ public class CoinDeposit {
 
     @Column(name = "`coin_name`")
     @ApiModelProperty(value = "币种名称")
-    private BigDecimal coinName;
+    private String coinName;
 
     @Column(name = "`address`")
     @ApiModelProperty(value = "钱包地址")
-    private BigDecimal address;
+    private String address;
 
     @Column(name = "`image_url`")
     @ApiModelProperty(value = "图片地址")
-    private BigDecimal imageUrl;
+    private String imageUrl;
 
     @Column(name = "`status`")
     @ApiModelProperty(value = "状态 0 关闭 1 开启")

@@ -2,6 +2,7 @@ package com.likes.modules.admin.business.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.BaseController;
+import com.likes.common.annotation.AllowAccess;
 import com.likes.common.enums.LoginUserTypeEnum;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
@@ -42,6 +43,7 @@ public class RechargeController extends BaseController {
 
 
 
+    @AllowAccess
     @ApiOperation("获取收款信息")
     @RequestMapping(name = "获取收款信息", value = "/getCoinDeposit", method = RequestMethod.GET)
     public ResultInfo getBankList() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.likes.common.mybatis.mapper.pay.PaymentOrderFlowMapper">
-  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.pay.PaymentOrderFlow">
+<mapper namespace="com.likes.common.mybatis.mapper.PaymentOrderFlowMapper">
+  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.PaymentOrderFlow">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="pay_chan_code" jdbcType="VARCHAR" property="payChanCode" />
     <result column="pay_chan_name" jdbcType="VARCHAR" property="payChanName" />
@@ -25,7 +25,7 @@
     delete from payment_order_flow
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.pay.PaymentOrderFlow" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.PaymentOrderFlow" useGeneratedKeys="true">
     insert into payment_order_flow (
       pay_chan_code,
       pay_chan_name,
@@ -49,7 +49,7 @@
             #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
            )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.pay.PaymentOrderFlow">
+  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.PaymentOrderFlow">
     update payment_order_flow
     set pay_chan_code = #{payChanCode,jdbcType=VARCHAR},
         pay_chan_name = #{payChanName,jdbcType=VARCHAR},

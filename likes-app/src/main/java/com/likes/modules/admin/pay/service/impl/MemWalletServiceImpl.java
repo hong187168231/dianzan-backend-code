@@ -4,17 +4,15 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.likes.common.config.UdunProperties;
 import com.likes.common.constant.Constants;
-import com.likes.common.constant.ModuleConstant;
 import com.likes.common.enums.GoldchangeEnum;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.dto.member.MemGoldchangeDO;
-import com.likes.common.model.request.IncarnateOrderReq;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.DzCoinMapper;
 import com.likes.common.mybatis.mapper.MemWalletAddressMapper;
-import com.likes.common.mybatis.mapper.UdunOrderMapper;
+import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
 import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.service.money.MemGoldchangeService;
@@ -62,7 +60,7 @@ public class MemWalletServiceImpl implements MemWalletService {
     @Resource
     private MemBaseinfoService memBaseinfoService;
     @Resource
-    private UdunOrderMapper udunRechargeMapper;
+    private PayRechargeOrderMapper udunRechargeMapper;
     @Resource
     private TraApplycashService traApplycashMapperService;
     @Resource
@@ -154,29 +152,29 @@ public class MemWalletServiceImpl implements MemWalletService {
 
     @Override
     public boolean submitWithdraw(String coinName,String businessId, BigDecimal amount, String moneyAddress, LoginUser loginUser) {
-        DzCoin dzCoin = getCoinType(coinName);
-        UdunOrder udunOrder = new UdunOrder();
-        udunOrder.setAmount(getTradeOffAmount(amount));
-        udunOrder.setAccno(loginUser.getAccno());
-        udunOrder.setMainCoinType(dzCoin.getMainCoinType());
-        udunOrder.setCoinType(dzCoin.getCoinType());
-        udunOrder.setTradeType(2);
-        udunOrder.setAddress(moneyAddress);
-        udunOrder.setBusinessId(businessId);
-        udunOrder.setTradeStatus(0);
-        udunOrder.setCreateUser(loginUser.getAccno());
-        udunOrder.setCreateTime(new Date());
-        udunRechargeMapper.insertSelective(udunOrder);
-
-        ResultMsg resultMsg = udunClient.withdraw(moneyAddress, udunOrder.getAmount(),
-                dzCoin.getMainCoinType(), dzCoin.getCoinType(),
-                businessId, null, udunProperties.getCallUrl());
-        if (resultMsg.getCode().equals(200)) {
-            return true;
-        }
-        logger.error("U dun发起提现错误 错误信息  ===== >> {}", JSONUtil.toJsonStr(resultMsg));
-        logger.error("U dun发起提现错误 == coinName={},moneyAddress={},accLogin={}",
-                coinName, moneyAddress, loginUser.getAcclogin());
+//        DzCoin dzCoin = getCoinType(coinName);
+//        OnlineRechargeOrder udunOrder = new OnlineRechargeOrder();
+//        udunOrder.setAmount(getTradeOffAmount(amount));
+//        udunOrder.setAccno(loginUser.getAccno());
+//        udunOrder.setMainCoinType(dzCoin.getMainCoinType());
+//        udunOrder.setCoinType(dzCoin.getCoinType());
+//        udunOrder.setTradeType(2);
+//        udunOrder.setAddress(moneyAddress);
+//        udunOrder.setBusinessId(businessId);
+//        udunOrder.setTradeStatus(0);
+//        udunOrder.setCreateUser(loginUser.getAccno());
+//        udunOrder.setCreateTime(new Date());
+//        udunRechargeMapper.insertSelective(udunOrder);
+//
+//        ResultMsg resultMsg = udunClient.withdraw(moneyAddress, udunOrder.getAmount(),
+//                dzCoin.getMainCoinType(), dzCoin.getCoinType(),
+//                businessId, null, udunProperties.getCallUrl());
+//        if (resultMsg.getCode().equals(200)) {
+//            return true;
+//        }
+//        logger.error("U dun发起提现错误 错误信息  ===== >> {}", JSONUtil.toJsonStr(resultMsg));
+//        logger.error("U dun发起提现错误 == coinName={},moneyAddress={},accLogin={}",
+//                coinName, moneyAddress, loginUser.getAcclogin());
         return false;
     }
 
@@ -184,28 +182,28 @@ public class MemWalletServiceImpl implements MemWalletService {
     @Transactional
     @Override
     public String udunCallBack(Trade trade) {
-        MemWalletAddress walletAddress = new MemWalletAddress();
-        walletAddress.setMoneyAddress(trade.getAddress());
-        MemWalletAddress result = memWalletAddressMapper.selectOne(walletAddress);
-        if (ObjectUtil.isNull(result)) {
-            return "error";
-        }
-        MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(result.getAccno());
-        BigDecimal amount = trade.getAmount().divide(new BigDecimal(1000000));
-        UdunOrder udunRecharge = new UdunOrder();
-        udunRecharge.setAmount(amount);
-        udunRecharge.setAccno(memBaseinfo.getAccno());
-        udunRecharge.setCoinType(trade.getCoinType());
-        udunRecharge.setTradeType(1);
-        udunRecharge.setTradeStatus(trade.getStatus());
-        udunRecharge.setCreateTime(new Date());
-        int row = udunRechargeMapper.insertSelective(udunRecharge);
-        if (row > 0 && trade.getStatus() == 3) {
-            boolean flag = createRechargeOrder(udunRecharge, memBaseinfo);
-            if (flag) {
-                return "ok";
-            }
-        }
+//        MemWalletAddress walletAddress = new MemWalletAddress();
+//        walletAddress.setMoneyAddress(trade.getAddress());
+//        MemWalletAddress result = memWalletAddressMapper.selectOne(walletAddress);
+//        if (ObjectUtil.isNull(result)) {
+//            return "error";
+//        }
+//        MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(result.getAccno());
+//        BigDecimal amount = trade.getAmount().divide(new BigDecimal(1000000));
+//        OnlineRechargeOrder udunRecharge = new OnlineRechargeOrder();
+//        udunRecharge.setAmount(amount);
+//        udunRecharge.setAccno(memBaseinfo.getAccno());
+//        udunRecharge.setCoinType(trade.getCoinType());
+//        udunRecharge.setTradeType(1);
+//        udunRecharge.setTradeStatus(trade.getStatus());
+//        udunRecharge.setCreateTime(new Date());
+//        int row = udunRechargeMapper.insertSelective(udunRecharge);
+//        if (row > 0 && trade.getStatus() == 3) {
+//            boolean flag = createRechargeOrder(udunRecharge, memBaseinfo);
+//            if (flag) {
+//                return "ok";
+//            }
+//        }
         return "error";
     }
 
@@ -217,31 +215,31 @@ public class MemWalletServiceImpl implements MemWalletService {
         }
     }
 
-    private boolean createRechargeOrder(UdunOrder udunRecharge, MemBaseinfo memBaseinfo) {
+    private boolean createRechargeOrder(PayRechargeOrder udunRecharge, MemBaseinfo memBaseinfo) {
 
-        TraOrderinfom traOrderinfom = new TraOrderinfom();
-        //给会员代充
-        traOrderinfom.setOrdertype(Constants.ORDERTYPE1);
-        traOrderinfom.setOrderno(SnowflakeIdWorker.generateShortId());
-        traOrderinfom.setAccno(memBaseinfo.getAccno());
-        traOrderinfom.setOrderdate(new Date());
-
-
-        //实际到账金额（赠送后的金额）
-        traOrderinfom.setSumamt(udunRecharge.getAmount());
-        traOrderinfom.setRealamt(udunRecharge.getAmount());
-
-        traOrderinfom.setIsinvoice(9);
-        traOrderinfom.setOrderstatus(Constants.ORDER_ORD08);
-        traOrderinfom.setAccountstatus(Constants.ORDER_ACC04);
-        traOrderinfom.setOrdernote("用户[" + memBaseinfo.getEmail() + "]udun 充值: ");
-        traOrderinfom.setPaydate(new Date());
-        int i = traOrderinfomService.insertOrder(traOrderinfom);
-        if (i < 0) {
-            logger.error("U dun 充值回调入库失败 == accLogin={}", memBaseinfo.getAccno());
-            return false;
-        }
-        updateChangeBalance(traOrderinfom, memBaseinfo);
+//        TraOrderinfom traOrderinfom = new TraOrderinfom();
+//        //给会员代充
+//        traOrderinfom.setOrdertype(Constants.ORDERTYPE1);
+//        traOrderinfom.setOrderno(SnowflakeIdWorker.generateShortId());
+//        traOrderinfom.setAccno(memBaseinfo.getAccno());
+//        traOrderinfom.setOrderdate(new Date());
+//
+//
+//        //实际到账金额（赠送后的金额）
+//        traOrderinfom.setSumamt(udunRecharge.getAmount());
+//        traOrderinfom.setRealamt(udunRecharge.getAmount());
+//
+//        traOrderinfom.setIsinvoice(9);
+//        traOrderinfom.setOrderstatus(Constants.ORDER_ORD08);
+//        traOrderinfom.setAccountstatus(Constants.ORDER_ACC04);
+//        traOrderinfom.setOrdernote("用户[" + memBaseinfo.getEmail() + "]udun 充值: ");
+//        traOrderinfom.setPaydate(new Date());
+//        int i = traOrderinfomService.insertOrder(traOrderinfom);
+//        if (i < 0) {
+//            logger.error("U dun 充值回调入库失败 == accLogin={}", memBaseinfo.getAccno());
+//            return false;
+//        }
+//        updateChangeBalance(traOrderinfom, memBaseinfo);
         return true;
     }
 
@@ -264,48 +262,48 @@ public class MemWalletServiceImpl implements MemWalletService {
     @Override
     @Transactional
     public void modifyWithdrawStatus(Trade trade) {
-        UdunOrder udunRecharge = new UdunOrder();
-        udunRecharge.setBusinessId(trade.getBusinessId());
-        udunRecharge.setTradeStatus(0);
-        UdunOrder result = udunRechargeMapper.selectOne(udunRecharge);
-        if (ObjectUtil.isNull(result)) {
-            logger.error("U dun 提现回调未查询到此订单== >{}", trade.getBusinessId());
-            return;
-        } else {
-            UdunOrder update = new UdunOrder();
-            update.setUnduOrderId(result.getUnduOrderId());
-            update.setUpdateUser("udun");
-            update.setTradeStatus(trade.getStatus());
-            update.setUpdateTime(new Date());
-
-            udunRechargeMapper.updateByPrimaryKeySelective(update);
-
-        }
-        TraOrderinfom traOrderinfom = traOrderinfomMapperService.findByOrderno(trade.getBusinessId());
-        traOrderinfom.setOrderstatus(Constants.ORDER_ORD07);
-        traOrderinfom.setUpdateUser("udun");
-        traOrderinfomMapperService.doUpdateIncarnateHandleOrder(traOrderinfom);
-
-
-        // 获取订单对应的申请提现
-        TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
-        if (traApplycash == null) {
-            throw new BusinessException("不存在提现申请");
-        }
-        if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
-            throw new BusinessException("状态不为提现申请");
-        }
-
-        if(trade.getStatus() == 1){
-            // 设置
-            traApplycash.setApycstatus(Constants.APYCSTATUS2);
-            traApplycash.setPaymemname("udun");
-            traApplycash.setUpdateUser("udun");
-            // 提现申请
-            traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
-        } else if (trade.getStatus() == 2) {
-            failedOrder(traOrderinfom, traApplycash,"驳回");
-        }
+//        OnlineRechargeOrder udunRecharge = new OnlineRechargeOrder();
+//        udunRecharge.setBusinessId(trade.getBusinessId());
+//        udunRecharge.setTradeStatus(0);
+//        OnlineRechargeOrder result = udunRechargeMapper.selectOne(udunRecharge);
+//        if (ObjectUtil.isNull(result)) {
+//            logger.error("U dun 提现回调未查询到此订单== >{}", trade.getBusinessId());
+//            return;
+//        } else {
+//            OnlineRechargeOrder update = new OnlineRechargeOrder();
+//            update.setUnduOrderId(result.getUnduOrderId());
+//            update.setUpdateUser("udun");
+//            update.setTradeStatus(trade.getStatus());
+//            update.setUpdateTime(new Date());
+//
+//            udunRechargeMapper.updateByPrimaryKeySelective(update);
+//
+//        }
+//        TraOrderinfom traOrderinfom = traOrderinfomMapperService.findByOrderno(trade.getBusinessId());
+//        traOrderinfom.setOrderstatus(Constants.ORDER_ORD07);
+//        traOrderinfom.setUpdateUser("udun");
+//        traOrderinfomMapperService.doUpdateIncarnateHandleOrder(traOrderinfom);
+//
+//
+//        // 获取订单对应的申请提现
+//        TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
+//        if (traApplycash == null) {
+//            throw new BusinessException("不存在提现申请");
+//        }
+//        if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
+//            throw new BusinessException("状态不为提现申请");
+//        }
+//
+//        if(trade.getStatus() == 1){
+//            // 设置
+//            traApplycash.setApycstatus(Constants.APYCSTATUS2);
+//            traApplycash.setPaymemname("udun");
+//            traApplycash.setUpdateUser("udun");
+//            // 提现申请
+//            traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
+//        } else if (trade.getStatus() == 2) {
+//            failedOrder(traOrderinfom, traApplycash,"驳回");
+//        }
     }
 
     @Override
@@ -345,23 +343,23 @@ public class MemWalletServiceImpl implements MemWalletService {
 //            logger.error("状态不为提现处理中");
 //            return;
 //        }
-
-        UdunOrder param = new UdunOrder();
-        param.setBusinessId(trade.getBusinessId());
-        UdunOrder udunOrder =   udunRechargeMapper.selectOne(param);
-        if(ObjectUtil.isNull(udunOrder)){
-            logger.error("udun 提现订单为空");
-            throw new BusinessException("udun 提现订单为空");
-        }
-        udunOrder.setTradeStatus(trade.getStatus());
-        udunRechargeMapper.updateByPrimaryKey(udunOrder);
-
-        if (trade.getStatus() == 4) {
-            failedOrder(traOrderinfom, traApplycash,"失败");
-            RedisBusinessUtil.delIncarnateOrderListCahce();
-            logger.info("udun 回调提现状态为失败 提现id ==== >> {}",trade.getBusinessId());
-            return;
-        }
+//
+//        OnlineRechargeOrder param = new OnlineRechargeOrder();
+//        param.setBusinessId(trade.getBusinessId());
+//        OnlineRechargeOrder udunOrder =   udunRechargeMapper.selectOne(param);
+//        if(ObjectUtil.isNull(udunOrder)){
+//            logger.error("udun 提现订单为空");
+//            throw new BusinessException("udun 提现订单为空");
+//        }
+//        udunOrder.setTradeStatus(trade.getStatus());
+//        udunRechargeMapper.updateByPrimaryKey(udunOrder);
+//
+//        if (trade.getStatus() == 4) {
+//            failedOrder(traOrderinfom, traApplycash,"失败");
+//            RedisBusinessUtil.delIncarnateOrderListCahce();
+//            logger.info("udun 回调提现状态为失败 提现id ==== >> {}",trade.getBusinessId());
+//            return;
+//        }
 
         // 修改为已提现
         // 订单

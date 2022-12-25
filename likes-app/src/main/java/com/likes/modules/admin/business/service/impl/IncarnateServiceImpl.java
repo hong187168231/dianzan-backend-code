@@ -19,7 +19,6 @@ import com.likes.common.model.response.IncarnateRecordResponse;
 import com.likes.common.model.response.level.MemberLevelResponse;
 import com.likes.common.model.vo.finance.MemFinanceVO;
 import com.likes.common.mybatis.entity.*;
-import com.likes.common.mybatis.mapper.UdunOrderMapper;
 import com.likes.common.mybatis.mapperext.tra.TraOrderinfomMapperExt;
 import com.likes.common.service.credit.MemCreditService;
 import com.likes.common.service.member.*;

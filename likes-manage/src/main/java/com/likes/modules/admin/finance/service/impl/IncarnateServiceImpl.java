@@ -3,7 +3,6 @@ package com.likes.modules.admin.finance.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.likes.common.annotation.ReadOnlyConnection;
 import com.likes.common.config.UdunProperties;
 import com.likes.common.constant.Constants;
 import com.likes.common.constant.ModuleConstant;
@@ -21,10 +20,9 @@ import com.likes.common.model.response.IncarnateOrderResponse;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.DzCoinMapper;
 import com.likes.common.mybatis.mapper.MemBankaccountMapper;
-import com.likes.common.mybatis.mapper.UdunOrderMapper;
+import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
 import com.likes.common.service.BaseServiceImpl;
 import com.likes.common.service.member.MemBaseinfoService;
-import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.service.member.MemLevelConfigService;
 import com.likes.common.service.money.MemGoldchangeService;
 import com.likes.common.service.money.TraApplyauditService;
@@ -50,7 +48,6 @@ import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -90,7 +87,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     @Resource
     private MemLevelConfigService memLevelConfigService;
     @Resource
-    private UdunOrderMapper udunRechargeMapper;
+    private PayRechargeOrderMapper udunRechargeMapper;
     @Resource
     private TraApplyauditService traApplyauditMapperService;
     @Resource
@@ -560,7 +557,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             throw new BusinessException("该订单已提交到第三方");
         }
         DzCoin dzCoin = getCoinType(coinName);
-        UdunOrder udunOrder = new UdunOrder();
+        OnlineRechargeOrder udunOrder = new OnlineRechargeOrder();
         udunOrder.setAmount(getTradeOffAmount(amount));
         udunOrder.setAccno(accno);
         udunOrder.setMainCoinType(dzCoin.getMainCoinType());

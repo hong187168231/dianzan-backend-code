@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.likes.common.mybatis.mapper.pay.MerchantPaymentChannelMapper">
-  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.pay.MerchantPaymentChannel">
+<mapper namespace="com.likes.common.mybatis.mapper.PayMerchantMapper">
+  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.MerchantPaymentChannel">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="pay_chan_code" jdbcType="VARCHAR" property="payChanCode" />
       <result column="pay_chan_name" jdbcType="VARCHAR" property="payChanName" />
@@ -21,7 +21,7 @@
     delete from merchant_payment_channel
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.pay.MerchantPaymentChannel" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.MerchantPaymentChannel" useGeneratedKeys="true">
     insert into merchant_payment_channel (pay_chan_code,pay_chan_name, merchat_acct, mcode,
                               mkey, is_off, err_no,
                               notify_url, create_time, update_time
@@ -31,7 +31,7 @@
     #{notifyUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
     )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.pay.MerchantPaymentChannel">
+  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.MerchantPaymentChannel">
     update merchant_payment_channel
     set pay_chan_code = #{payChanCode,jdbcType=VARCHAR},
         pay_chan_name = #{payChanName,jdbcType=VARCHAR},

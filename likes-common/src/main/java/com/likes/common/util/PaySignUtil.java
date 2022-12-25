@@ -189,7 +189,7 @@ public class PaySignUtil {
      * @param api_key
      * @return
      */
-    public static String getSign(Map<String, String> map, String api_key) {
+    public static String getSign(Map<String, Object> map, String api_key) {
         // 对参数名按照ASCII升序排序
         Object[] key = map.keySet().toArray();
         Arrays.sort(key);
@@ -238,7 +238,7 @@ public class PaySignUtil {
      * @param api_key
      * @return
      */
-    public static String getSignLower(Map<String, String> map, String api_key) {
+    public static String getSignLower(Map<String, Object> map, String api_key) {
         // 对参数名按照ASCII升序排序
         Object[] key = map.keySet().toArray();
         Arrays.sort(key);

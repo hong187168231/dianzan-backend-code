@@ -3,7 +3,6 @@ package com.likes.modules.admin.business.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.BaseController;
 import com.likes.common.annotation.AllowAccess;
-import com.likes.common.enums.LoginUserTypeEnum;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -14,14 +13,14 @@ import com.likes.common.util.LogUtils;
 import com.likes.common.util.StringUtils;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.business.service.RechargeService;
+import com.likes.modules.admin.pay.dto.OnlinePayDTO;
+import com.likes.modules.admin.business.service.OnlinePayService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,6 +40,8 @@ public class RechargeController extends BaseController {
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private OnlinePayService iOnlinePayService;
 
 
     @AllowAccess
@@ -61,8 +62,6 @@ public class RechargeController extends BaseController {
         logger.info("/getBankList耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
     }
-
-
 
 
     @ApiOperation("提交usdt充值")
@@ -130,6 +129,25 @@ public class RechargeController extends BaseController {
             lock.unlock();
         }
         logger.info("/v3/doAgentPay耗时{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
+
+
+    @ApiOperation("线上支付")
+    @AllowAccess
+    @RequestMapping(name = "获取收款地址", value = "/onlinePay", method = RequestMethod.POST)
+    public ResultInfo onlinePay(@RequestBody OnlinePayDTO onlinePayDTO) {
+        logger.error("获取收款地址前端傳入參數,params:{},", JSONObject.toJSONString(onlinePayDTO));
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            LoginUser loginUserAPP = getLoginUserAPP();
+            response.setData(iOnlinePayService.doOnlinePay(onlinePayDTO,loginUserAPP));
+        } catch (Exception e) {
+            response = ResultInfo.error("获取收款地址失败");
+            logger.error("获取收款地址,出错信息:{}", e);
+        }
+        logger.info("/getCollectUrl耗时{}毫秒：", (System.currentTimeMillis() - start));
         return response;
     }
 

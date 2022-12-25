@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.likes.common.mybatis.mapper.pay.PaymentOrderFlowMapper">
+  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.pay.PaymentOrderFlow">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="pay_chan_code" jdbcType="VARCHAR" property="payChanCode" />
+    <result column="pay_chan_name" jdbcType="VARCHAR" property="payChanName" />
+    <result column="merchat_acct" jdbcType="VARCHAR" property="merchatAcct" />
+    <result column="mcode" jdbcType="VARCHAR" property="mcode" />
+    <result column="pay_type_code" jdbcType="VARCHAR" property="payTypeCode" />
+    <result column="pay_type_name" jdbcType="VARCHAR" property="payTypeName" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="mer_order_no" jdbcType="VARCHAR" property="merOrderNo" />
+    <result column="order_price" jdbcType="INTEGER" property="orderPrice" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="notify_status" jdbcType="INTEGER" property="notifyStatus" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <sql id="Base_Column_List">
+        id,pay_chan_code,pay_chan_name,merchat_acct,mcode,pay_type_code,pay_type_name,order_no,mer_order_no,order_price,status,notify_status,pay_time,create_time,update_time
+    </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from payment_order_flow
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.pay.PaymentOrderFlow" useGeneratedKeys="true">
+    insert into payment_order_flow (
+      pay_chan_code,
+      pay_chan_name,
+      merchat_acct,
+      mcode,
+      pay_type_code,
+      pay_type_name,
+      order_no,
+      mer_order_no,
+      order_price,
+      status,
+      notify_status,
+      pay_time,
+      create_time,
+      update_time
+    )
+    values (#{payChanCode,jdbcType=VARCHAR}, #{payChanName,jdbcType=VARCHAR}, #{merchatAcct,jdbcType=VARCHAR},
+            #{mcode,jdbcType=VARCHAR}, #{payTypeCode,jdbcType=VARCHAR}, #{payTypeName,jdbcType=DECIMAL},
+            #{orderNo,jdbcType=TIMESTAMP}, #{merOrderNo,jdbcType=VARCHAR}, #{orderPrice,jdbcType=INTEGER},
+            #{status,jdbcType=INTEGER}, #{notifyStatus,jdbcType=INTEGER}, #{payTime,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+           )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.pay.PaymentOrderFlow">
+    update payment_order_flow
+    set pay_chan_code = #{payChanCode,jdbcType=VARCHAR},
+        pay_chan_name = #{payChanName,jdbcType=VARCHAR},
+        merchat_acct = #{merchatAcct,jdbcType=VARCHAR},
+        mcode = #{mcode,jdbcType=VARCHAR},
+        pay_type_code = #{payTypeCode,jdbcType=VARCHAR},
+        pay_type_name = #{payTypeName,jdbcType=DECIMAL},
+        order_no = #{orderNo,jdbcType=TIMESTAMP},
+        mer_order_no = #{merOrderNo,jdbcType=VARCHAR},
+        order_price = #{orderPrice,jdbcType=INTEGER},
+        status = #{status,jdbcType=INTEGER},
+        notify_status = #{notifyStatus,jdbcType=INTEGER},
+        pay_time = #{payTime,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="getPaymentOrderFlow"  resultMap="BaseResultMap">
+        <include refid="Base_Column_List" />
+        from payment_order_flow
+        where pay_chan_code = #{payChanCode,jdbcType=VARCHAR}
+         and merchat_acct = #{merchatAcct,jdbcType=VARCHAR}
+         and mer_order_no = #{merOrderNo,jdbcType=VARCHAR}
+    </select>
+</mapper>

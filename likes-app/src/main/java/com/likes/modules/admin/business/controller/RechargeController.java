@@ -7,28 +7,30 @@ import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.ResultInfo;
+import com.likes.common.model.request.RechargeUsdtRequest;
 import com.likes.common.model.request.TraRechargemealRequest;
 import com.likes.common.util.LogUtils;
 import com.likes.common.util.StringUtils;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.business.service.RechargeService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 充值 线下 / 线上
- *
- * @author bjkj
  */
-@Controller
+@RestController
+@Api(tags = "线下充值")
 @RequestMapping(value = "/recharge")
 public class RechargeController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -40,17 +42,13 @@ public class RechargeController extends BaseController {
 
 
 
-    @ResponseBody
-    @RequestMapping(name = "获取收款信息", value = "/getBankList", method = RequestMethod.GET)
+    @ApiOperation("获取收款信息")
+    @RequestMapping(name = "获取收款信息", value = "/getCoinDeposit", method = RequestMethod.GET)
     public ResultInfo getBankList() {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
-        LoginUser loginUserAPP = getLoginUserAPP();
-        if (LoginUserTypeEnum.isTrailAccount(loginUserAPP.getLogintype())) {
-            return ResultInfo.error("试玩会员无法发起提现充值");
-        }
         try {
-            response.setData(rechargeService.getBankList(this.getLoginUserAPP()));
+            response.setData(rechargeService.getCoinDeposit(this.getLoginUserAPP()));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
@@ -63,35 +61,16 @@ public class RechargeController extends BaseController {
     }
 
 
-    @ResponseBody
-    @RequestMapping(name = "获取usdt收款地址", value = "/getUsdtAddress", method = RequestMethod.GET)
-    public ResultInfo getUsdtAddress() {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        LoginUser loginUserAPP = getLoginUserAPP();
-        try {
-            response.setData(rechargeService.getUsdtAddress(loginUserAPP));
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            logger.info("失败:{}", e.getMessage());
-        } catch (Exception e) {
-            response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
-            logger.error("getBankList error,req:{}", e);
-        }
-        logger.info("/getUsdtAddress耗时{}毫秒", (System.currentTimeMillis() - start));
-        return response;
-    }
 
 
-
-    @ResponseBody
+    @ApiOperation("提交usdt充值")
     @RequestMapping(name = "提交usdt充值", value = "/v3/doPayUsdt", method = RequestMethod.POST)
-    public ResultInfo doPayUsdt(TraRechargemealRequest req) {
+    public ResultInfo doPayUsdt(@RequestBody RechargeUsdtRequest req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_USDT_APPLY_LOCK, 0, 10 * 1000);
         try {
-            if (null == req.getBankid() || StringUtils.isEmpty(req.getPayuser())) {
+            if (null == req.getAmount() || StringUtils.isBlank(req.getPayAddress()) || StringUtils.isBlank(req.getTransferAddress())) {
                 return ResultInfo.paramsError();
             }
             LoginUser loginUserAPP = getLoginUserAPP();
@@ -103,7 +82,7 @@ public class RechargeController extends BaseController {
                 return ResultInfo.error("充值操作频繁，请稍后再试！");
             }
             redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 10, TimeUnit.SECONDS);
-            response.setData(rechargeService.doPayV1(loginUserAPP, req));
+            response.setData(rechargeService.doPayUsdt(loginUserAPP, req));
             LogUtils.logUserModifyOperates(getClass().getName() + ".doPayV1", req, loginUserAPP);
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
@@ -119,9 +98,6 @@ public class RechargeController extends BaseController {
     }
 
 
-
-
-    @ResponseBody
     @RequestMapping(name = "代理充值下单", value = "/v3/doAgentPay", method = RequestMethod.POST)
     public ResultInfo doPayV1(TraRechargemealRequest req) {
         long start = System.currentTimeMillis();
@@ -154,7 +130,6 @@ public class RechargeController extends BaseController {
         logger.info("/v3/doAgentPay耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
     }
-
 
 
 }

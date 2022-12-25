@@ -64,13 +64,6 @@ public class WebAppConfig implements WebMvcConfigurer {
         return new ServerEndpointExporter();
     }
 
-    /**
-     * 配置默认servlet处理
-     */
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
 
 
     @Bean

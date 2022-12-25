@@ -72,10 +72,6 @@ public class WebAppConfig implements WebMvcConfigurer {
     /**
      * 配置默认servlet处理
      */
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
 
 
     @Bean
@@ -125,7 +121,13 @@ public class WebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(systemInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(systemInterceptor).addPathPatterns("/**")
+                .excludePathPatterns("/js/**")
+                .excludePathPatterns("/swagger**/**")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/v3/**")
+                .excludePathPatterns("/swagger-ui.html/**")
+                .excludePathPatterns("/doc.html");
     }
 
 

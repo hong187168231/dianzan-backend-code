@@ -125,7 +125,7 @@ minio:
   access-key: minioadmin
   secret-key: minioadmin
   # 自定义域名(非必须)，Nginx配置反向代理转发文件路径
-  custom-domain:
+  custom-domain: https://img.kxwwd.com
   # 默认的桶名称，每个微服务有单独的默认存储桶，可查看youlai-admin.yaml配置
   default-bucket: picture
 

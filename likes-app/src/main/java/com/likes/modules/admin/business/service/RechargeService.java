@@ -16,7 +16,7 @@ public interface RechargeService {
     /**
      * 随机返回一个
      */
-    Map<String, Object> getBankList(LoginUser loginUser);
+    Map<String, Object> getCoinDeposit(LoginUser loginUser);
 
     Map<String, Object> doPayV1(LoginUser loginUserAPP, TraRechargemealRequest req);
 
@@ -28,5 +28,4 @@ public interface RechargeService {
     List<SysThreePaysetDTO> paySetInfo(LoginUser loginUserAPP, String wayType);
 
 
-   String getUsdtAddress(LoginUser loginUser);
 }

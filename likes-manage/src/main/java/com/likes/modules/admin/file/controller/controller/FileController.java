@@ -4,6 +4,7 @@ import com.likes.common.annotation.AllowAccess;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.service.uploadFile.MinioService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/uploadFiles")
+@Api(tags = "文件上传")
 public class FileController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

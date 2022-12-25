@@ -11,17 +11,8 @@ import com.likes.common.model.dto.sys.SysPayaccountDO;
 import com.likes.common.model.request.RechargeUsdtRequest;
 import com.likes.common.model.request.TraRechargemealRequest;
 import com.likes.common.model.response.TraRechargemealResponse;
-import com.likes.common.mybatis.entity.MemBaseinfo;
-import com.likes.common.mybatis.entity.MemLevelConfig;
-import com.likes.common.mybatis.entity.SysBusparameter;
-import com.likes.common.mybatis.entity.SysParameter;
-import com.likes.common.mybatis.entity.SysPayaccount;
-import com.likes.common.mybatis.entity.SysPayset;
-import com.likes.common.mybatis.entity.SysPaysetExample;
-import com.likes.common.mybatis.entity.SysThreepayset;
-import com.likes.common.mybatis.entity.TraOrderinfom;
-import com.likes.common.mybatis.entity.TraOrdertracking;
-import com.likes.common.mybatis.entity.TraRechargeaudit;
+import com.likes.common.mybatis.entity.*;
+import com.likes.common.mybatis.mapper.CoinDepositMapper;
 import com.likes.common.mybatis.mapperext.sys.SysBusparameterMapperExt;
 import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemLevelConfigService;
@@ -92,6 +83,9 @@ public class RechargeServiceImpl implements RechargeService {
     @Resource
     private MemLevelConfigService memLevelConfigService;
 
+    @Resource
+    private CoinDepositMapper coinDepositMapper;
+
     @Override
     public List<TraRechargemealResponse> rechargemealList() {
         //默认6个
@@ -117,20 +111,24 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public Map<String, Object> getBankList(LoginUser loginUser) {
+    public Map<String, Object> getCoinDeposit(LoginUser loginUser) {
         Map<String, Object> dataMap = getBankListCacheByLevel(loginUser.getLevelSeq());
-        SysPayset payset = sysPaysetService.getUseOne(2);
-        dataMap.put("giftrate", payset.getGiftrate().multiply(BigDecimal.valueOf(100)).intValue());
 
-        if (payset == null) {
-            throw new BusinessException("171","支付设定不存在");
-        }
-        if (1 == payset.getRechargetype()) {
-            BigDecimal payAmount = memBaseinfoService.getUserByAccno(loginUser.getAccno()).getPayAmount();
-            if (payAmount.compareTo(BigDecimal.ZERO) == 1) {
-                dataMap.put("giftrate", 0);
-            }
-        }
+        CoinDeposit coinDepositTrc = new CoinDeposit();
+        coinDepositTrc.setCoinType("USDT-TRC20");
+        coinDepositTrc.setStatus(1);
+        coinDepositTrc.setDelStatus(0);
+        CoinDeposit coinTrc = coinDepositMapper.selectOne(coinDepositTrc);
+
+        CoinDeposit coinDepositErc = new CoinDeposit();
+        coinDepositErc.setCoinType("USDT-ERC20");
+        coinDepositErc.setStatus(1);
+        coinDepositErc.setDelStatus(0);
+        CoinDeposit coinErc =  coinDepositMapper.selectOne(coinDepositErc);
+
+
+        dataMap.put("USDT-TRC20",coinTrc);
+        dataMap.put("USDT-ERC20",coinErc);
         return dataMap;
     }
 
@@ -147,10 +145,10 @@ public class RechargeServiceImpl implements RechargeService {
         List<SysPayaccountDO> aliPays = sysPayAccountMapperService.getPayInfo(1, levelSeq);
         dataMap.put("ALIPAY", aliPays);
 
-        List<SysPayaccountDO> wechatPays = sysPayAccountMapperService.getPayInfo(2,levelSeq);
+        List<SysPayaccountDO> wechatPays = sysPayAccountMapperService.getPayInfo(2, levelSeq);
         dataMap.put("WECHAT", wechatPays);
 
-        List<SysPayaccountDO> netbankPays = sysPayAccountMapperService.getPayInfo(3,levelSeq);
+        List<SysPayaccountDO> netbankPays = sysPayAccountMapperService.getPayInfo(3, levelSeq);
         if (!CollectionUtil.isEmpty(netbankPays)) {
             netbankPays.forEach(sysPayaccountDO -> {
                 SysBusparameter sysBusparameter = sysBusparameterMapperExt.selectByBusparamcode(sysPayaccountDO.getBankname());
@@ -439,8 +437,4 @@ public class RechargeServiceImpl implements RechargeService {
         return sysThreePaysetDTOList;
     }
 
-    @Override
-    public String getUsdtAddress(LoginUser loginUser) {
-        return "";
-    }
 }

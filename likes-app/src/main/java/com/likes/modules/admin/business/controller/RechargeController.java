@@ -41,13 +41,14 @@ public class RechargeController extends BaseController {
     private RedisTemplate redisTemplate;
 
 
-    @ResponseBody
-    @RequestMapping(name = "获取收款信息", value = "/getBankList", method = RequestMethod.GET)
+
+    @ApiOperation("获取收款信息")
+    @RequestMapping(name = "获取收款信息", value = "/getCoinDeposit", method = RequestMethod.GET)
     public ResultInfo getBankList() {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            response.setData(rechargeService.getBankList(this.getLoginUserAPP()));
+            response.setData(rechargeService.getCoinDeposit(this.getLoginUserAPP()));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
@@ -60,25 +61,6 @@ public class RechargeController extends BaseController {
     }
 
 
-    @ApiOperation("查询用户AG余额外部接口")
-    @GetMapping("/getBalanceApi")
-    @RequestMapping(name = "获取usdt收款地址", value = "/getUsdtAddress", method = RequestMethod.GET)
-    public ResultInfo getUsdtAddress() {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        LoginUser loginUserAPP = getLoginUserAPP();
-        try {
-            response.setData(rechargeService.getUsdtAddress(loginUserAPP));
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            logger.info("失败:{}", e.getMessage());
-        } catch (Exception e) {
-            response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
-            logger.error("getBankList error,req:{}", e);
-        }
-        logger.info("/getUsdtAddress耗时{}毫秒", (System.currentTimeMillis() - start));
-        return response;
-    }
 
 
     @ApiOperation("提交usdt充值")

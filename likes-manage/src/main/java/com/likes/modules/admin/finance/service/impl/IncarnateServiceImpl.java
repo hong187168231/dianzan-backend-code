@@ -557,14 +557,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             throw new BusinessException("该订单已提交到第三方");
         }
         DzCoin dzCoin = getCoinType(coinName);
-        OnlineRechargeOrder udunOrder = new OnlineRechargeOrder();
+        PayRechargeOrder udunOrder = new PayRechargeOrder();
         udunOrder.setAmount(getTradeOffAmount(amount));
         udunOrder.setAccno(accno);
-        udunOrder.setMainCoinType(dzCoin.getMainCoinType());
-        udunOrder.setCoinType(dzCoin.getCoinType());
-        udunOrder.setTradeType(2);
-        udunOrder.setAddress(moneyAddress);
-        udunOrder.setBusinessId(businessId);
+//        udunOrder.setMainCoinType(dzCoin.getMainCoinType());
+//        udunOrder.setCoinType(dzCoin.getCoinType());
+//        udunOrder.setTradeType(2);
+//        udunOrder.setAddress(moneyAddress);
+//        udunOrder.setBusinessId(businessId);
         udunOrder.setTradeStatus(0);
         udunOrder.setCreateUser(accno);
         udunOrder.setCreateTime(new Date());

@@ -135,7 +135,7 @@ public class RechargeController extends BaseController {
 
     @ApiOperation("线上支付")
     @AllowAccess
-    @RequestMapping(name = "获取收款地址", value = "/onlinePay", method = RequestMethod.POST)
+    @RequestMapping(name = "线上支付", value = "/onlinePay", method = RequestMethod.POST)
     public ResultInfo onlinePay(@RequestBody OnlinePayDTO onlinePayDTO) {
         logger.error("获取收款地址前端傳入參數,params:{},", JSONObject.toJSONString(onlinePayDTO));
         long start = System.currentTimeMillis();

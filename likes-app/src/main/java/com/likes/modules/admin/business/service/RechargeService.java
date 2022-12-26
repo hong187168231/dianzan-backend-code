@@ -20,7 +20,7 @@ public interface RechargeService {
 
     Map<String, Object> doPayV1(LoginUser loginUserAPP, TraRechargemealRequest req);
 
-    Map<String, Object> doPayUsdt(LoginUser loginUserAPP, RechargeUsdtRequest req);
+    boolean doPayUsdt(LoginUser loginUserAPP, RechargeUsdtRequest req);
 
     /**
      * 获取在线充值设置

@@ -262,26 +262,26 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public Map<String, Object> doPayUsdt(LoginUser loginUserAPP, RechargeUsdtRequest req) {
+    public boolean doPayUsdt(LoginUser loginUserAPP, RechargeUsdtRequest req) {
         doPayUsdtCheckParams(loginUserAPP, req);
-        //判断收款账号存在不
-        SysPayaccount sysPayaccount = sysPayAccountMapperService.selectByPrimaryKey(req.getId());
-        if (sysPayaccount == null || sysPayaccount.getIsDelete()) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1109.getCode(), "收款账户不存在");
-        }
-        if (sysPayaccount.getStatus() != 0) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1110.getCode(), "当前渠道繁忙,请尝试其他渠道");
-        }
+//        //判断收款账号存在不
+//        SysPayaccount sysPayaccount = sysPayAccountMapperService.selectByPrimaryKey(req.getId());
+//        if (sysPayaccount == null || sysPayaccount.getIsDelete()) {
+//            throw new BusinessException(StatusCode.LIVE_ERROR_1109.getCode(), "收款账户不存在");
+//        }
+//        if (sysPayaccount.getStatus() != 0) {
+//            throw new BusinessException(StatusCode.LIVE_ERROR_1110.getCode(), "当前渠道繁忙,请尝试其他渠道");
+//        }
 
-        SysPaysetExample sysPaysetExample = new SysPaysetExample();
-        SysPaysetExample.Criteria criteria = sysPaysetExample.createCriteria();
-        criteria.andIsDeleteEqualTo(false);
-        criteria.andStatusEqualTo(0);
-        criteria.andSettypeEqualTo(2);
-        SysPayset sysPayset = sysPaysetService.selectOneByExample(sysPaysetExample);
-        if (sysPayset == null) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1111.getCode(), "支付设定不存在");
-        }
+//        SysPaysetExample sysPaysetExample = new SysPaysetExample();
+//        SysPaysetExample.Criteria criteria = sysPaysetExample.createCriteria();
+//        criteria.andIsDeleteEqualTo(false);
+//        criteria.andStatusEqualTo(0);
+//        criteria.andSettypeEqualTo(2);
+//        SysPayset sysPayset = sysPaysetService.selectOneByExample(sysPaysetExample);
+//        if (sysPayset == null) {
+//            throw new BusinessException(StatusCode.LIVE_ERROR_1111.getCode(), "支付设定不存在");
+//        }
         // 此方法 是代理充值 所以 生成订单就行 ，再有管理后台 进行订单处理
         Date nowDate = new Date();
         // 主表信息
@@ -331,7 +331,6 @@ public class RechargeServiceImpl implements RechargeService {
 
         TraRechargeaudit traRechargeaudit = new TraRechargeaudit();
         traRechargeaudit.setOrderid(traOrderinfom.getOrderid());
-        traRechargeaudit.setPaysetid(sysPayset.getPaysetid());
         traRechargeaudit.setCreateUser(loginUserAPP.getAccno());
         traRechargeauditService.insertSelective(traRechargeaudit);
         HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -341,7 +340,7 @@ public class RechargeServiceImpl implements RechargeService {
         dataMap.put("orderstatus", traOrderinfom.getOrderstatus());
         dataMap.put("realamt", tradeOffAmount);
         RedisBusinessUtil.delRechargeUnLineOrder();
-        return dataMap;
+        return true;
     }
 
     private void doPayV1checkParams(LoginUser loginUserAPP, TraRechargemealRequest req) {

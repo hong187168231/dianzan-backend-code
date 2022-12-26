@@ -189,7 +189,28 @@ public class PaySignUtil {
      * @param api_key
      * @return
      */
-    public static String getSign(Map<String, Object> map, String api_key) {
+    public static String getSign(Map<String, String> map, String api_key) {
+        // 对参数名按照ASCII升序排序
+        Object[] key = map.keySet().toArray();
+        Arrays.sort(key);
+        // System.out.println(key.toString());
+        // 生成加密原串
+        StringBuffer res = new StringBuffer();
+        for (int i = 0; i < key.length; i++) {
+            res.append(key[i] + "=" + map.get(key[i]) + "&");
+        }
+        // 再拼接秘钥
+        String src = res.append("key=" + api_key).toString();
+        logger.info("sign src={}", src);
+        // MD5加密
+        String md5 = MD5Encoder(src);
+        // 将字符串全部转为大写
+        String rel = md5.toUpperCase();
+        logger.info("sign rel={}", rel);
+        return rel;
+    }
+
+    public static String getSign2(Map<String, Object> map, String api_key) {
         // 对参数名按照ASCII升序排序
         Object[] key = map.keySet().toArray();
         Arrays.sort(key);

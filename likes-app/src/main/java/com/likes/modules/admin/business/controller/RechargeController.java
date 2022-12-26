@@ -88,7 +88,7 @@ public class RechargeController extends BaseController {
 
     @ApiOperation("提交usdt充值")
     @RequestMapping(name = "提交usdt充值", value = "/v3/doPayUsdt", method = RequestMethod.POST)
-    public ResultInfo doPayUsdt(@RequestBody RechargeUsdtRequest req) {
+    public ResultInfo doPayUsdt(RechargeUsdtRequest req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_USDT_APPLY_LOCK, 0, 10 * 1000);
@@ -124,7 +124,7 @@ public class RechargeController extends BaseController {
     @ApiOperation("线上支付")
     @AllowAccess
     @RequestMapping(name = "线上支付", value = "/onlinePay", method = RequestMethod.POST)
-    public ResultInfo onlinePay(@RequestBody OnlinePayDTO onlinePayDTO) {
+    public ResultInfo onlinePay(OnlinePayDTO onlinePayDTO) {
         logger.error("获取收款地址前端傳入參數,params:{},", JSONObject.toJSONString(onlinePayDTO));
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();

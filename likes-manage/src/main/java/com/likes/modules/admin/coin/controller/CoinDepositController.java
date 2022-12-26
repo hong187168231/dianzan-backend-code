@@ -31,7 +31,7 @@ public class CoinDepositController extends BaseController {
 
     @ApiOperation("新增收款钱包")
     @PostMapping("/saveCoinDeposit")
-    public ResultInfo saveCoinDeposit(@RequestBody @Validated CoinDepositDTO coinDto) {
+    public ResultInfo saveCoinDeposit( @Validated CoinDepositDTO coinDto) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -52,7 +52,7 @@ public class CoinDepositController extends BaseController {
 
     @ApiOperation("修改收款钱包")
     @PostMapping("/modifyCoinDeposit")
-    public ResultInfo modifyCoinDeposit(@RequestBody @Validated CoinDepositDTO coinDto) {
+    public ResultInfo modifyCoinDeposit( @Validated CoinDepositDTO coinDto) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -76,7 +76,7 @@ public class CoinDepositController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "id主键", required = true),
     })
-    public ResultInfo delCoinDeposit(Integer id) {
+    public ResultInfo delCoinDeposit(@RequestParam(value = "id") Integer id) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -98,7 +98,7 @@ public class CoinDepositController extends BaseController {
             @ApiImplicitParam(name = "id", value = "id主键", required = true),
             @ApiImplicitParam(name = "status", value = "0关闭 1开启", required = true)
     })
-    public ResultInfo editCoinStatus(Integer id, Integer status) {
+    public ResultInfo editCoinStatus(@RequestParam(value = "id") Integer id,@RequestParam(value = "status") Integer status) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {

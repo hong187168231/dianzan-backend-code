@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.likes.common.mybatis.mapper.PaymentTypeMapper">
-  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.PaymentType">
+<mapper namespace="com.likes.common.mybatis.mapper.PayTypeMapper">
+  <resultMap id="BaseResultMap" type="com.likes.common.mybatis.entity.PayType">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="pay_chan_code" jdbcType="VARCHAR" property="payChanCode" />
     <result column="pay_type_Code" jdbcType="VARCHAR" property="payTypeCode" />
@@ -13,7 +13,7 @@
     delete from payment_type
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.PaymentType" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.likes.common.mybatis.entity.PayType" useGeneratedKeys="true">
     insert into payment_type (pay_chan_code, pay_type_Code, pay_type_name,
                               create_time, update_time
     )
@@ -21,7 +21,7 @@
             #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
            )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.PaymentType">
+  <update id="updateByPrimaryKey" parameterType="com.likes.common.mybatis.entity.PayType">
     update payment_type
     set pay_chan_code = #{payChanCode,jdbcType=VARCHAR},
         pay_type_Code = #{payTypeCode,jdbcType=VARCHAR},

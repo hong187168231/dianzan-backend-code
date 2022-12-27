@@ -564,40 +564,12 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
         traOrderinfom.setUpdateTime(new Date());
         traOrderinfom.setPaydate(new Date());
 
-        // 每次都要判断 这笔单子是否 有这个支付设定的优惠
-        SysPayset sysPayset = sysPaysetService.getOneBySettypeByOrderid(traOrderinfom.getOrderid());
-        if (sysPayset == null) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1103.getCode(), "支付设定不存在");
-        }
+
         double amount = traOrderinfom.getRealamt().setScale(3, BigDecimal.ROUND_DOWN).doubleValue();
-        Double giftrate = sysPayset.getGiftrate().setScale(3, BigDecimal.ROUND_DOWN).doubleValue();
-        Double maxgift = sysPayset.getMaxgift().setScale(3, BigDecimal.ROUND_DOWN).doubleValue();
+
         MemBaseinfo chongzhiBaseinfo = memBaseinfoService.getUserByAccno(traOrderinfom.getAccno());
-        // 入款优惠频率 1首次充值优惠 2每次充值优惠
-        BigDecimal sumamt = null;
-        Integer rechargetype = sysPayset.getRechargetype();
-        if (rechargetype == 1) {
-            double give = Double.parseDouble(String.valueOf(amount)) * giftrate;
-            if (chongzhiBaseinfo.getPayAmount().doubleValue() > 0) {
-                give = 0d;
-            }
-
-            if (maxgift != 0 && give > maxgift) {
-                give = maxgift;
-            }
-            double sum = amount + give;
-            sumamt = new BigDecimal(sum);
-            sumamt = sumamt.setScale(2, BigDecimal.ROUND_HALF_DOWN);
-        } else {
-            double give = Double.parseDouble(String.valueOf(amount)) * giftrate;
-            if (maxgift != 0 && give > maxgift) {
-                give = maxgift;
-            }
-            double sum = amount + give;
-            sumamt = new BigDecimal(sum);
-            sumamt = sumamt.setScale(2, BigDecimal.ROUND_HALF_DOWN);
-        }
-
+        BigDecimal sumamt = req.getVietRealAmount();
+        sumamt = sumamt.setScale(2, BigDecimal.ROUND_HALF_DOWN);
         // 修改
         traOrderinfom.setSumamt(getTradeOffAmount(sumamt));
 

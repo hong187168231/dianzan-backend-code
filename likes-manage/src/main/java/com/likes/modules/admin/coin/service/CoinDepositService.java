@@ -41,6 +41,7 @@ public class CoinDepositService {
 
     public Boolean saveCoinDeposit(CoinDeposit coinDeposit, LoginUser loginUser) {
         coinDeposit.setCreateUser(loginUser.getAcclogin());
+        coinDeposit.setDelStatus(0);
         return coinDepositMapper.insert(coinDeposit) > 0;
     }
 

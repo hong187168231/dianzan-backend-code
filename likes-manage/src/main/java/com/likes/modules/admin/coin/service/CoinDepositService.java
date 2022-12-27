@@ -30,7 +30,7 @@ public class CoinDepositService {
      */
     public PageInfo<CoinDeposit> coinDepositList(PageBounds page) {
         CoinDeposit coinDeposit = new CoinDeposit();
-        coinDeposit.setStatus(1);
+        coinDeposit.setDelStatus(0);
         PageHelper.startPage(page.getPageNo(), page.getPageSize());
         List<CoinDeposit> coinDepositList = coinDepositMapper.select(coinDeposit);
         PageInfo<CoinDeposit> pageInfo = new PageInfo<>(coinDepositList);

@@ -1,6 +1,7 @@
 package com.likes.modules.admin.pay.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.enums.GoldchangeEnum;
 import com.likes.common.model.dto.member.MemGoldchangeDO;
@@ -79,18 +80,21 @@ public class CsPayServiceImpl implements CsPayService {
 
         long timestamp = System.currentTimeMillis() / 1000;
 
+
         Map<String, Object> payMap = new TreeMap<>();
-        payMap.put("business_type", "30001");
+        payMap.put("business_type", "20011");
         payMap.put("bank_id", "ACB");
         payMap.put("pay_type", csPayDTO.getPayType());
         payMap.put("mer_order_no", csPayDTO.getOrderNo());
         payMap.put("order_price", csPayDTO.getAmount());
-//        payMap.put("backUrl", backUrl);
+        payMap.put("page_back_url", "http://www.baidu.com");
         payMap.put("notify_url", csPayDTO.getNotifyUrl());
         payMap.put("timestamp", timestamp);
 
         String sign = PaySignUtil.getSignLower(payMap,key);
         log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
+
+        log.info("铭文"+ JSON.toJSONString(payMap));
         payMap.put("sign",sign);
 
         String params = base64(DESUtil.encrypt(JSONObject.toJSONString(payMap), key));

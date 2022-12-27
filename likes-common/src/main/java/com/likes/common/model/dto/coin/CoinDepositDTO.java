@@ -16,14 +16,13 @@ public class CoinDepositDTO {
 
     private String coinType;
 
-    private BigDecimal coinName;
+    private String coinName;
 
-    private BigDecimal address;
+    private String address;
 
-    private BigDecimal imageUrl;
+    private String imageUrl;
 
     private Integer status;
-
 
 
 

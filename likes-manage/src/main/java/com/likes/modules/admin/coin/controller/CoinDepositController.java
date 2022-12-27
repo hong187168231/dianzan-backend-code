@@ -57,9 +57,7 @@ public class CoinDepositController extends BaseController {
         ResultInfo response = ResultInfo.ok();
         try {
             LoginUser loginUser = getLoginAdmin();
-            CoinDeposit coinDeposit = new CoinDeposit();
-            BeanUtils.copyProperties(coinDto, coinDeposit);
-            Boolean data = coinDepositService.modifyCoinDeposit(coinDeposit, loginUser);
+            Boolean data = coinDepositService.modifyCoinDeposit(coinDto, loginUser);
             response.setData(data);
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());

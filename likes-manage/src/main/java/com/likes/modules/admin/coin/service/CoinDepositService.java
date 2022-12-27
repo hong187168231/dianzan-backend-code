@@ -7,9 +7,11 @@ import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
+import com.likes.common.model.dto.coin.CoinDepositDTO;
 import com.likes.common.mybatis.entity.CoinDeposit;
 import com.likes.common.mybatis.mapper.CoinDepositMapper;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +44,13 @@ public class CoinDepositService {
         return coinDepositMapper.insert(coinDeposit) > 0;
     }
 
-    public boolean modifyCoinDeposit(CoinDeposit coinDeposit, LoginUser loginUser) {
-        if (ObjectUtils.isEmpty(coinDeposit.getId())) {
+    public boolean modifyCoinDeposit(CoinDepositDTO coinDto, LoginUser loginUser) {
+        if (ObjectUtils.isEmpty(coinDto.getId())) {
             throw new BusinessException(StatusCode.ACCOUNT_EMPTY.getCode(), "id项不允许为空");
         }
+        CoinDeposit coinDeposit = new CoinDeposit();
+        BeanUtils.copyProperties(coinDto, coinDeposit);
+        coinDeposit.setId(coinDto.getId().intValue());
         coinDeposit.setUpdateUser(loginUser.getAcclogin());
         return coinDepositMapper.updateByPrimaryKeySelective(coinDeposit) > 0;
     }

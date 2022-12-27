@@ -810,7 +810,7 @@
         t.realamt as rechargegold,
         ROUND((t.sumamt - t.realamt),2) as givegold,
         mb.nickname as nickname,
-        mb.mobileno as mobileno,
+        mb.email as email,
         mb.unique_id as uniqueId,
         mb.remark as remark,
         IF(t.update_user is not null,(select ml.acclogin from bd_user ml where ml.accno =
@@ -818,9 +818,9 @@
         FROM tra_orderinfom t LEFT JOIN mem_baseinfo mb on t.accno = mb.accno
         WHERE t.is_delete = b'0'
         AND t.ordertype = 2
-        <if test="mobileno != null and mobileno != ''">
-            and mb.mobileno = #{mobileno}
-        </if>
+<!--        <if test="mobileno != null and mobileno != ''">-->
+<!--            and mb.mobileno = #{mobileno}-->
+<!--        </if>-->
         <if test="orderstatus != null and  orderstatus !='' ">
             and t.orderstatus = #{orderstatus}
         </if>

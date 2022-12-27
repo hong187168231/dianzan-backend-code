@@ -420,13 +420,6 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
 
     @Override
     public List<EntryOnLineOrderExcelResponse> onlineOrderList(EntryOrderReq req) {
-        //支付商查询
-        if (!StringUtils.isEmpty(req.getProviderid())) {
-            List<Long> list = sysThreePaysetService.getAllSysThreePaySet(req.getProviderid());
-            if (list.size() > 0) {
-                req.setTpaysetids(list);
-            }
-        }
         List<EntryOnLineOrderExcelResponse> list = traOrderinfomMapperService.onlineOrderList(req);
         list.forEach(r -> {
             if (Constants.ORDER_ORD04.equals(r.getOrderstatus())) {

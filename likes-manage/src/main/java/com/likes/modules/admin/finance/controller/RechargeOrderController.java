@@ -19,16 +19,15 @@ import com.likes.common.util.JsonUtil;
 import com.likes.common.util.LogUtils;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.finance.service.RechargeOrderService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -47,7 +46,8 @@ import java.util.concurrent.TimeUnit;
  *
  * @author bjkj
  */
-@Controller
+@Api(tags = "充值订单管理")
+@RestController
 @RequestMapping(value = "/order")
 public class RechargeOrderController extends BaseController {
     private final static Logger logger = LogManager.getLogger(RechargeOrderController.class);
@@ -59,7 +59,6 @@ public class RechargeOrderController extends BaseController {
 
 
     //-------------------------------------------公司入款订单----------------------------------------------------------
-    @ResponseBody
     @RequestMapping(name = "公司入款订单处理", value = "/getRechargeOrderDetail", method = RequestMethod.GET)
     public ResultInfo getRechargeOrderDetail(@Valid OrderReq req, BindingResult err) {
         long start = System.currentTimeMillis();
@@ -83,7 +82,6 @@ public class RechargeOrderController extends BaseController {
     }
 
     @Syslog("交易凭证上传多图上传")
-    @ResponseBody
     @RequestMapping(name = "交易凭证上传多图上传", value = "/awsupload/manyBusinessPicFileUpload", method = RequestMethod.POST)
     public ResultInfo manyBusinessPicFileUpload(@RequestParam("file") MultipartFile[] files) throws Exception {
         long start = System.currentTimeMillis();
@@ -164,7 +162,8 @@ public class RechargeOrderController extends BaseController {
         return response;
     }
 
-    @ResponseBody
+
+    @ApiOperation("线下入款订单")
     @RequestMapping(name = "公司入款订单管理", value = "/orderList", method = RequestMethod.GET)
     public ResultInfo orderList(EntryOrderReq req, PageBounds page) {
         long start = System.currentTimeMillis();
@@ -212,7 +211,6 @@ public class RechargeOrderController extends BaseController {
         logger.info("/export/recharge耗时{}毫秒：", (System.currentTimeMillis() - start));
     }
 
-    @ResponseBody
     @RequestMapping(name = "公司入款订单查看", value = "/getOrderDetail", method = RequestMethod.GET)
     public ResultInfo orderList(EntryOrderReq req) {
         long start = System.currentTimeMillis();
@@ -308,7 +306,6 @@ public class RechargeOrderController extends BaseController {
     //----------------------------------------------强制入款-----------------------------------------------------
     //订单详细
     @Syslog("强制入账")
-    @ResponseBody
     @RequestMapping(name = "强制入账", value = "/getMandatoryOrderDetail", method = RequestMethod.GET)
     public ResultInfo getMandatoryOrderDetail(EntryOrderReq req) {
         long start = System.currentTimeMillis();

@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Table(name = "`member_credit_change`")
-public class MemberCreditChange {
+public class    MemberCreditChange {
     @Id
     @Column(name = "`id`")
     @GeneratedValue(generator = "JDBC")

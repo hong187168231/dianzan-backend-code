@@ -166,7 +166,7 @@ public class MemBaseinfoWriteServiceImpl implements MemBaseinfoWriteService {
                     dto.setChangeAmount(amount);
                     dto.setOperateEnum(YueaboOperateEnum.INTO);
                     dto.setIsSystemWay(true);
-                    yuebaoChangeService.updateYuebaoAmount(dto);
+//                    yuebaoChangeService.updateYuebaoAmount(dto);
                 }else {
                     int i = memBaseinfoService.updateMemberAmount(amount, pamount, bamount, namount, consumeAcmount, wamount, waitAmount, memBaseinfo.getAccno(), memBaseinfo.getMemid());
                     if (i != 1) {

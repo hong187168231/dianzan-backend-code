@@ -588,14 +588,14 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
                 throw new BusinessException(StatusCode.LIVE_ERROR_202.getCode(), "已处理过该订单");
             }
 
-            sysPayAccountMapperService.updateTotalAmount(loginUser.getAccno(), traOrderinfom.getBankid(), traOrderinfom.getRealamt());
-            SysPayaccount syspayaccount = sysPayAccountMapperService.selectByPrimaryKey(traOrderinfom.getBankid());
-            if (syspayaccount.getTotalAmount().compareTo(syspayaccount.getStopamt()) >= 0) {
-                syspayaccount.setSysStatus(false);
-                syspayaccount.setUpdateUser(loginUser.getAccno());
-                syspayaccount.setUpdateTime(new Date());
-                sysPayAccountMapperService.updateByPrimaryKeySelective(syspayaccount);
-            }
+//            sysPayAccountMapperService.updateTotalAmount(loginUser.getAccno(), traOrderinfom.getBankid(), traOrderinfom.getRealamt());
+//            SysPayaccount syspayaccount = sysPayAccountMapperService.selectByPrimaryKey(traOrderinfom.getBankid());
+//            if (syspayaccount.getTotalAmount().compareTo(syspayaccount.getStopamt()) >= 0) {
+//                syspayaccount.setSysStatus(false);
+//                syspayaccount.setUpdateUser(loginUser.getAccno());
+//                syspayaccount.setUpdateTime(new Date());
+//                sysPayAccountMapperService.updateByPrimaryKeySelective(syspayaccount);
+//            }
             // 充值用户
 
             if (chongzhiBaseinfo != null) {

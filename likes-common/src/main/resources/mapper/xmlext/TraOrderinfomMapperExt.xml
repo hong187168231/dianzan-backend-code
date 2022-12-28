@@ -806,6 +806,8 @@
         SELECT t.orderid,t.orderno,t.mealid,t.orderstatus,t.create_time as
         createdate,t.payuser ,t.paynote,t.ordernote,t.update_time updateTime,
         t.realamt as realamt,
+        t.pay_address as payAddress,
+        t.transfer_address as transferAddress,
         TRUNCATE((t.sumamt - t.realamt)/ t.realamt,3) as givepercent,
         t.realamt as rechargegold,
         ROUND((t.sumamt - t.realamt),2) as givegold,
@@ -1304,8 +1306,7 @@
         t.update_user LIMIT 1),NULL) AS modifyusername
         FROM tra_orderinfom t left join mem_baseinfo mb on t.accno = mb.accno
         WHERE t.is_delete = b'0'
-        AND( t.ordertype = 1
-        or  t.ordertype = 2)
+        AN t.ordertype = 1
         <if test="email != null and email != ''">
             and mb.email = #{email}
         </if>
@@ -1320,12 +1321,6 @@
         </if>
         <if test="uniqueId != null and  uniqueId !='' ">
             and mb.unique_id = #{uniqueId}
-        </if>
-        <if test="tpaysetids != null">
-            and t.tpaysetid in
-            <foreach close=")" collection="tpaysetids" index="index" item="s" open="(" separator=",">
-                #{s}
-            </foreach>
         </if>
         <if test="startDate != null and  startDate !='' ">
             <![CDATA[  and t.create_time >= #{startDate} ]]>
@@ -2366,12 +2361,6 @@
         <if test="uniqueId != null and  uniqueId !='' ">
             and mb.unique_id = #{uniqueId}
         </if>
-        <if test="tpaysetids != null">
-            and t.tpaysetid in
-            <foreach close=")" collection="tpaysetids" index="index" item="s" open="(" separator=",">
-                #{s}
-            </foreach>
-        </if>
         <if test="startDate != null and  startDate !='' ">
             <![CDATA[  and t.create_time >= #{startDate} ]]>
         </if>
@@ -2553,4 +2542,3 @@
         </foreach>
     </update>
 </mapper>
-

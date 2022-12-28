@@ -2,6 +2,7 @@ package com.likes.common.model.response;
 
 import com.likes.common.constant.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -23,7 +24,13 @@ public class EntryOrderResponse {
     private String paynote;
     private String ordernote;
     private String remark;
+
     private String moneyAddress;
+    @ApiModelProperty("付款地址")
+    private String payAddress;
+
+    @ApiModelProperty("收款地址")
+    private String transferAddress;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
     private Date createdate;

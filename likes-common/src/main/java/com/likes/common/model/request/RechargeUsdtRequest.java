@@ -17,6 +17,10 @@ public class RechargeUsdtRequest {
     private BigDecimal amount;
     @ApiModelProperty("付款地址")
     private String payAddress;
+
+    @ApiModelProperty("付款人")
+    private String payUserName;
+
     @ApiModelProperty("收款地址")
     private String transferAddress;
 }

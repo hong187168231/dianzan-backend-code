@@ -39,7 +39,7 @@ public class RankingTask {
 
     Logger log = LoggerFactory.getLogger(RankingTask.class);
 
-    @Scheduled(fixedDelay = 100000000)
+    @Scheduled(fixedDelay = 60000)
     public void rankingTask() {
         try {
             String beginTime = DateUtils.dayBeginStr();

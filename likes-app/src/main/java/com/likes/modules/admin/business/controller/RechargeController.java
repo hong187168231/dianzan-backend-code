@@ -7,6 +7,7 @@ import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.ResultInfo;
+import com.likes.common.model.request.PayTypeRequest;
 import com.likes.common.model.request.RechargeUsdtRequest;
 import com.likes.common.model.request.TraRechargemealRequest;
 import com.likes.common.model.vo.pay.PayTypeVO;
@@ -26,6 +27,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,11 +71,12 @@ public class RechargeController extends BaseController {
     @AllowAccess
     @ApiOperation("获取线上支付类型")
     @RequestMapping(name = "获取线上支付类型", value = "/payTypeList", method = RequestMethod.GET)
-    public ResultInfo<PayTypeVO> payTypeList() {
+    public ResultInfo<PayTypeVO> payTypeList(HttpServletRequest request) {
+        String language = request.getHeader("language");
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            response.setData(payTypeService.payTypeList());
+            response.setData(payTypeService.payTypeList(language));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());

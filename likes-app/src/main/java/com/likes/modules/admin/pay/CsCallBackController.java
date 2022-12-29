@@ -3,6 +3,7 @@ package com.likes.modules.admin.pay;
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.BaseController;
 import com.likes.common.annotation.AdminAccess;
+import com.likes.common.annotation.AllowAccess;
 import com.likes.modules.admin.pay.dto.cs.CSCallBackVoPrev;
 import com.likes.modules.admin.pay.dto.cs.CsPayNoticeReq;
 import com.likes.modules.admin.pay.service.CsPayService;
@@ -29,6 +30,7 @@ public class CsCallBackController extends BaseController {
     private CsPayService csPayService;
 
     @ResponseBody
+    @AllowAccess
     @RequestMapping(name = "创世异步通知", value = "/callback", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
     public CSCallBackVoPrev csNotice(CsPayNoticeReq csNoticeVo) {
         logger.error("创世异步通知傳入參數,params:{},", JSONObject.toJSONString(csNoticeVo));

@@ -13,22 +13,19 @@ import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.service.money.TraOrderinfomService;
 import com.likes.common.util.PaySignUtil;
 import com.likes.common.util.SnowflakeIdWorker;
-import com.likes.common.util.StringUtils;
 import com.likes.modules.admin.pay.service.CsPayService;
 import com.likes.modules.admin.pay.common.Constants;
 import com.likes.modules.admin.pay.dto.CsPayDTO;
 import com.likes.modules.admin.pay.dto.cs.CSCallBackVoPrev;
-import com.likes.modules.admin.pay.dto.cs.CSNoticeVo;
+import com.likes.modules.admin.pay.dto.cs.CsPayNoticeReq;
 import com.likes.modules.admin.pay.service.PayMerchantService;
 import com.likes.modules.admin.pay.util.DESUtil;
 import com.likes.modules.admin.pay.util.HttpClient4Util;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import java.net.URLEncoder;
 import java.util.*;
 
 import static com.likes.common.util.ViewUtil.getTradeOffAmount;
@@ -149,8 +146,7 @@ public class CsPayServiceImpl implements CsPayService {
     @Resource
     private PayMerchantService payMerchantService;
 
-    @Resource
-    private PaymentOrderFlowMapper paymentOrderFlowMapper;
+
 
     /**
      * 六、	异步通知接口
@@ -160,7 +156,7 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
-    public CSCallBackVoPrev csNotice(CSNoticeVo csNoticeVo) throws Exception {
+    public CSCallBackVoPrev callbackNotice(CsPayNoticeReq csNoticeVo) throws Exception {
         CSCallBackVoPrev csCallBackVoPrev = new CSCallBackVoPrev();
         csCallBackVoPrev.setCode("0");
         PayMerchant payMerchant = payMerchantService.getMerchant(Constants.PAY_CHAN_CS_CODE);
@@ -174,11 +170,6 @@ public class CsPayServiceImpl implements CsPayService {
             csCallBackVoPrev.setCode("2000");
             return csCallBackVoPrev;
         }
-
-
-
-
-
         //解密
         String params = DESUtil.decrypt(csNoticeVo.getParams(), payMerchant.getMerchantKey());
         try {
@@ -190,6 +181,20 @@ public class CsPayServiceImpl implements CsPayService {
             Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2已匹配	2
             String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
             Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
+            String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
+
+
+//            Map<String, Object> payMap = new TreeMap<>();
+//            payMap.put("business_type", "20011");
+//            payMap.put("bank_id", "ACB");
+//            payMap.put("pay_type", csPayDTO.getPayType());
+//            payMap.put("mer_order_no", csPayDTO.getOrderNo());
+//            payMap.put("order_price", csPayDTO.getAmount());
+//            payMap.put("page_back_url", "http://www.baidu.com");
+//            payMap.put("notify_url", csPayDTO.getNotifyUrl());
+//            payMap.put("timestamp", timestamp);
+
+
 
             PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
             payRechargeOrder.setTradeId(order_no);

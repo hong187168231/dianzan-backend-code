@@ -285,7 +285,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         }
         asynRegister(req, newUser);
         registerGive(newUser);
-        return new HashMap<String, Object>();
+        return new HashMap<>();
 
     }
 
@@ -397,12 +397,12 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
     }
 
     private void registerGive(MemBaseinfo memBaseinfo) {
-        String timeStr = "2022-06-24 00:00:00";
-        Date date = DateUtils.str2date(timeStr);
-        Date now = new Date();
-        if (now.before(date)) {
-            return;
-        }
+//        String timeStr = "2022-06-24 00:00:00";
+//        Date date = DateUtils.str2date(timeStr);
+//        Date now = new Date();
+//        if (now.before(date)) {
+//            return;
+//        }
         BigDecimal amount = new BigDecimal(0);
         SysParameter giveAmount = this.sysParamService.getByCode("REGISTER_GIVE_AMOUNT");
         if (giveAmount == null || StringUtils.isEmpty(giveAmount.getSysparamvalue())) {

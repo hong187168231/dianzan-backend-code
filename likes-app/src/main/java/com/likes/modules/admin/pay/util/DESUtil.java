@@ -1,5 +1,6 @@
 package com.likes.modules.admin.pay.util;
 
+import com.likes.modules.admin.pay.service.impl.CsPayServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.misc.BASE64Decoder;
@@ -10,6 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.IOException;
 import java.security.Security;
 
 public class DESUtil {
@@ -22,7 +24,9 @@ public class DESUtil {
 
     //解密
     public static String decrypt(String data,String key) {
-        if (data == null) return null;
+        if (data == null) {
+            return "";
+        }
         String result = null;
         try {
             byte[] dataByte = new BASE64Decoder().decodeBuffer(data) ;
@@ -36,12 +40,14 @@ public class DESUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return result.replaceAll("(\r\n|\n)", "");
     }
 
     //加密
     public static String encrypt(String data,String key) {
+        if (data == null) {
+            return "";
+        }
         String result = null;
         try {
             DESedeKeySpec spec = new DESedeKeySpec(key.getBytes());
@@ -68,6 +74,14 @@ public class DESUtil {
     }
 
 
+    private static String base64Decoder(String result) {
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            return new String(decoder.decodeBuffer(result),"utf-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
         String key = "d2fb04d8103613b8d391ebc2d34228bd" ;
@@ -76,6 +90,6 @@ public class DESUtil {
         String data = encoder.encode(result.getBytes());
         System.out.println("BASE64加密：" + data);
         System.out.println(result);
-        System.out.println(DESUtil.decrypt(result,key));
+        System.out.println(DESUtil.decrypt(base64Decoder("c1ZnS0MyaHNmRXY0NElBNmpsMmJTSTh6Ym9OanRaQzlvSXZkdU5hOWpBWWZXTHpKcVdtMytxZDZNNFRBaGdHZGZ4a09ycTdHV3VLZ2RQblZwNlJTTktoRFhsa0d2WEZKcDN5c2ZJWlFDNVRaZkViSEl5Uk1nSUF4aXhaNitHKytFWnM3UGljN1BVbnZzODhGZ2tsbWZjUWsrellZR3hIemJaWWFmYXU4K3ZYZVk5MDdCaTBFeFpzbDhhcWN2NStSQWFuZE9LYzZiamxsMkhRQmJuclJzdnpXRy8xNEVwazNLTHQxMDV6MnN1dnEzZ2dRQ3p3aGYxZGd0K0tyaEFFalp3SXcxakI5dFBPRklnWHNFYnBzVi80dVlCMk5pUWxkUEdyQ2h6TEhyN1g5STd4MDBVK3g1QT09"),key));
     }
 }

@@ -23,9 +23,11 @@ import com.likes.modules.admin.pay.util.DESUtil;
 import com.likes.modules.admin.pay.util.HttpClient4Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 import static com.likes.common.util.ViewUtil.getTradeOffAmount;
@@ -55,7 +57,7 @@ public class CsPayServiceImpl implements CsPayService {
             long timestamp = System.currentTimeMillis() / 1000;
             Map<String, Object> payMap = new TreeMap<>();
             payMap.put("business_type", "20011");
-            payMap.put("bank_id", "ACB");
+//            payMap.put("bank_id", "ACB");
 //            payMap.put("pay_type", "OnlineBank");
             payMap.put("mer_order_no", SnowflakeIdWorker.generateShortId());
             payMap.put("order_price", 50000);
@@ -94,6 +96,15 @@ public class CsPayServiceImpl implements CsPayService {
         return encoder.encode(result.getBytes());
     }
 
+    private static String base64Decoder(String result) {
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            return new String(decoder.decodeBuffer(result),"utf-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static String base642(String result) {
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(result.getBytes());
@@ -108,7 +119,7 @@ public class CsPayServiceImpl implements CsPayService {
 
         Map<String, Object> payMap = new TreeMap<>();
         payMap.put("business_type", "20011");
-        payMap.put("bank_id", "ACB");
+//        payMap.put("bank_id", "ACB");
 //        payMap.put("pay_type", csPayDTO.getPayType());
         payMap.put("mer_order_no", csPayDTO.getOrderNo());
         payMap.put("order_price", csPayDTO.getAmount());
@@ -184,7 +195,7 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
-    public CSCallBackVoPrev callbackNotice(CsPayNoticeReq csNoticeVo) throws Exception {
+    public CSCallBackVoPrev callbackNotice(CsPayNoticeReq csPayNoticeReq) throws Exception {
         CSCallBackVoPrev csCallBackVoPrev = new CSCallBackVoPrev();
         csCallBackVoPrev.setCode("0");
         PayMerchant payMerchant = payMerchantService.getMerchant(Constants.PAY_CHAN_CS_CODE);
@@ -193,13 +204,13 @@ public class CsPayServiceImpl implements CsPayService {
             csCallBackVoPrev.setCode("2000");
             return csCallBackVoPrev;
         }
-        if (null == csNoticeVo || !csNoticeVo.getMcode().equals(payMerchant.getMerchantCode())) {
-            log.error("創世支付回調接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csNoticeVo.getMcode(), payMerchant.getMerchantCode());
+        if (ObjectUtil.isNull(csPayNoticeReq) || !csPayNoticeReq.getMcode().equals("gxtnxaciwhdg")) {
+            log.error("創世支付回調接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csPayNoticeReq.getMcode(), payMerchant.getMerchantCode());
             csCallBackVoPrev.setCode("2000");
             return csCallBackVoPrev;
         }
         //解密
-        String params = DESUtil.decrypt(csNoticeVo.getParams(), payMerchant.getMerchantKey());
+        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()) , payMerchant.getMerchantKey());
         try {
             JSONObject jsonObject = JSONObject.parseObject(params);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003

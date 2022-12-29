@@ -52,13 +52,36 @@ public class CsPayServiceImpl implements CsPayService {
 
     public static void main(String[] args) {
         try {
+            long timestamp = System.currentTimeMillis() / 1000;
             Map<String, Object> payMap = new TreeMap<>();
-            payMap.put("business_type", "10005");
-            payMap.put("pay_type", "OnlineBank");
-            payMap.put("timestamp", "1654668613");
+            payMap.put("business_type", "20011");
+            payMap.put("bank_id", "ACB");
+//            payMap.put("pay_type", "OnlineBank");
+            payMap.put("mer_order_no", SnowflakeIdWorker.generateShortId());
+            payMap.put("order_price", 50000);
+            payMap.put("page_back_url", "http://www.baidu.com");
+            payMap.put("notify_url", "http://www.baidu.com");
+            payMap.put("timestamp", timestamp);
 
-            String sign = PaySignUtil.getSignLower(payMap,"09175c09023dffa3dcb351cb113f0be1");
-            System.out.println(sign);
+            String sign = PaySignUtil.getSignLower(payMap,key);
+            log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
+
+            log.info("铭文"+ JSON.toJSONString(payMap));
+            payMap.put("sign",sign);
+
+            String params = base642(DESUtil.encrypt(JSONObject.toJSONString(payMap), key));
+            Map<String, String> reqParams = new HashMap<>();
+            reqParams.put("mcode", mcode);
+            reqParams.put("params", params);
+            log.info("CS获取收银台支付token    (收款接口)帶請求參數输入,apiUrl：{},params：{}", apiUrl, JSONObject.toJSONString(reqParams));
+            String resultString = "";
+            try {
+                resultString = HttpClient4Util.doPost(apiUrl, JSONObject.toJSONString(reqParams));
+                log.info("CS获取收银台支付token    (收款接口)返回,result：{}", resultString);
+            } catch (Exception e) {
+                log.info("CS获取收银台支付token    (收款接口)請求Exception：{}", e);
+                throw e;
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             //处理异常
@@ -67,6 +90,11 @@ public class CsPayServiceImpl implements CsPayService {
     }
 
     private String base64(String result) {
+        BASE64Encoder encoder = new BASE64Encoder();
+        return encoder.encode(result.getBytes());
+    }
+
+    private static String base642(String result) {
         BASE64Encoder encoder = new BASE64Encoder();
         return encoder.encode(result.getBytes());
     }
@@ -81,7 +109,7 @@ public class CsPayServiceImpl implements CsPayService {
         Map<String, Object> payMap = new TreeMap<>();
         payMap.put("business_type", "20011");
         payMap.put("bank_id", "ACB");
-        payMap.put("pay_type", csPayDTO.getPayType());
+//        payMap.put("pay_type", csPayDTO.getPayType());
         payMap.put("mer_order_no", csPayDTO.getOrderNo());
         payMap.put("order_price", csPayDTO.getAmount());
         payMap.put("page_back_url", "http://www.baidu.com");

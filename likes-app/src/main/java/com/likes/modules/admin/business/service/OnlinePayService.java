@@ -106,17 +106,15 @@ public class OnlinePayService {
 
 
     public boolean insertPayment(CsPayDTO csPayDTO, LoginUser loginUser) {
-//        MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
-//        PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
-//        payRechargeOrder.setAmount(new BigDecimal(csPayDTO.getAmount()));
-//        payRechargeOrder.setAccno(memBaseinfo.getAccno());
-//        payRechargeOrder.setTradeId(csPayDTO.getOrderNo());
-//        payRechargeOrder.setCreateUser(loginUser.getAcclogin());
-//        payRechargeOrder.setCreateTime(new Date());
-//        payRechargeOrder.setTradeStatus(0);
-//        int row = payRechargeOrderMapper.insertSelective(payRechargeOrder);
-//        return row > 0;
-        return true;
-
+        MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
+        PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
+        payRechargeOrder.setAmount(new BigDecimal(csPayDTO.getAmount()));
+        payRechargeOrder.setAccno(memBaseinfo.getAccno());
+        payRechargeOrder.setTradeId(csPayDTO.getOrderNo());
+        payRechargeOrder.setCreateUser(loginUser.getAcclogin());
+        payRechargeOrder.setCreateTime(new Date());
+        payRechargeOrder.setTradeStatus(0);
+        int row = payRechargeOrderMapper.insertSelective(payRechargeOrder);
+        return row > 0;
     }
 }

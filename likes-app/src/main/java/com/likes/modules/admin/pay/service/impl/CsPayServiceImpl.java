@@ -223,31 +223,32 @@ public class CsPayServiceImpl implements CsPayService {
             String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
 
 
-//            Map<String, Object> payMap = new TreeMap<>();
-//            payMap.put("business_type", "20011");
-//            payMap.put("bank_id", "ACB");
-//            payMap.put("pay_type", csPayDTO.getPayType());
-//            payMap.put("mer_order_no", csPayDTO.getOrderNo());
-//            payMap.put("order_price", csPayDTO.getAmount());
-//            payMap.put("page_back_url", "http://www.baidu.com");
-//            payMap.put("notify_url", csPayDTO.getNotifyUrl());
-//            payMap.put("timestamp", timestamp);
+            Map<String, Object> noticeMap = new TreeMap<>();
+            noticeMap.put("business_type", business_type);
+            noticeMap.put("mer_order_no",mer_order_no);
+            noticeMap.put("order_no", order_no);
+            noticeMap.put("order_price", order_price);
+//            noticeMap.put("status", status);
+            noticeMap.put("pay_time", pay_time);
+            noticeMap.put("timestamp", timestamp);
+
+            String likesSign = PaySignUtil.getSignLower(noticeMap,key);
 
 
 
-            PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
-            payRechargeOrder.setTradeId(order_no);
-            PayRechargeOrder rechargeOrder =  payRechargeOrderMapper.selectOne(payRechargeOrder);
+            PayRechargeOrder rechargeParam = new PayRechargeOrder();
+            rechargeParam.setTradeId(mer_order_no);
+            PayRechargeOrder rechargeOrder =  payRechargeOrderMapper.selectOne(rechargeParam);
             if(ObjectUtil.isNull(rechargeOrder)){
                 csCallBackVoPrev.setCode("2000");
                 log.error("订单不存在===[{}]",order_no);
                 return csCallBackVoPrev;
             }
-            payRechargeOrder.setUpdateTime(new Date());
-            payRechargeOrder.setTradeStatus(1);
-            payRechargeOrder.setOrderStatus(1);
-            payRechargeOrderMapper.updateByPrimaryKey(payRechargeOrder);
-            createRechargeOrder(payRechargeOrder);
+            rechargeOrder.setUpdateTime(new Date());
+            rechargeOrder.setTradeStatus(1);
+            rechargeOrder.setOrderStatus(1);
+            payRechargeOrderMapper.updateByPrimaryKeySelective(rechargeOrder);
+            createRechargeOrder(rechargeOrder);
         } catch (Exception e) {
             log.error("創世支付回調接口，解密失败,params:{}", params);
             csCallBackVoPrev.setCode("9999");

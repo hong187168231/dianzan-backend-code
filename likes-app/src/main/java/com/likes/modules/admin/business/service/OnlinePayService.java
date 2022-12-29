@@ -63,7 +63,7 @@ public class OnlinePayService {
                         csPayDTO.setBackUrl(payMerchant.getPageBackUrl());
                         csPayDTO.setOrderNo(SnowflakeIdWorker.generateShortId());
                         System.out.println(csPayDTO.getOrderNo().length());
-                        csPayDTO.setPayType("OnlineBank");
+                        csPayDTO.setPayType(onlinePayDTO.getPayType());
                         resultString = csPayService.submitPay(csPayDTO);
                     } catch (Exception e) {
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败Exception:{}", e);

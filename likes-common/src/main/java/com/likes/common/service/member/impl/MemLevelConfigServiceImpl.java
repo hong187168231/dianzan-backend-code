@@ -317,16 +317,16 @@ public class MemLevelConfigServiceImpl implements MemLevelConfigService {
         MemberLevelResponse response = new MemberLevelResponse();
         if (StringUtils.isNotEmpty(accno)) {
             MemLevel memLevel = memLevelMapperExt.selectByAccno(accno);
-            String startDate = DateUtils.getDateString(memLevel.getCreateTime());
-            String endDate = DateUtils.getDateString(memLevel.getExpireTime());
+            String startDate = DateUtils.getDateStringVn(memLevel.getCreateTime());
+            String endDate = DateUtils.getDateStringVn(memLevel.getExpireTime());
             String effectiveDate = startDate + "-" + endDate;
             response.setEffectiveDate(effectiveDate);
             if (!ObjectUtils.isEmpty(memLevel)) {
                 chuliMemLevelConfig(response, memLevel);
                 response.setRemainingTime(DateUtils.getDatePoor(memLevel.getExpireTime(), new Date()));
                 if (response.getLevelSeq().equals(0)) {
-                    String startDate1 = DateUtils.getDateString(memLevel.getCreateTime());
-                    String endDate1 = DateUtils.getDateString(DateUtils.addDays(memLevel.getCreateTime(), 365));
+                    String startDate1 = DateUtils.getDateStringVn(memLevel.getCreateTime());
+                    String endDate1 = DateUtils.getDateStringVn(DateUtils.addDays(memLevel.getCreateTime(), 365));
                     String effectiveDate1 = startDate1 + "-" + endDate1;
                     response.setEffectiveDate(effectiveDate1);
                 }

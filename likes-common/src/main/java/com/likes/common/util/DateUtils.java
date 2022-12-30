@@ -44,7 +44,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     // 日期格式模板
     public static final String FORMAT_YYYY_MM_DD_HHMMSS = "yyyy-MM-dd HH:mm:ss";
-    public static final String FORMAT_YYYY_MM_DD_HHMMSS_VN = "dd-MM-yyyy HH:mm:ss";
+    public static final String FORMAT_YYYY_MM_DD_HHMMSS_VN = "HH:mm:ss dd-MM-yyyy";
 
 
     public static final String FORMAT_YYYY_MM_DD_HHMMSSSSS = "yyyy-MM-dd HH:mm:ss:SSS";

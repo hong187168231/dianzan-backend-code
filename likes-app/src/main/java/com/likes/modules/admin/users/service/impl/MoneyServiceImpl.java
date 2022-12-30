@@ -1,6 +1,7 @@
 package com.likes.modules.admin.users.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.github.pagehelper.Page;
 import com.likes.common.annotation.ReadOnlyConnection;
@@ -169,6 +170,9 @@ public class MoneyServiceImpl implements MoneyService {
         Page<MemGoldchangeDTO> list = memGoldchangeService.myIncomeAndExpensesList(req, page.toRowBounds());
         if (CollectionUtils.isNotEmpty(list)) {
             list.forEach(o -> {
+                String createTime = o.getCreateTime();
+                Date createDateTime = DateUtils.str2date(createTime);
+                o.setCreateTime(DateUtils.getDateTimeStrVn(createDateTime));
                 Integer changetype = o.getChangetype();
                 o.setQuantity(o.getQuantity().setScale(3, BigDecimal.ROUND_DOWN));
                 //1(1为收入，2为支出)

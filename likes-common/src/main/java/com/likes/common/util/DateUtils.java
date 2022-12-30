@@ -44,6 +44,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     // 日期格式模板
     public static final String FORMAT_YYYY_MM_DD_HHMMSS = "yyyy-MM-dd HH:mm:ss";
+    public static final String FORMAT_YYYY_MM_DD_HHMMSS_VN = "dd-MM-yyyy HH:mm:ss";
+
+
     public static final String FORMAT_YYYY_MM_DD_HHMMSSSSS = "yyyy-MM-dd HH:mm:ss:SSS";
     public static final String FORMAT_YYYY_MM_DD_HHMM00 = "yyyy-MM-dd HH:mm:00";
     public static final String FORMAT_YYYYMMDDHHMMSSSSS = "yyyyMMddHHmmssSSS";
@@ -52,6 +55,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String FORMAT_YYYYMMDDHHMM = "yyyyMMddHHmm";
     public static final String DEFAULT_TIMESTAMP = "yyyyMMddHHmmss";
     public static final String FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+
+    public static final String FORMAT_YYYY_MM_DD_VN = "dd-MM-yyyy";
     public static final String FORMAT_YYYYMMDD = "yyyyMMdd";
     public static final String FORMAT_YEAR = "yyyy";
 
@@ -1061,6 +1066,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static String getDateString(Date date) {
         return formatDate(date, FORMAT_YYYY_MM_DD);
     }
+
+    public static String getDateStringVn(Date date) {
+        return formatDate(date, FORMAT_YYYY_MM_DD_VN);
+    }
+
+    public static String getDateTimeStrVn(Date date) {
+        return formatDate(date, FORMAT_YYYY_MM_DD_HHMMSS_VN);
+    }
+
 
     /**
      * 给时间加上或减去指定毫秒，秒，分，时，天、月或年等，返回变动后的时间

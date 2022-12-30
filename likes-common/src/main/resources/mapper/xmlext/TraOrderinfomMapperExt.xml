@@ -1306,7 +1306,7 @@
         t.update_user LIMIT 1),NULL) AS modifyusername
         FROM tra_orderinfom t left join mem_baseinfo mb on t.accno = mb.accno
         WHERE t.is_delete = b'0'
-        AN t.ordertype = 1
+        AND t.ordertype = 1
         <if test="email != null and email != ''">
             and mb.email = #{email}
         </if>

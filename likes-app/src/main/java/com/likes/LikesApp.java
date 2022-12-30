@@ -29,7 +29,7 @@ public class LikesApp extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-//        TimeZone.setDefault(TimeZone.getTimeZone("GMT-5"));
+//        TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
         ApplicationContext applicationContext = SpringApplication.run(LikesApp.class, args);
         SpringUtil.setApplicationContext(applicationContext);
     }

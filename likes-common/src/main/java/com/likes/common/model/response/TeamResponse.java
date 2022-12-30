@@ -24,7 +24,7 @@ public class TeamResponse {
     @ApiModelProperty(value = "今日下单数")
     private Integer todayTaskNum;
     @ApiModelProperty(value = "注册时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createTime;
 
     public String getEmail() {

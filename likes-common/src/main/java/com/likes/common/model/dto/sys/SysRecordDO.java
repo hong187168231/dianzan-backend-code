@@ -23,7 +23,7 @@ public class SysRecordDO extends SysRecord {
         this.recorddate = recorddate;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date recorddate;
 
     private String operationName;

@@ -40,7 +40,7 @@ public class MemLevelRecord {
     private Integer changeType;
 
     @Column(name = "`create_time`")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createTime;
 
     @Column(name = "`update_time`")

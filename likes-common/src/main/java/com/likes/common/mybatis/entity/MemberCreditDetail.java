@@ -40,7 +40,7 @@ public class MemberCreditDetail {
      * 创建时间
      */
     @Column(name = "`create_time`")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createTime;
 
     /**

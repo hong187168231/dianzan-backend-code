@@ -31,8 +31,7 @@ public class MemberCreditVO {
     private Integer integral;
 
     // 更新时间
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
 
 }
-

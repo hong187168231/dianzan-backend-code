@@ -28,7 +28,7 @@ public class FundsResponse {
     @ApiModelProperty(value = "操作说明")
     private String opnote;
     @ApiModelProperty(value = "交易时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createtime;
     private String subEmail;
 

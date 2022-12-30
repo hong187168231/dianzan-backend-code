@@ -12,7 +12,7 @@ import java.util.Date;
 
 public class AgentEveryData implements Serializable {
 
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+7")
     private Date createTime;
 
     private Integer addVipNum = 0;

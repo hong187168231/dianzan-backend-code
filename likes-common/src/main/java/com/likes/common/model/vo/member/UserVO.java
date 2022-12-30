@@ -68,7 +68,7 @@ public class UserVO {
     /**
      * 说明: 最后登录时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date lastlogindate;
 
 

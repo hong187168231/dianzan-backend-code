@@ -32,16 +32,16 @@ public class EntryOrderResponse {
     @ApiModelProperty("收款地址")
     private String transferAddress;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date createdate;
     private String orderstatus;
     private String modifyusername;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
     private Long tpaysetid;
     private String provider;
     private String email;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date paydate;
 
     private String completionTime;

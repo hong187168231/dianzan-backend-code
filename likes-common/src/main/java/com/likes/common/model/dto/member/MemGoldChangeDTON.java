@@ -36,7 +36,7 @@ public class MemGoldChangeDTON {
     //创建人
     private String createuser;
     //创建时间
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createtime;
     //最后修改人
     private String updateuser;
@@ -58,7 +58,7 @@ private  String bdusername;
     }
 
     //更新时间
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date updatetime;
     // 雪花排序号
     private Long snowsn;

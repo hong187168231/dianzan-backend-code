@@ -152,7 +152,6 @@ public class MemberOtherServiceImpl implements MemberOtherService {
     }
 
     @Override
-    @DS("slave")
     public PageInfo<MemGoldChangeDTON> getMemberGoldChange(MemGoldChangeRequest req) {
         PageHelper.startPage(req.getPageNo(), req.getPageSize());
         List<MemGoldChangeDTON> tmp = memGoldchangeMapperExt.getMemberGoldChange(req);

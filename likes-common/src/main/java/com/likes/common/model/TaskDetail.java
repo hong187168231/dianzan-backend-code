@@ -86,17 +86,17 @@ public class TaskDetail {
 
     private String createMobile;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date createTime;
 
     /**
      * 任务到期时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
 
 
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+7")
     private Date finishDate;
 
     /**

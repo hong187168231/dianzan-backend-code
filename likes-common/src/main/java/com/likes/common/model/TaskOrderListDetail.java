@@ -21,7 +21,7 @@ public class TaskOrderListDetail {
 
     private BigDecimal receivePrice;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date createTime;
 
     private Integer status;

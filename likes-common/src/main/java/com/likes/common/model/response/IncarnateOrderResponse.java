@@ -23,7 +23,7 @@ public class IncarnateOrderResponse {
     private String banknamealias;
     private String bankaddress;
     private String orderstatus;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date createTime;
     private String accno;
     private String moneyAddress;
@@ -52,9 +52,9 @@ public class IncarnateOrderResponse {
     private Double allhaixudamaliang;
     private Double alljiehefei;
     private List<OrderAuditDO> auditList = new ArrayList<OrderAuditDO>();
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date finishTime;
 
     private String updateUser;

@@ -13,7 +13,7 @@ public class UsersDO extends MemBaseinfo {
     private Integer logintype;
     private Integer accstatus;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+7")
     private Date lastlogindate;
 
     private Integer loginnum;

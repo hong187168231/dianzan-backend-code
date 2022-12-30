@@ -11,7 +11,7 @@ public class MemberBankDTO {
     private String mobileno;
     private String moneyAddress;
     private String bankname;
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT-5")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+7")
     private String createTime;
     private String accountname;
     private String accountno;

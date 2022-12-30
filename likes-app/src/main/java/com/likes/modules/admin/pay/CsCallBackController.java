@@ -37,9 +37,9 @@ public class CsCallBackController {
     @PostMapping(name = "创世异步通知", value = "callback")
     public CSCallBackVoPrev csNotice(@RequestParam("params") String params,@RequestParam("mcode") String mcode) {
         CsPayNoticeReq csPayNoticeReq = new CsPayNoticeReq();
-        log.error("创世异步通知传入参数,params:{},", JSONObject.toJSONString(csPayNoticeReq));
         csPayNoticeReq.setParams(params);
         csPayNoticeReq.setMcode(mcode);
+        log.error("创世异步通知传入参数,params:{},", JSONObject.toJSONString(csPayNoticeReq));
         long start = System.currentTimeMillis();
         CSCallBackVoPrev csCallBackVoPrev;
         try {

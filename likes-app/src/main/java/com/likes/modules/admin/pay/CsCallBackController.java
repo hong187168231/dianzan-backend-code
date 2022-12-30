@@ -6,12 +6,11 @@ import com.likes.modules.admin.pay.dto.cs.CSCallBackVoPrev;
 import com.likes.modules.admin.pay.dto.cs.CsPayNoticeReq;
 import com.likes.modules.admin.pay.service.CsPayService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -30,14 +29,17 @@ public class CsCallBackController {
     private CsPayService csPayService;
 
     @ApiOperation("传世支付回调")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "params", value = "params", required = true),
-//            @ApiImplicitParam(name = "mcode", value = "mcode", required = true)
-//    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "params", value = "params", required = true),
+            @ApiImplicitParam(name = "mcode", value = "mcode", required = true)
+    })
     @AllowAccess
     @PostMapping(name = "创世异步通知", value = "callback")
-    public CSCallBackVoPrev csNotice(@RequestBody CsPayNoticeReq csPayNoticeReq) {
+    public CSCallBackVoPrev csNotice(@RequestParam("params") String params,@RequestParam("mcode") String mcode) {
+        CsPayNoticeReq csPayNoticeReq = new CsPayNoticeReq();
         log.error("创世异步通知传入参数,params:{},", JSONObject.toJSONString(csPayNoticeReq));
+        csPayNoticeReq.setParams(params);
+        csPayNoticeReq.setMcode(mcode);
         long start = System.currentTimeMillis();
         CSCallBackVoPrev csCallBackVoPrev;
         try {

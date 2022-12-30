@@ -223,74 +223,75 @@ public class CsPayServiceImpl implements CsPayService {
     @Override
     public CSCallBackVoPrev callbackNotice(CsPayNoticeReq csPayNoticeReq) throws Exception {
         CSCallBackVoPrev csCallBackVoPrev = new CSCallBackVoPrev();
-        csCallBackVoPrev.setCode("0");
-        PayMerchant payMerchant = payMerchantService.getMerchant(Constants.PAY_CHAN_CS_CODE);
-        if (ObjectUtil.isNull(payMerchant)) {
-            log.error("创世支付回调接口，您还未开通支付通道");
-            csCallBackVoPrev.setCode("2000");
-            return csCallBackVoPrev;
-        }
-        if (ObjectUtil.isNull(csPayNoticeReq) || !csPayNoticeReq.getMcode().equals("gxtnxaciwhdg")) {
-            log.error("创世支付回调接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csPayNoticeReq.getMcode(), payMerchant.getMerchantCode());
-            csCallBackVoPrev.setCode("2000");
-            return csCallBackVoPrev;
-        }
-        //解密
-        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()), payMerchant.getMerchantKey());
-        try {
-            JSONObject jsonObject = JSONObject.parseObject(params);
-            String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
-            String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
-            String order_no = jsonObject.getString("order_no");//	是	String	系统订单号
-            String order_price = jsonObject.getString("order_price");//	是	Int	订单金额
-            Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2已匹配	2
-            String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
-            Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
-            String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
-
-            Map<String, Object> noticeMap = new TreeMap<>();
-            noticeMap.put("business_type", business_type);
-            noticeMap.put("mer_order_no", mer_order_no);
-            noticeMap.put("order_no", order_no);
-            noticeMap.put("order_price", order_price);
-            noticeMap.put("status", status);
-            noticeMap.put("pay_time", pay_time);
-            noticeMap.put("timestamp", timestamp);
-            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
-            if (!sign.equals(likesSign)) {
-                log.error("创世支付回调接口，签名错误============{},", JSON.toJSONString(csPayNoticeReq));
-                csCallBackVoPrev.setCode("1001");
-                return csCallBackVoPrev;
-            }
-            PayRechargeOrder rechargeParam = new PayRechargeOrder();
-            rechargeParam.setTradeId(mer_order_no);
-            PayRechargeOrder rechargeOrder = payRechargeOrderMapper.selectOne(rechargeParam);
-            if (ObjectUtil.isNull(rechargeOrder)) {
-                csCallBackVoPrev.setCode("1002");
-                log.error("商户订单号不存在===[{}]", order_no);
-                return csCallBackVoPrev;
-            }
-            if (rechargeOrder.getTradeStatus() != 0) {
-                csCallBackVoPrev.setCode("2000");
-                log.error("订单号已经处理===[{}]", order_no);
-                return csCallBackVoPrev;
-            }
-            if (rechargeOrder.getOrderStatus() == 2) {
-                csCallBackVoPrev.setCode("2000");
-                log.error("订单已经充值成功无需处理===[{}]", order_no);
-                return csCallBackVoPrev;
-            }
-            rechargeOrder.setUpdateTime(new Date());
-            rechargeOrder.setTradeStatus(2);
-            rechargeOrder.setOrderStatus(2);
-            payRechargeOrderMapper.updateByPrimaryKeySelective(rechargeOrder);
-            createRechargeOrder(rechargeOrder);
-        } catch (Exception e) {
-            log.error("创世支付回调发生错误,错误信息 ===== params:{}", params);
-            csCallBackVoPrev.setCode("9999");
-            return csCallBackVoPrev;
-        }
-        return csCallBackVoPrev;
+        csCallBackVoPrev.setCode("success");
+        return  csCallBackVoPrev;
+//        PayMerchant payMerchant = payMerchantService.getMerchant(Constants.PAY_CHAN_CS_CODE);
+//        if (ObjectUtil.isNull(payMerchant)) {
+//            log.error("创世支付回调接口，您还未开通支付通道");
+//            csCallBackVoPrev.setCode("2000");
+//            return csCallBackVoPrev;
+//        }
+//        if (ObjectUtil.isNull(csPayNoticeReq) || !csPayNoticeReq.getMcode().equals("gxtnxaciwhdg")) {
+//            log.error("创世支付回调接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csPayNoticeReq.getMcode(), payMerchant.getMerchantCode());
+//            csCallBackVoPrev.setCode("2000");
+//            return csCallBackVoPrev;
+//        }
+//        //解密
+//        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()), payMerchant.getMerchantKey());
+//        try {
+//            JSONObject jsonObject = JSONObject.parseObject(params);
+//            String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
+//            String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
+//            String order_no = jsonObject.getString("order_no");//	是	String	系统订单号
+//            String order_price = jsonObject.getString("order_price");//	是	Int	订单金额
+//            Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2已匹配	2
+//            String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
+//            Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
+//            String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
+//
+//            Map<String, Object> noticeMap = new TreeMap<>();
+//            noticeMap.put("business_type", business_type);
+//            noticeMap.put("mer_order_no", mer_order_no);
+//            noticeMap.put("order_no", order_no);
+//            noticeMap.put("order_price", order_price);
+//            noticeMap.put("status", status);
+//            noticeMap.put("pay_time", pay_time);
+//            noticeMap.put("timestamp", timestamp);
+//            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
+//            if (!sign.equals(likesSign)) {
+//                log.error("创世支付回调接口，签名错误============{},", JSON.toJSONString(csPayNoticeReq));
+//                csCallBackVoPrev.setCode("1001");
+//                return csCallBackVoPrev;
+//            }
+//            PayRechargeOrder rechargeParam = new PayRechargeOrder();
+//            rechargeParam.setTradeId(mer_order_no);
+//            PayRechargeOrder rechargeOrder = payRechargeOrderMapper.selectOne(rechargeParam);
+//            if (ObjectUtil.isNull(rechargeOrder)) {
+//                csCallBackVoPrev.setCode("1002");
+//                log.error("商户订单号不存在===[{}]", order_no);
+//                return csCallBackVoPrev;
+//            }
+//            if (rechargeOrder.getTradeStatus() != 0) {
+//                csCallBackVoPrev.setCode("2000");
+//                log.error("订单号已经处理===[{}]", order_no);
+//                return csCallBackVoPrev;
+//            }
+//            if (rechargeOrder.getOrderStatus() == 2) {
+//                csCallBackVoPrev.setCode("2000");
+//                log.error("订单已经充值成功无需处理===[{}]", order_no);
+//                return csCallBackVoPrev;
+//            }
+//            rechargeOrder.setUpdateTime(new Date());
+//            rechargeOrder.setTradeStatus(2);
+//            rechargeOrder.setOrderStatus(2);
+//            payRechargeOrderMapper.updateByPrimaryKeySelective(rechargeOrder);
+//            createRechargeOrder(rechargeOrder);
+//        } catch (Exception e) {
+//            log.error("创世支付回调发生错误,错误信息 ===== params:{}", params);
+//            csCallBackVoPrev.setCode("9999");
+//            return csCallBackVoPrev;
+//        }
+//        return csCallBackVoPrev;
     }
 
 

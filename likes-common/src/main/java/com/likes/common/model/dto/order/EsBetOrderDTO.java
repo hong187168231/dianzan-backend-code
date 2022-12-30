@@ -11,9 +11,9 @@ public class EsBetOrderDTO extends EsBetOrder {
 	
 	private String account;
 	private Integer memberId;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-6")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
 	private Date settlementTime;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT-6")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
 	private Date createTime;
 	public String getAccount() {
 		return account;

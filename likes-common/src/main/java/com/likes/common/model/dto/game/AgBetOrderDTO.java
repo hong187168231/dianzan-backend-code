@@ -12,12 +12,12 @@ public class AgBetOrderDTO extends AgBetOrder {
     private Integer memberId;
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date betTime;
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date createTime;
     private String gameName;

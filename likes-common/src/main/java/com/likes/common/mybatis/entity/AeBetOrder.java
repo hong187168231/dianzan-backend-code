@@ -129,7 +129,7 @@ public class AeBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date stime;
 
@@ -144,7 +144,7 @@ public class AeBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date etime;
 

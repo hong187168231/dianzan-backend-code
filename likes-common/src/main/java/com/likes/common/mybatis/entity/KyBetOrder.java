@@ -162,7 +162,7 @@ public class KyBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date gameStartTime;
 
@@ -177,7 +177,7 @@ public class KyBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date gameEndTime;
 
@@ -258,7 +258,7 @@ public class KyBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date createTime;
 

@@ -261,7 +261,7 @@ public class AgFishBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date creationTime;
 
@@ -331,7 +331,7 @@ public class AgFishBetOrder implements Serializable {
      */
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
-            timezone = "GMT-6"
+            timezone = "GMT+7"
     )
     private Date createTime;
 

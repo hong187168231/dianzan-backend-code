@@ -1,19 +1,17 @@
 package com.likes.modules.admin.pay;
 
 import com.alibaba.fastjson.JSONObject;
-import com.likes.common.BaseController;
 import com.likes.common.annotation.AllowAccess;
 import com.likes.modules.admin.pay.dto.cs.CSCallBackVoPrev;
 import com.likes.modules.admin.pay.dto.cs.CsPayNoticeReq;
 import com.likes.modules.admin.pay.service.CsPayService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -38,8 +36,8 @@ public class CsCallBackController {
 //    })
     @AllowAccess
     @PostMapping(name = "创世异步通知", value = "callback")
-    public CSCallBackVoPrev csNotice(@RequestBody CsPayNoticeReq csPayNoticeReq){
-        log.error("创世异步通知傳入參數,params:{},", JSONObject.toJSONString(csPayNoticeReq));
+    public CSCallBackVoPrev csNotice(@RequestBody CsPayNoticeReq csPayNoticeReq) {
+        log.error("创世异步通知传入参数,params:{},", JSONObject.toJSONString(csPayNoticeReq));
         long start = System.currentTimeMillis();
         CSCallBackVoPrev csCallBackVoPrev;
         try {

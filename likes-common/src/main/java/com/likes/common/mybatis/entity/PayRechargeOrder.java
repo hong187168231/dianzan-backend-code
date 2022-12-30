@@ -38,7 +38,7 @@ public class PayRechargeOrder {
     private Integer orderStatus;
 
     /**
-     * 1 成功 2 失败
+     * 0 待处理  1 成功  2失败
      */
     @Column(name = "`trade_status`")
     private Integer tradeStatus;

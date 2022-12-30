@@ -24,6 +24,7 @@ import com.likes.modules.admin.pay.util.DESUtil;
 import com.likes.modules.admin.pay.util.HttpClient4Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -35,6 +36,7 @@ import static com.likes.common.util.ViewUtil.getTradeOffAmount;
 
 @Service
 @Slf4j
+@Transactional
 public class CsPayServiceImpl implements CsPayService {
 
     @Resource
@@ -87,7 +89,7 @@ public class CsPayServiceImpl implements CsPayService {
 //            }
 //            String str = "c1ZnS0MyaHNmRXY0NElBNmpsMmJTSTh6Ym9OanRaQzlvSXZkdU5hOWpBWWZXTHpKcVdtMytxZDZNNFRBaGdHZGZ4a09ycTdHV3VLZ2RQblZwNlJTTktoRFhsa0d2WEZKcDN5c2ZJWlFDNVRaZkViSEl5Uk1nSUF4aXhaNitHKytFWnM3UGljN1BVbnZzODhGZ2tsbWZjUWsrellZR3hIemJaWWFmYXU4K3ZYZVk5MDdCaTBFeFpzbDhhcWN2NStSQWFuZE9LYzZiamxsMkhRQmJuclJzdnpXRy8xNEVwazNLTHQxMDV6MnN1dnEzZ2dRQ3p3aGYxZGd0K0tyaEFFalp3SXcxakI5dFBPRklnWHNFYnBzVi80dVlCMk5pUWxkUEdyQ2h6TEhyN1g5STd4MDBVK3g1QT09";
 //           String inParams = DESUtil.decrypt(base64Decoder(str), "d2fb04d8103613b8d391ebc2d34228bd");
-           String deParams = "{\"order_no\":\"INC2022122919444111933000\",\"business_type\":\"10003\",\"order_price\":16888.000,\"mer_order_no\":\"0375206448827328\",\"status\":\"2\",\"pay_time\":\"20221229194833\",\"timestamp\":1672318116}";
+            String deParams = "{\"order_no\":\"INC2022122919444111933000\",\"business_type\":\"10003\",\"order_price\":16888.000,\"mer_order_no\":\"0375206448827328\",\"status\":\"2\",\"pay_time\":\"20221229194833\",\"timestamp\":1672318116}";
             String sign = "511e1e421f8a6138bc03cdd006db087f";
             JSONObject jsonObject = JSONObject.parseObject(deParams);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
@@ -104,12 +106,12 @@ public class CsPayServiceImpl implements CsPayService {
             noticeMap.put("order_no", order_no);
             noticeMap.put("business_type", business_type);
             noticeMap.put("order_price", order_price);
-            noticeMap.put("mer_order_no",mer_order_no);
+            noticeMap.put("mer_order_no", mer_order_no);
             noticeMap.put("status", status);
             noticeMap.put("pay_time", pay_time);
             noticeMap.put("timestamp", timestamp);
 
-            String likesSign = PaySignUtil.getSignLower(noticeMap,key);
+            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
             return;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -126,7 +128,7 @@ public class CsPayServiceImpl implements CsPayService {
     private static String base64Decoder(String result) {
         BASE64Decoder decoder = new BASE64Decoder();
         try {
-            return new String(decoder.decodeBuffer(result),"utf-8");
+            return new String(decoder.decodeBuffer(result), "utf-8");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -154,11 +156,11 @@ public class CsPayServiceImpl implements CsPayService {
         payMap.put("notify_url", csPayDTO.getNotifyUrl());
         payMap.put("timestamp", timestamp);
 
-        String sign = PaySignUtil.getSignLower(payMap,key);
+        String sign = PaySignUtil.getSignLower(payMap, key);
         log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
 
-        log.info("铭文"+ JSON.toJSONString(payMap));
-        payMap.put("sign",sign);
+        log.info("铭文" + JSON.toJSONString(payMap));
+        payMap.put("sign", sign);
 
         String params = base64(DESUtil.encrypt(JSONObject.toJSONString(payMap), key));
         Map<String, String> reqParams = new HashMap<>();
@@ -208,10 +210,8 @@ public class CsPayServiceImpl implements CsPayService {
 //    }
 
 
-
     @Resource
     private PayMerchantService payMerchantService;
-
 
 
     /**
@@ -226,17 +226,17 @@ public class CsPayServiceImpl implements CsPayService {
         csCallBackVoPrev.setCode("0");
         PayMerchant payMerchant = payMerchantService.getMerchant(Constants.PAY_CHAN_CS_CODE);
         if (ObjectUtil.isNull(payMerchant)) {
-            log.error("創世支付回調接口，您还未开通支付通道");
+            log.error("创世支付回调接口，您还未开通支付通道");
             csCallBackVoPrev.setCode("2000");
             return csCallBackVoPrev;
         }
         if (ObjectUtil.isNull(csPayNoticeReq) || !csPayNoticeReq.getMcode().equals("gxtnxaciwhdg")) {
-            log.error("創世支付回調接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csPayNoticeReq.getMcode(), payMerchant.getMerchantCode());
+            log.error("创世支付回调接口，商户唯一标识不正确,csmcode：{},ptmcode：{},", csPayNoticeReq.getMcode(), payMerchant.getMerchantCode());
             csCallBackVoPrev.setCode("2000");
             return csCallBackVoPrev;
         }
         //解密
-        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()) , payMerchant.getMerchantKey());
+        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()), payMerchant.getMerchantKey());
         try {
             JSONObject jsonObject = JSONObject.parseObject(params);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
@@ -248,35 +248,45 @@ public class CsPayServiceImpl implements CsPayService {
             Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
             String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
 
-
             Map<String, Object> noticeMap = new TreeMap<>();
             noticeMap.put("business_type", business_type);
-            noticeMap.put("mer_order_no",mer_order_no);
+            noticeMap.put("mer_order_no", mer_order_no);
             noticeMap.put("order_no", order_no);
             noticeMap.put("order_price", order_price);
             noticeMap.put("status", status);
             noticeMap.put("pay_time", pay_time);
             noticeMap.put("timestamp", timestamp);
-
-            String likesSign = PaySignUtil.getSignLower(noticeMap,key);
-
-
-
+            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
+            if (!sign.equals(likesSign)) {
+                log.error("创世支付回调接口，签名错误============{},", JSON.toJSONString(csPayNoticeReq));
+                csCallBackVoPrev.setCode("1001");
+                return csCallBackVoPrev;
+            }
             PayRechargeOrder rechargeParam = new PayRechargeOrder();
             rechargeParam.setTradeId(mer_order_no);
-            PayRechargeOrder rechargeOrder =  payRechargeOrderMapper.selectOne(rechargeParam);
-            if(ObjectUtil.isNull(rechargeOrder)){
+            PayRechargeOrder rechargeOrder = payRechargeOrderMapper.selectOne(rechargeParam);
+            if (ObjectUtil.isNull(rechargeOrder)) {
+                csCallBackVoPrev.setCode("1002");
+                log.error("商户订单号不存在===[{}]", order_no);
+                return csCallBackVoPrev;
+            }
+            if (rechargeOrder.getTradeStatus() != 0) {
                 csCallBackVoPrev.setCode("2000");
-                log.error("订单不存在===[{}]",order_no);
+                log.error("订单号已经处理===[{}]", order_no);
+                return csCallBackVoPrev;
+            }
+            if (rechargeOrder.getOrderStatus() == 2) {
+                csCallBackVoPrev.setCode("2000");
+                log.error("订单已经充值成功无需处理===[{}]", order_no);
                 return csCallBackVoPrev;
             }
             rechargeOrder.setUpdateTime(new Date());
-            rechargeOrder.setTradeStatus(1);
-            rechargeOrder.setOrderStatus(1);
+            rechargeOrder.setTradeStatus(2);
+            rechargeOrder.setOrderStatus(2);
             payRechargeOrderMapper.updateByPrimaryKeySelective(rechargeOrder);
             createRechargeOrder(rechargeOrder);
         } catch (Exception e) {
-            log.error("創世支付回調接口，解密失败,params:{}", params);
+            log.error("创世支付回调发生错误,错误信息 ===== params:{}", params);
             csCallBackVoPrev.setCode("9999");
             return csCallBackVoPrev;
         }

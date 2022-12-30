@@ -34,14 +34,21 @@ public class PayRechargeOrder {
     @Column(name = "`trade_Id`")
     private String tradeId;
 
-    @Column(name = "`order_status`")
-    private Integer orderStatus;
+    @Column(name = "`order_no`")
+    private String orderNo;
 
     /**
-     * 0 待处理  1 成功  2失败
+     * 0 待处理  1 已回调
      */
     @Column(name = "`trade_status`")
     private Integer tradeStatus;
+
+
+    /**
+     * 1 待处理  2 已成功 3 失败
+     */
+    @Column(name = "`order_status`")
+    private Integer orderStatus;
 
     @Column(name = "`create_user`")
     private String createUser;

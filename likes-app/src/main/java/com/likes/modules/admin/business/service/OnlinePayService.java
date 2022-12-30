@@ -88,7 +88,7 @@ public class OnlinePayService {
 //                            paymentOrderFlow.setOrderNo(order_no);//	是	String	系统订单号（3方支付返回）
 //                            paymentOrderFlow.setUpdateTime(new Date());
 //                            paymentOrderFlowMapper.updateByPrimaryKey(paymentOrderFlow);
-                            insertPayment(csPayDTO, loginUser);
+                            insertPayment(csPayDTO,order_no, loginUser);
                             csPayResultVo.setToken(token);
                             csPayResultVo.setUrl(pay_url + "?token=" + token);
                             break;
@@ -104,16 +104,17 @@ public class OnlinePayService {
     }
 
 
-    public boolean insertPayment(CsPayDTO csPayDTO, LoginUser loginUser) {
+    public boolean insertPayment(CsPayDTO csPayDTO,String order_no, LoginUser loginUser) {
         MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
         PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
         payRechargeOrder.setAmount(new BigDecimal(csPayDTO.getAmount()));
         payRechargeOrder.setAccno(memBaseinfo.getAccno());
         payRechargeOrder.setTradeId(csPayDTO.getOrderNo());
+        payRechargeOrder.setOrderNo(order_no);
         payRechargeOrder.setCreateUser(loginUser.getAcclogin());
         payRechargeOrder.setCreateTime(new Date());
         payRechargeOrder.setTradeStatus(0);
-        payRechargeOrder.setOrderStatus(1);
+        payRechargeOrder.setOrderStatus(0);
         int row = payRechargeOrderMapper.insertSelective(payRechargeOrder);
         return row > 0;
     }

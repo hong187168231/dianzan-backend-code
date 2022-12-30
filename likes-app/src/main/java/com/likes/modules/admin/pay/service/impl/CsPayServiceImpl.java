@@ -270,6 +270,11 @@ public class CsPayServiceImpl implements CsPayService {
                 log.error("商户订单号不存在===[{}]", order_no);
                 return csCallBackVoPrev;
             }
+            if (!rechargeOrder.getOrderNo().equals(order_no)) {
+                csCallBackVoPrev.setCode("1002");
+                log.error("CS平台订单号和商户订单号不匹配===[{}]", JSON.toJSONString(csPayNoticeReq));
+                return csCallBackVoPrev;
+            }
             if (rechargeOrder.getTradeStatus() != 0) {
                 csCallBackVoPrev.setCode("2000");
                 log.error("订单号已经处理===[{}]", order_no);
@@ -281,7 +286,7 @@ public class CsPayServiceImpl implements CsPayService {
                 return csCallBackVoPrev;
             }
             rechargeOrder.setUpdateTime(new Date());
-            rechargeOrder.setTradeStatus(2);
+            rechargeOrder.setTradeStatus(1);
             rechargeOrder.setOrderStatus(2);
             payRechargeOrderMapper.updateByPrimaryKeySelective(rechargeOrder);
             createRechargeOrder(rechargeOrder);

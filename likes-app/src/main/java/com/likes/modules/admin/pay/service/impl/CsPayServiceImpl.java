@@ -89,30 +89,48 @@ public class CsPayServiceImpl implements CsPayService {
 //            }
 //            String str = "c1ZnS0MyaHNmRXY0NElBNmpsMmJTSTh6Ym9OanRaQzlvSXZkdU5hOWpBWWZXTHpKcVdtMytxZDZNNFRBaGdHZGZ4a09ycTdHV3VLZ2RQblZwNlJTTktoRFhsa0d2WEZKcDN5c2ZJWlFDNVRaZkViSEl5Uk1nSUF4aXhaNitHKytFWnM3UGljN1BVbnZzODhGZ2tsbWZjUWsrellZR3hIemJaWWFmYXU4K3ZYZVk5MDdCaTBFeFpzbDhhcWN2NStSQWFuZE9LYzZiamxsMkhRQmJuclJzdnpXRy8xNEVwazNLTHQxMDV6MnN1dnEzZ2dRQ3p3aGYxZGd0K0tyaEFFalp3SXcxakI5dFBPRklnWHNFYnBzVi80dVlCMk5pUWxkUEdyQ2h6TEhyN1g5STd4MDBVK3g1QT09";
 //           String inParams = DESUtil.decrypt(base64Decoder(str), "d2fb04d8103613b8d391ebc2d34228bd");
-            String deParams = "{\"order_no\":\"INC2022122919444111933000\",\"business_type\":\"10003\",\"order_price\":16888.000,\"mer_order_no\":\"0375206448827328\",\"status\":\"2\",\"pay_time\":\"20221229194833\",\"timestamp\":1672318116}";
-            String sign = "511e1e421f8a6138bc03cdd006db087f";
-            JSONObject jsonObject = JSONObject.parseObject(deParams);
-            String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
-            String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
-            String order_no = jsonObject.getString("order_no");//	是	String	系统订单号
-            String order_price = jsonObject.getString("order_price");//	是	Int	订单金额
-            Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2已匹配	2
-            String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
-            Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
-//            String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
+//            String deParams = "{\"order_no\":\"INC2022122919444111933000\",\"business_type\":\"10003\",\"order_price\":16888.000,\"mer_order_no\":\"0375206448827328\",\"status\":\"2\",\"pay_time\":\"20221229194833\",\"timestamp\":1672318116}";
+//            String sign = "511e1e421f8a6138bc03cdd006db087f";
+//            JSONObject jsonObject = JSONObject.parseObject(deParams);
+//            String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
+//            String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
+//            String order_no = jsonObject.getString("order_no");//	是	String	系统订单号
+//            String order_price = jsonObject.getString("order_price");//	是	Int	订单金额
+//            Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2已匹配	2
+//            String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
+//            Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
+////            String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
+//
+//
+//            Map<String, Object> noticeMap = new TreeMap<>();
+//            noticeMap.put("order_no", order_no);
+//            noticeMap.put("business_type", business_type);
+//            noticeMap.put("order_price", order_price);
+//            noticeMap.put("mer_order_no", mer_order_no);
+//            noticeMap.put("status", status);
+//            noticeMap.put("pay_time", pay_time);
+//            noticeMap.put("timestamp", timestamp);
+//
+//            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
+//            return;
 
-
+            long timestamp = System.currentTimeMillis() / 1000;
             Map<String, Object> noticeMap = new TreeMap<>();
-            noticeMap.put("order_no", order_no);
-            noticeMap.put("business_type", business_type);
-            noticeMap.put("order_price", order_price);
-            noticeMap.put("mer_order_no", mer_order_no);
-            noticeMap.put("status", status);
-            noticeMap.put("pay_time", pay_time);
+            noticeMap.put("order_no", "INC2022123016062821172723");
+            noticeMap.put("business_type", "10003");
+            noticeMap.put("order_price", "50001.000");
+            noticeMap.put("mer_order_no", "0375356579075008");
+            noticeMap.put("status", 2);
+            noticeMap.put("pay_time", "20221229194833");
             noticeMap.put("timestamp", timestamp);
 
-            String likesSign = PaySignUtil.getSignLower(noticeMap, key);
-            return;
+            String sign = PaySignUtil.getSignLower(noticeMap,key);
+            log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
+            noticeMap.put("sign",sign);
+
+            String params = base642(DESUtil.encrypt(JSONObject.toJSONString(noticeMap), key));
+            System.out.println(params);
+
         } catch (Exception ex) {
             ex.printStackTrace();
             //处理异常

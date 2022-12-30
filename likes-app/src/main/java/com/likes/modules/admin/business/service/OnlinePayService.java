@@ -114,7 +114,7 @@ public class OnlinePayService {
         payRechargeOrder.setCreateUser(loginUser.getAcclogin());
         payRechargeOrder.setCreateTime(new Date());
         payRechargeOrder.setTradeStatus(0);
-        payRechargeOrder.setOrderStatus(0);
+        payRechargeOrder.setOrderStatus(1);
         int row = payRechargeOrderMapper.insertSelective(payRechargeOrder);
         return row > 0;
     }

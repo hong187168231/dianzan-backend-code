@@ -304,7 +304,7 @@ public class CsPayServiceImpl implements CsPayService {
         TraOrderinfom traOrderinfom = new TraOrderinfom();
         //给会员代充
         traOrderinfom.setOrdertype(com.likes.common.constant.Constants.ORDERTYPE1);
-        traOrderinfom.setOrderno(SnowflakeIdWorker.generateShortId());
+        traOrderinfom.setOrderno(payRechargeOrder.getTradeId());
         traOrderinfom.setAccno(memBaseinfo.getAccno());
         traOrderinfom.setOrderdate(new Date());
 

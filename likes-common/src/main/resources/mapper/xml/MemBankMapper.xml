@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.like.admin.modules.mem.mapper.MemBankMapper">
+
+    <select id="queryList" resultType="com.like.admin.pojo.vo.mem.MemBankVO">
+        SELECT
+        mb.mobile,
+        mbb.user_id AS userId,
+        mbb.mem_bank_id as memBankId,
+        mbb.user_name AS userName,
+        pb.bank_name AS bankName,
+        mbb.bank_card_no AS bankCardNo,
+        mbb.`status` AS `status`,
+        mbb.create_time AS createTime
+        FROM
+        mem_bank mbb
+        INNER JOIN mem_baseinfo mb ON mb.id = mbb.user_id
+        INNER JOIN pay_bank pb ON mbb.bank_id = pb.bank_id
+
+        <if test="req.mobile != null and req.mobile != '' ">
+            and mb.mobile = #{req.mobile}
+        </if>
+        <if test="req.bankCardNo != null and req.bankCardNo != '' ">
+            and mbb.bank_card_no = #{req.bankCardNo}
+        </if>
+        <if test="req.startTime != null  ">
+            and mbb.create_time &gt;= #{req.startTime}
+        </if>
+        <if test="req.endTime != null ">
+            and mbb.create_time &lt;= #{req.endTime}
+        </if>
+        ORDER BY mbb.create_time desc
+    </select>
+
+    <select id="existCashOrder"
+            parameterType="com.like.user.pojo.dto.OrderDTO"
+            resultType="com.like.core.pojo.entity.PayTakeCash">
+        SELECT * FROM pay_take_cash t WHERE 1=1
+        and t.accno = #{accno}
+        <if test="orderStatusList != null and orderStatusList.size != 0">
+            AND t.cash_status in
+            <foreach close=")" collection="orderStatusList" index="index" item="s" open="("
+                     separator=",">
+                #{s}
+            </foreach>
+        </if>
+        limit 1
+    </select>
+
+</mapper>

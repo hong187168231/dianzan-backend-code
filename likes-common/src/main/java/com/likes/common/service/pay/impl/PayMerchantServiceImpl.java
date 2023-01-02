@@ -1,11 +1,10 @@
 package com.likes.common.service.pay.impl;
 
 import com.likes.common.mybatis.entity.PayMerchant;
-import com.likes.common.mybatis.mapper.PayBanksMapper;
 import com.likes.common.mybatis.mapper.PayMerchantMapper;
 import com.likes.common.service.pay.PayMerchantService;
 import org.springframework.stereotype.Service;
-import com.likes.common.mybatis.entity.PayBanks;
+import com.likes.common.mybatis.entity.PayBank;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -35,8 +34,8 @@ public class PayMerchantServiceImpl implements PayMerchantService {
     }
 
     @Override
-    public List<PayBanks> queryBanks() {
-        List<PayBanks> merchants = payBanksMapper.selectAll();
+    public List<PayBank> queryBanks() {
+        List<PayBank> merchants = payBanksMapper.selectAll();
         return merchants;
     }
 }

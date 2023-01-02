@@ -1,4 +1,4 @@
-package com.likes.modules.admin.login.controller.service.impl;
+package com.likes.common.util;
 
 
 

@@ -1,12 +1,11 @@
 package com.likes.modules.admin.login.controller.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.dynamic.datasource.annotation.DS;
+import com.likes.common.util.InvitationCodeGnerateUtil;
+import com.likes.common.util.SnowFlakeUtil;
 import com.likes.common.constant.Constants;
 import com.likes.common.constant.ModuleConstant;
-import com.likes.common.constant.RedisKeys;
 import com.likes.common.enums.*;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -15,19 +14,16 @@ import com.likes.common.model.dto.member.UserGoldDO;
 import com.likes.common.model.dto.sys.SysAreaDO;
 import com.likes.common.model.dto.sys.SysShortmsgDO;
 import com.likes.common.model.request.ActingUsersRequest;
-import com.likes.common.model.request.CreditRequest;
 import com.likes.common.model.request.UsersRequest;
 import com.likes.common.model.response.level.MemberLevelResponse;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.MemBaseinfoMapper;
 import com.likes.common.mybatis.mapper.MemLoginMapper;
-import com.likes.common.mybatis.mapper.MemRepayuserMapper;
 import com.likes.common.mybatis.mapper.MemSubInfoMapper;
 import com.likes.common.mybatis.mapperext.member.MemLevelConfigMapperExt;
 import com.likes.common.mybatis.mapperext.member.MemLevelMapperExt;
 import com.likes.common.mybatis.mapperext.member.MemRelationshipMapperExt;
 import com.likes.common.service.BaseServiceImpl;
-import com.likes.common.service.code.UniqueCodeService;
 import com.likes.common.service.credit.MemCreditService;
 import com.likes.common.service.member.*;
 import com.likes.common.service.money.TraOrderinfomService;
@@ -40,11 +36,9 @@ import com.likes.common.util.encrypt.MD5;
 import com.likes.common.util.http.HttpUtils;
 import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.modules.admin.login.controller.service.AppLoginService;
-import com.likes.modules.admin.mail.service.MailService;
 import com.likes.modules.admin.mail.service.impl.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -52,15 +46,10 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static com.likes.common.util.ViewUtil.getTradeOffAmount;
 
 @Service
 public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginService {
@@ -164,9 +153,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
             StringBuilder sms_message = new StringBuilder();
             sms_message.append("验证码：");
             sms_message.append(smsCode);
-
             asyncSendMail(req, sysShortmsg, sms_message, smsCode);
-
             return sendwait;
         } else {
             // 明确提示

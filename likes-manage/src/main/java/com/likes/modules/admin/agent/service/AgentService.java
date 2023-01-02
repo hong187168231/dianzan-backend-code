@@ -1,6 +1,8 @@
 package com.likes.modules.admin.agent.service;
 
 import com.likes.common.model.SysRecord;
+import com.likes.common.model.request.AgentUsersEditRequest;
+import com.likes.common.model.request.AgentUsersRequest;
 import com.likes.common.service.BaseService;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -32,14 +34,8 @@ public interface AgentService extends BaseService {
      * @param req
      * @param user
      */
-    void doEdt(SysAgentinfo req, LoginUser user) throws BusinessException;
+    void addAgent(AgentUsersRequest req, LoginUser user) throws BusinessException;
 
-    /**
-     * 删除代理
-     *
-     * @param agentid
-     * @param user
-     * @throws BusinessException
-     */
-    void doDel(Long agentid, LoginUser user) throws BusinessException;
+    void editAgent(AgentUsersRequest req, LoginUser user) throws BusinessException;
+
 }

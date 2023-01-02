@@ -982,6 +982,8 @@ public final class Constants {
      * 注册标识
      */
     public static final String REGIST = "regist";
+
+    public static final String OPERATRA = "operator";
     /**
      * 推荐
      */

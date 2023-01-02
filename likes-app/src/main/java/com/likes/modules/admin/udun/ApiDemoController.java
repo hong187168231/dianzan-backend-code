@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.likes.common.annotation.AllowAccess;
-import com.likes.modules.admin.login.controller.service.impl.SnowFlakeUtil;
+import com.likes.common.util.SnowFlakeUtil;
 import com.uduncloud.sdk.client.UdunClient;
 import com.uduncloud.sdk.domain.Address;
 import com.uduncloud.sdk.domain.Coin;

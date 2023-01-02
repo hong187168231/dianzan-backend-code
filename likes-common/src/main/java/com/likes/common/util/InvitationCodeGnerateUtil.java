@@ -1,10 +1,7 @@
-package com.likes.modules.admin.login.controller.service.impl;
+package com.likes.common.util;
 
 import com.likes.common.mybatis.entity.MemBaseinfo;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -46,4 +43,3 @@ public class InvitationCodeGnerateUtil {
     }
 
 }
-

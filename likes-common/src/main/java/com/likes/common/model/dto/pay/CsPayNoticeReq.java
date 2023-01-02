@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.dto.cs;
+package com.likes.common.model.dto.pay;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

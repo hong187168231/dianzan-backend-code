@@ -2,9 +2,9 @@ package com.likes.modules.admin.pay;
 
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.annotation.AllowAccess;
-import com.likes.modules.admin.pay.dto.cs.CSCallBackVoPrev;
-import com.likes.modules.admin.pay.dto.cs.CsPayNoticeReq;
-import com.likes.modules.admin.pay.service.CsPayService;
+import com.likes.common.model.dto.pay.CSCallBackVoPrev;
+import com.likes.common.model.dto.pay.CsPayNoticeReq;
+import com.likes.common.service.pay.CsPayService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

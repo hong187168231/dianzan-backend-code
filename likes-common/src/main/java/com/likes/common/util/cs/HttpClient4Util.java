@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.util;
+package com.likes.common.util.cs;
 
 
 import cn.hutool.http.HttpUtil;

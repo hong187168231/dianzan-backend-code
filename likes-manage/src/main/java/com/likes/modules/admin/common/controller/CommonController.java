@@ -10,7 +10,7 @@ import com.likes.common.mybatis.entity.SysBusparameter;
 import com.likes.common.service.uploadFile.UplaodFileSevice;
 import com.likes.common.util.CaptchaUtils;
 import com.likes.common.util.CaptchaUtils.ComplexLevel;
-import com.likes.modules.admin.common.service.CommonService;
+import com.likes.common.service.common.CommonService;
 import com.github.binarywang.utils.qrcode.MatrixToImageWriter;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;

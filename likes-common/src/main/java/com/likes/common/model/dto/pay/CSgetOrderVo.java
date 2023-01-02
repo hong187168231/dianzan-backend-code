@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.dto.cs;
+package com.likes.common.model.dto.pay;
 
 public class CSgetOrderVo {
     private String business_type;//	是	String(5)	业务编码

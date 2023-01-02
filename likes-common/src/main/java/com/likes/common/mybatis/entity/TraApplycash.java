@@ -38,6 +38,10 @@ public class TraApplycash implements Serializable {
      * @mbggenerated
      */
     private Long orderid;
+    /**
+     * 第3方支付返回流水号
+     */
+    private String orderno;
 
     /**
      * 字段: tra_applycash.accno<br/>
@@ -706,6 +710,14 @@ public class TraApplycash implements Serializable {
      */
     public void setOrdertype(Integer ordertype) {
         this.ordertype = ordertype;
+    }
+
+    public String getOrderno() {
+        return orderno;
+    }
+
+    public void setOrderno(String orderno) {
+        this.orderno = orderno;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.likes.modules.admin.finance.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.likes.common.annotation.ReadOnlyConnection;
 import com.likes.common.constant.Constants;
 import com.likes.common.constant.ModuleConstant;
 import com.likes.common.enums.CreditChangeEnum;
@@ -45,7 +44,7 @@ import com.likes.common.util.DateUtils;
 import com.likes.common.util.PaySignUtil;
 import com.likes.common.util.http.HttpUtils;
 import com.likes.common.util.redis.RedisBusinessUtil;
-import com.likes.modules.admin.common.service.CommonService;
+import com.likes.common.service.common.CommonService;
 import com.likes.modules.admin.finance.service.RechargeOrderService;
 import com.github.pagehelper.Page;
 

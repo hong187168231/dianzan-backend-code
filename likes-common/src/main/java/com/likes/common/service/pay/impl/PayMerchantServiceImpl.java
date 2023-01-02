@@ -1,10 +1,11 @@
-package com.likes.modules.admin.pay.service.impl;
+package com.likes.common.service.pay.impl;
 
 import com.likes.common.mybatis.entity.PayMerchant;
+import com.likes.common.mybatis.mapper.PayBanksMapper;
 import com.likes.common.mybatis.mapper.PayMerchantMapper;
-import com.likes.modules.admin.pay.service.PayMerchantService;
+import com.likes.common.service.pay.PayMerchantService;
 import org.springframework.stereotype.Service;
-
+import com.likes.common.mybatis.entity.PayBanks;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -13,6 +14,9 @@ public class PayMerchantServiceImpl implements PayMerchantService {
 
     @Resource
     private PayMerchantMapper payMerchantMapper;
+
+    @Resource
+    private PayBanksMapper payBanksMapper;
 
     @Override
     public List<PayMerchant> payMerchantList(String merchantCode) {
@@ -28,5 +32,11 @@ public class PayMerchantServiceImpl implements PayMerchantService {
         payMerchant.setMerchantCode(mCode);
         PayMerchant merchant = payMerchantMapper.selectOne(payMerchant);
         return merchant;
+    }
+
+    @Override
+    public List<PayBanks> queryBanks() {
+        List<PayBanks> merchants = payBanksMapper.selectAll();
+        return merchants;
     }
 }

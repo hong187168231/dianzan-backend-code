@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public final class Constants {
+    public final static String PAY_CHAN_CS_CODE = "CS"; //创世支付
 
     /**
      * 人工存提订单类型: 0-存入
@@ -894,6 +895,8 @@ public final class Constants {
     public static final Integer APYCSTATUS2 = 2;
     public static final Integer APYCSTATUS3 = 3;
     public static final Integer APYCSTATUS4 = 4;
+
+    public static final Integer APYCSTATUS8 = 8;
     public static final Integer APYCSTATUS9 = 9;
 
     // 时时彩

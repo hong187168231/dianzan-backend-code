@@ -14,7 +14,7 @@ import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.util.BeanUtils;
 import com.likes.common.util.CollectionUtil;
 import com.likes.common.util.StringUtils;
-import com.likes.modules.admin.common.service.CommonService;
+import com.likes.common.service.common.CommonService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

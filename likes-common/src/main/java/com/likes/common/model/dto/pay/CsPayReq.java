@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.dto.cs;
+package com.likes.common.model.dto.pay;
 
 
 import lombok.Data;

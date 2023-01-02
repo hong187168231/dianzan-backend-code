@@ -1,11 +1,12 @@
 /**
  *
  */
-package com.likes.modules.admin.common.service;
+package com.likes.common.service.common;
 
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.model.dto.OperatorDO;
+import com.likes.common.mybatis.entity.MemHotsearch;
 import com.likes.common.mybatis.entity.SysBusparameter;
 import com.likes.common.mybatis.entity.SysInfolog;
 import com.likes.common.service.BaseService;
@@ -45,5 +46,12 @@ public interface CommonService extends BaseService {
      */
     ResultInfo getSiteNotice(PageBounds pageBounds);
 
+    /**
+     * 热词列表
+     * @param memHotsearch
+     * @return
+     */
+    List<MemHotsearch> getHotSearch(MemHotsearch memHotsearch);
 
+    boolean checkUserMemberLevelExpire(Integer levelSeq, String accno);
 }

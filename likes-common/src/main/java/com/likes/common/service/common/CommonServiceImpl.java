@@ -1,6 +1,5 @@
-package com.likes.modules.admin.common.service.impl;
+package com.likes.common.service.common;
 
-import com.alibaba.fastjson.JSONObject;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.enums.SysParameterEnum;
 import com.likes.common.enums.ValidateMethodEnum;
@@ -8,10 +7,13 @@ import com.likes.common.exception.BusinessException;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.model.dto.OperatorDO;
+import com.likes.common.mybatis.entity.MemHotsearch;
 import com.likes.common.mybatis.entity.SysBusparameter;
 import com.likes.common.mybatis.entity.SysInfolog;
 import com.likes.common.mybatis.entity.SysParameter;
 import com.likes.common.service.BaseServiceImpl;
+import com.likes.common.service.member.MemHotsearchService;
+import com.likes.common.service.member.MemLevelService;
 import com.likes.common.service.member.MemLoginService;
 import com.likes.common.service.sys.SysBusParamService;
 import com.likes.common.service.sys.SysInfologService;
@@ -20,18 +22,12 @@ import com.likes.common.util.BaseUtil;
 import com.likes.common.util.JsonUtil;
 import com.likes.common.util.StringUtils;
 import com.likes.common.util.http.HttpClientUtil;
-import com.likes.common.util.uploadFile.FileNameUtils;
-import com.likes.common.util.uploadFile.FileUtils2;
-import com.likes.modules.admin.common.service.CommonService;
+import com.likes.common.service.common.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +48,10 @@ public class CommonServiceImpl extends BaseServiceImpl implements CommonService 
     private SysInfologService sysInfologService;
     @Resource
     private SysBusParamService sysBusParamService;
+    @Resource
+    private MemHotsearchService memHotsearchService;
+    @Resource
+    private MemLevelService memLevelService;
 
     /**
      * @param pcode
@@ -103,4 +103,17 @@ public class CommonServiceImpl extends BaseServiceImpl implements CommonService 
         return response;
     }
 
+    @Override
+    public List<MemHotsearch> getHotSearch(MemHotsearch memHotsearch) {
+        if (null == memHotsearch.getSearchtype()) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_998.getCode(), "类型为空");
+        }
+        return memHotsearchService.getHotSearch(memHotsearch);
+    }
+
+    @Override
+    public boolean checkUserMemberLevelExpire(Integer levelSeq, String accno) {
+        int count = memLevelService.checkUserMemberLevelExpire(levelSeq,accno);
+        return count <= 0;
+    }
 }

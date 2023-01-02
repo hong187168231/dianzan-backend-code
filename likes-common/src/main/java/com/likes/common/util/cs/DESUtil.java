@@ -1,6 +1,5 @@
-package com.likes.modules.admin.pay.util;
+package com.likes.common.util.cs;
 
-import com.likes.modules.admin.pay.service.impl.CsPayServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.misc.BASE64Decoder;

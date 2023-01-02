@@ -1,12 +1,11 @@
 package com.likes.modules.admin.pay;
 
 import com.likes.common.BaseController;
-import com.likes.common.annotation.AllowAccess;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.modules.admin.pay.service.MemWalletService;
-import com.likes.modules.admin.users.service.MoneyService;
+import com.likes.common.service.pay.PayMerchantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +28,9 @@ public class PayController extends BaseController {
 
     @Resource
     private MemWalletService memWalletService;
+
+    @Resource
+    private PayMerchantService payMerchantService;
 
     @RequestMapping(name = "提交充值", value = "/submitRecharge", method = RequestMethod.POST)
     public ResultInfo submitRecharge(String coinName, BigDecimal amount, String moneyAddress) {
@@ -83,6 +85,23 @@ public class PayController extends BaseController {
             logger.error("{}.moneyAddress 失败:{}", getClass().getName(), e.getMessage(), e);
         } catch (Exception e) {
             response = ResultInfo.error("获取钱包地址出错");
+            logger.error("{}.moneyAddress 出错:{}", getClass().getName(), e.getMessage(), e);
+        }
+        logger.info("/moneyAddress耗时{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
+
+    @RequestMapping(name = "查询银行列表", value = "/queryBanks", method = RequestMethod.GET)
+    public ResultInfo queryBanks() {
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            response.setData(payMerchantService.queryBanks());
+        } catch (BusinessException e) {
+            response.setResultInfo(e.getCode(), e.getMessage());
+            logger.error("{}.moneyAddress 失败:{}", getClass().getName(), e.getMessage(), e);
+        } catch (Exception e) {
+            response = ResultInfo.error("查询银行列表");
             logger.error("{}.moneyAddress 出错:{}", getClass().getName(), e.getMessage(), e);
         }
         logger.info("/moneyAddress耗时{}毫秒", (System.currentTimeMillis() - start));

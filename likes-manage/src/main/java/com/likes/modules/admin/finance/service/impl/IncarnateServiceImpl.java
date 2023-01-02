@@ -1,7 +1,8 @@
 package com.likes.modules.admin.finance.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.likes.common.config.UdunProperties;
 import com.likes.common.constant.Constants;
@@ -14,6 +15,7 @@ import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
+import com.likes.common.model.dto.pay.CsPaymentDTO;
 import com.likes.common.model.request.IncarnateOrderReq;
 import com.likes.common.model.response.EntryIncarnateOrderExcelResponse;
 import com.likes.common.model.response.IncarnateOrderResponse;
@@ -21,6 +23,7 @@ import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.DzCoinMapper;
 import com.likes.common.mybatis.mapper.MemBankaccountMapper;
 import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
+import com.likes.common.mybatis.mapper.SysPayaccountMapper;
 import com.likes.common.service.BaseServiceImpl;
 import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemLevelConfigService;
@@ -29,17 +32,18 @@ import com.likes.common.service.money.TraApplyauditService;
 import com.likes.common.service.money.TraApplycashService;
 import com.likes.common.service.money.TraOrderinfomService;
 import com.likes.common.service.money.TraOrdertrackingService;
+import com.likes.common.service.pay.CsPayService;
+import com.likes.common.service.pay.PayMerchantService;
 import com.likes.common.service.sys.InfSysremindinfoService;
 import com.likes.common.service.sys.SysBusParamService;
 import com.likes.common.util.DateUtils;
 import com.likes.common.util.redis.RedisBaseUtil;
 import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.common.util.redis.RedisLock;
-import com.likes.modules.admin.common.service.CommonService;
+import com.likes.common.service.common.CommonService;
 import com.likes.modules.admin.finance.service.IncarnateService;
 import com.github.pagehelper.Page;
 import com.uduncloud.sdk.client.UdunClient;
-import com.uduncloud.sdk.domain.ResultMsg;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -98,6 +102,12 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     UdunClient udunClient;
     @Resource
     UdunProperties udunProperties;
+    @Resource
+    CsPayService csPayService;
+    @Resource
+    SysPayaccountMapper sysPayaccountMapper;
+    @Resource
+    private PayMerchantService payMerchantService;
 
   /*  @Override
     public PageResult incarnateOrderList(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin) {
@@ -542,7 +552,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         if (traApplycash == null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_104.getCode(), "不存在提现申请");
         }
-        boolean flag = submitWithdraw("TRC20", traOrderinfom.getOrderno(), traOrderinfom.getRealamt(), traOrderinfom.getPayimg(), traOrderinfom.getAccno());
+        boolean flag = submitWithdraw(req, loginAdmin,traOrderinfom);
         if (!flag) {
             throw new RuntimeException("发起提现失败");
         }
@@ -551,32 +561,156 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
 
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean submitWithdraw(String coinName, String businessId, BigDecimal amount, String moneyAddress, String accno) {
-        Integer businessIdNum = udunRechargeMapper.countBusinessId(businessId);
-        if (businessIdNum > 0) {
-            throw new BusinessException("该订单已提交到第三方");
+    public boolean submitWithdraw(IncarnateOrderReq req, LoginUser loginAdmin,TraOrderinfom traOrderinfom) {
+
+        // 提现申请
+        TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
+        if (traApplycash == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_104.getCode(), "不存在提现申请");
         }
-        DzCoin dzCoin = getCoinType(coinName);
-        PayRechargeOrder udunOrder = new PayRechargeOrder();
-        udunOrder.setAmount(getTradeOffAmount(amount));
-        udunOrder.setAccno(accno);
-//        udunOrder.setMainCoinType(dzCoin.getMainCoinType());
-//        udunOrder.setCoinType(dzCoin.getCoinType());
-//        udunOrder.setTradeType(2);
-//        udunOrder.setAddress(moneyAddress);
-//        udunOrder.setBusinessId(businessId);
-        udunOrder.setTradeStatus(0);
-        udunOrder.setCreateUser(accno);
-        udunOrder.setCreateTime(new Date());
-        udunRechargeMapper.insertSelective(udunOrder);
-//        throw  new RuntimeException("22");
-        ResultMsg resultMsg = udunClient.withdraw(moneyAddress, udunOrder.getAmount(), dzCoin.getMainCoinType(), dzCoin.getCoinType(), businessId, null, udunProperties.getCallUrl());
-        if (resultMsg.getCode().equals(200)) {
+        if (Constants.APYCSTATUS2 != traApplycash.getApycstatus()) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_106.getCode(), "状态不为提现处理中");
+        }
+        if (!(loginAdmin.getSysroleid().equals(Constants.SUPERADMINSYSROLEID))) {
+            // 不是超级管理员 就验证是否属于你
+            if (!traApplycash.getPaymemname().equals(loginAdmin.getAccno())) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "该订单不属于您，无操作权限");
+            }
+        }
+
+        if (req.getBeSucceed() == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "处理状态不能为空");
+        }
+
+        if (!req.getBeSucceed()) {
+            failedOrder(req, loginAdmin);
+            RedisBusinessUtil.delIncarnateOrderListCahce();
+            return false;
+        }
+        List<PayMerchant> payMerchantList = payMerchantService.payMerchantList(Constants.PAY_CHAN_CS_CODE);
+        if (CollUtil.isEmpty(payMerchantList)) {
+            throw new BusinessException("您还未开通支付通道");
+        } else {
+            String resultString = "";
+            for (PayMerchant payMerchant : payMerchantList) {
+                SysPayaccount sysPayaccount = sysPayaccountMapper.selectByPrimaryKey(traOrderinfom.getBankid());
+                CsPaymentDTO csPaymentDTO = new CsPaymentDTO();
+                csPaymentDTO.setOrderNo(req.getOrderno());
+                csPaymentDTO.setAmount(traApplycash.getApycgold().intValue());
+                csPaymentDTO.setNotifyUrl(payMerchant.getNotifyUrl());
+                csPaymentDTO.setBankId(sysPayaccount.getBankcode());
+                csPaymentDTO.setBeneNo(sysPayaccount.getAccountno());
+                csPaymentDTO.setPayee(sysPayaccount.getAccountname());
+                try {
+                    csPayService.submitPayment(csPaymentDTO);
+                } catch (Exception e) {
+                    logger.error("創世支付，(付款接口)失败Exception:{}", e);
+                }
+                if (null == resultString || "".equals(resultString)) {
+                    logger.error("創世支付，获取收银台支付token    (收款接口)失败");
+                    //记录一次错误，进入下一个支付通道
+                    return false;
+                } else {
+                    JSONObject jsonObject = JSONObject.parseObject(resultString);
+                    if (null == jsonObject) {
+                        logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
+                        //记录一次错误，进入下一个支付通道
+                        return false;
+                    } else if (!"0".equals(jsonObject.getString("code"))) {
+                        logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
+                        //记录一次错误，进入下一个支付通道
+                        return false;
+                    }
+                }
+            }
+        }
+// 订单状态 ord01新订单 ord04待付款 ord05提现申请 ord06提现取消 ord07提现处理中 ord08已付款
+        // ord09用户取消 ord10已评价 ord11已退款 ord12已提现 ord13充值失败 ord14t提现失败 ord99已过期  ord98 有注单数据
+        // 修改为已提现
+        // 订单
+        traOrderinfom.setOrderstatus(Constants.ORDER_ORD12);
+        traOrderinfom.setPaydate(new Date());
+        traOrderinfom.setUpdateUser(loginAdmin.getAccno());
+        traOrderinfom.setOrdernote(req.getReason());
+        int i = traOrderinfomMapperService.updateIncarnateConfirmOrder(traOrderinfom);
+        if (i > 0) {
+            // 订单轨迹信息
+            TraOrdertracking traOrdertracking = new TraOrdertracking();
+            traOrdertracking.setOrderid(traOrderinfom.getOrderid());
+            traOrdertracking.setTrackdate(new Date());
+            traOrdertracking.setOrderstatus(Constants.ORDER_ORD12);
+            traOrdertracking.setOperuse(loginAdmin.getAccno());
+            traOrdertracking.setTrackbody("管理员[" + loginAdmin.getBdusername() + "]确认转账");
+            // 最后状态
+            int tc = traOrdertrackingMapperService.insertTraOrdertracking(traOrdertracking);
+            if (!(tc > 0)) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_202.getCode(), "已处理过该订单");
+            }
+            // 提现数据修改
+            traApplycash.setPaydate(new Date());
+            // 申请状态 1提交申请 2提现处理中 3已经失败 4已打款 8已到账 9已取消
+            traApplycash.setApycstatus(Constants.APYCSTATUS4);
+            traApplycash.setUpdateUser(loginAdmin.getAccno());
+
+            // 提现申请
+            int k = traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);
+            if (!(k > 0)) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "提现状态不为提现处理中");
+            }
+
+//            // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
+//            MemGoldchange paramMemGoldchange = new MemGoldchange();
+//            paramMemGoldchange.setAccno(traOrderinfom.getAccno());
+//            paramMemGoldchange.setChangetype(GoldchangeEnum.WITHDRAWAL_APPLY.getValue());
+//            paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
+//            paramMemGoldchange.setUpdateUser(loginAdmin.getAccno());
+//            paramMemGoldchange.setOpnote("提现完成");
+//            paramMemGoldchange.setSource(traOrderinfom.getSource());
+//
+//            int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);
+//            if (!(mg > 0)) {
+//                throw new BusinessException(StatusCode.LIVE_ERROR_115.getCode(), "处理用户提现失败");
+//            }
+
+//            // 修改 对应 充值订单的 结算状态
+//            Long apyid = traApplycash.getApycid();
+//            List<TraApplyaudit> traApplyaudits = traApplyauditMapperService.getListById(apyid);
+//            if (CollectionUtils.isNotEmpty(traApplyaudits)) {
+//                List<Long> orderids = traApplyaudits.stream().map(ob -> ob.getOrderid()).collect(Collectors.toList());
+//                traOrderinfomMapperService.doJiesuanOrder(orderids);
+//            }
+//            MemBaseinfoExample membaseinfoExample = new MemBaseinfoExample();
+//            membaseinfoExample.createCriteria().andAccnoEqualTo(traOrderinfom.getAccno());
+//            MemBaseinfo membaseinfo = memBaseinfoService.selectOneByExample(membaseinfoExample);
+//            // 设置提现金额
+//            membaseinfo.setWithdrawalAmount(getTradeOffAmount(traOrderinfom.getSumamt()));
+//            // 设置首次提现金额
+//            if (membaseinfo.getWithdrawalFirst() == null || membaseinfo.getWithdrawalFirst().compareTo(BigDecimal.ZERO) == 0) {
+//                membaseinfo.setWithdrawalFirst(getTradeOffAmount(traOrderinfom.getSumamt()));
+//            }
+//            // 设置最大提现金额
+//            if (membaseinfo.getWithdrawalMax() == null || membaseinfo.getWithdrawalMax().compareTo(getTradeOffAmount(traOrderinfom.getSumamt())) == -1) {
+//                membaseinfo.setWithdrawalMax(getTradeOffAmount(traOrderinfom.getSumamt()));
+//            }
+//            // 修改已提现金额
+//            memBaseinfoService.updateWithdrawalAmount(membaseinfo);
+//            // 发送系统消息
+//            this.doInfSysremindinfo(traOrderinfom, loginAdmin);
+//
+//            // 会员提现成功日志
+//            SysInfolog sysInfolog = new SysInfolog();
+//            sysInfolog.setAccno(loginAdmin.getAccno());
+//            sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + req.getOrderno() + "]提现成功");
+//            sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
+//            sysInfolog.setModelname("会员提现");
+//            sysInfolog.setOrginfo("doIncarnateConfirm");
+//            commonService.insertSelective(sysInfolog);
+//            RedisBusinessUtil.delIncarnateOrderListCahce();
+//            logger.info("{}{}处理订单{}用户{}提现完成", loginAdmin.getBdusername(), loginAdmin.getAccno(), traOrderinfom.getAccno(), zhubo.getNickname());
             return true;
-        }else{
-            logger.error("U dun发起提现错误 错误信息  ===== >> {}", JSONUtil.toJsonStr(resultMsg));
-            logger.error("U dun发起提现错误 == coinName={},moneyAddress={},accLogin={}", coinName, moneyAddress, accno);
-            throw  new RuntimeException(resultMsg.getMessage());
+
+        } else {
+            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "提现失败(订单已提现)");
         }
     }
 

@@ -1,31 +1,15 @@
 package com.likes.modules.admin.common.controller;
 
-import com.github.binarywang.utils.qrcode.MatrixToImageWriter;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.google.zxing.qrcode.encoder.ByteMatrix;
-import com.google.zxing.qrcode.encoder.Encoder;
-import com.google.zxing.qrcode.encoder.QRCode;
 import com.likes.common.BaseController;
-import com.likes.common.constant.Constants;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.HelpManual;
 import com.likes.common.model.LoginUser;
-import com.likes.common.model.TaskDetail;
-import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
-import com.likes.common.model.dto.OperatorDO;
 import com.likes.common.model.request.BaseRequest;
-import com.likes.common.mybatis.entity.SysBusparameter;
 import com.likes.common.mybatis.mapper.HelpManualMapper;
-import com.likes.common.util.CaptchaUtils;
-import com.likes.common.util.CaptchaUtils.ComplexLevel;
 import com.likes.common.util.StringUtils;
-import com.likes.modules.admin.common.service.CommonService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -34,14 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 @Controller

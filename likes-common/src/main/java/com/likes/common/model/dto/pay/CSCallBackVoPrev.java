@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.dto.cs;
+package com.likes.common.model.dto.pay;
 
 public class CSCallBackVoPrev {
     private String code;//	是	String	0代表成功

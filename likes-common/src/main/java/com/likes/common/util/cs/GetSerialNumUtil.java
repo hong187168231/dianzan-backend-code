@@ -1,4 +1,4 @@
-package com.likes.modules.admin.pay.util;
+package com.likes.common.util.cs;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

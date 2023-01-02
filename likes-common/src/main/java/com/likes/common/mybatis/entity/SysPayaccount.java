@@ -40,6 +40,11 @@ public class SysPayaccount implements Serializable {
     private String accountno;
 
     /**
+     * 银行代码
+     */
+    private String bankcode;
+
+    /**
      * 字段: sys_payaccount.accountname<br/>
      * 必填: true<br/>
      * 缺省: <br/>
@@ -739,6 +744,22 @@ public class SysPayaccount implements Serializable {
      */
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getBankcode() {
+        return bankcode;
+    }
+
+    public void setBankcode(String bankcode) {
+        this.bankcode = bankcode;
+    }
+
+    public Boolean getDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
     }
 
     /**

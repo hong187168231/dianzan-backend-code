@@ -4,8 +4,8 @@
 
     <select id="queryList" resultType="com.likes.common.model.bank.MemBankVO">
         SELECT
-        mb.mobile,
-        mbb.user_id AS userId,
+        mb.email,
+        mbb.accno AS accno,
         mbb.mem_bank_id as memBankId,
         mbb.user_name AS userName,
         pb.bank_name AS bankName,
@@ -14,9 +14,8 @@
         mbb.create_time AS createTime
         FROM
         mem_bank mbb
-        INNER JOIN mem_baseinfo mb ON mb.id = mbb.user_id
+        INNER JOIN mem_baseinfo mb ON mb.accno = mbb.accno
         INNER JOIN pay_bank pb ON mbb.bank_id = pb.bank_id
-
         <if test="req.mobile != null and req.mobile != '' ">
             and mb.mobile = #{req.mobile}
         </if>

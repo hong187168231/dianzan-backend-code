@@ -13,15 +13,11 @@ public class AgentUserRequest {
 
     @ApiModelProperty("代理用户ID")
     private Long memId;
-
     @ApiModelProperty("账号")
     private String email;
-
     @ApiModelProperty("密码")
     private String password;
-
     @ApiModelProperty("单笔操额度")
     private Integer singleAddMoney;
-
 
 }

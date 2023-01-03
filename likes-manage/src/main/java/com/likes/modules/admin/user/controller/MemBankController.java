@@ -34,7 +34,7 @@ public class MemBankController {
 
     @ApiOperation(value = "分页查询")
     @PostMapping(value = "/page")
-    public ResultInfo page(@RequestBody MemBankPageReq req, PageBounds pageBounds) {
+    public ResultInfo page(MemBankPageReq req, PageBounds pageBounds) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -52,7 +52,7 @@ public class MemBankController {
 
     @ApiOperation(value = "启用、禁用")
     @PostMapping(value = "/switchStatus")
-    public ResultInfo switchStatus(@RequestBody MemBankSwitchReq req) {
+    public ResultInfo switchStatus(MemBankSwitchReq req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {

@@ -53,7 +53,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
     @Override
     public boolean addBankCard(AddBankCardReq req, LoginUser loginUser) {
         MemBank countBank = new MemBank();
-        countBank.setUserId(loginUser.getMemid());
+        countBank.setAccno(loginUser.getAccno());
         int levelCount = memBankMapper.selectCount(countBank);
         if (levelCount > 0) {
             throw new BusinessException("你已绑定银行卡!");
@@ -83,7 +83,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
 //        }
         MemBank memBankRelation = new MemBank();
         BeanUtils.copyProperties(req, memBankRelation);
-        memBankRelation.setUserId(loginUser.getMemid());
+        memBankRelation.setAccno(loginUser.getAccno());
         memBankRelation.setBankName(payBank.getBankName());
         return memBankMapper.insertSelective(memBankRelation) > 0;
     }
@@ -95,7 +95,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
             throw new BusinessException("无效银行id!");
         }
         MemBank memBankParam = new MemBank();
-        memBankParam.setUserId(loginUser.getMemid());
+        memBankParam.setAccno(loginUser.getAccno());
         List<MemBank> memBankList = memBankMapper.select(memBankParam);
         List<Long> ids = new LinkedList<>();
         for (MemBank memBank : memBankList) {
@@ -120,7 +120,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         }
         MemBank memBankRelation = new MemBank();
         BeanUtils.copyProperties(req, memBankRelation);
-        memBankRelation.setUserId(loginUser.getMemid());
+        memBankRelation.setAccno(loginUser.getAccno());
 //        memBankRelation.setMobile(loginUser.getMobile());
         memBankRelation.setMemBankId(req.getMemBankId());
         memBankRelation.setBankId(payBank.getBankId());
@@ -130,7 +130,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
     @Override
     public MemBankVO findPage(LoginUser loginUser) {
         MemBank memBankParam = new MemBank();
-        memBankParam.setUserId(loginUser.getMemid());
+        memBankParam.setAccno(loginUser.getAccno());
         List<MemBank> list = memBankMapper.select(memBankParam);
         if (CollectionUtil.isEmpty(list)) {
             return new MemBankVO();
@@ -145,7 +145,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
     @Override
     public boolean getBindStatus(LoginUser loginUser) {
         MemBank countBank = new MemBank();
-        countBank.setUserId(loginUser.getMemid());
+        countBank.setAccno(loginUser.getAccno());
         int levelCount = memBankMapper.selectCount(countBank);
         if (levelCount > 0) {
             return true;

@@ -117,6 +117,7 @@ public class AgentUserServiceImpl implements AgentUserService {
         }
         asynRegister(request, newUser);
         AgentUser agentUser = new AgentUser();
+        agentUser.setAccno(newUser.getAccno());
         agentUser.setCreateTime(new Date());
         agentUser.setSingleAddMoney(request.getSingleAddMoney());
         return agentUserMapper.insertSelective(agentUser) > 0;
@@ -135,7 +136,8 @@ public class AgentUserServiceImpl implements AgentUserService {
             throw new BusinessException(StatusCode.ACCOUNT_EMPTY.getCode(), "代充人不存在");
         }
         AgentUser agentUser = new AgentUser();
-        agentUser.setCreateTime(new Date());
+        agentUser.setUpdateTime(new Date());
+        agentUser.setUpdateUser(loginUser.getAcclogin());
         agentUser.setSingleAddMoney(request.getSingleAddMoney());
         return agentUserMapper.updateByPrimaryKeySelective(agentUser) > 0;
     }

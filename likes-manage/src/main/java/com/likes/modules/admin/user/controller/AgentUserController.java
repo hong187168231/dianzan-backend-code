@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +37,7 @@ public class AgentUserController extends BaseController {
 
     @ApiOperation("代理新增")
     @Syslog("代理新增")
-    @RequestMapping(name = "代理新增", value = "/create", method = RequestMethod.POST)
+    @PostMapping(name = "代理新增", value = "/create")
     public ResultInfo createUser(AgentUserRequest request) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();

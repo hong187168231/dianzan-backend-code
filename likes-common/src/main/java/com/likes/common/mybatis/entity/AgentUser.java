@@ -9,10 +9,12 @@ import java.util.Date;
 @Data
 @Table(name = "`agent_user`")
 public class AgentUser {
+
     @Id
     @Column(name = "`agent_id`")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long agentId;
+
     @Column(name = "`accno`")
     private String accno;
 
@@ -20,10 +22,11 @@ public class AgentUser {
     private Integer singleAddMoney;
 
     @Column(name = "`create_user`")
-    private Date createUser;
+    private String createUser;
 
     @Column(name = "`update_user`")
-    private Date updateUser;
+    private String updateUser;
+
     @Column(name = "`create_time`")
     private Date createTime;
 

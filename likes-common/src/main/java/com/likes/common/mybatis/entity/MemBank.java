@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 /**
  * <p>
@@ -29,11 +30,11 @@ public class MemBank {
     @GeneratedValue(generator = "JDBC")
     private Long memBankId;
 
-    @ApiModelProperty(value = "用户id")
-    private Long userId;
+    @ApiModelProperty(value = "用户标识")
+    private String accno;
 
     @ApiModelProperty(value = "用户账号")
-    private String mobile;
+    private String email;
 
     @ApiModelProperty(value = "银行卡用户名")
     private String userName;
@@ -58,6 +59,15 @@ public class MemBank {
 
     @ApiModelProperty(value = "备注")
     private String remark;
+
+
+    private String createUser;
+
+    private String updateUser;
+
+    private Date createTime;
+
+    private Date updateTime;
 
 
 }

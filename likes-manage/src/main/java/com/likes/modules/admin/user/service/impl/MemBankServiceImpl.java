@@ -35,7 +35,7 @@ public class MemBankServiceImpl implements IMemBankService {
     @Override
     public boolean switchStatus(MemBankSwitchReq req) {
         MemBank memBankRelation = new MemBank();
-        memBankRelation.setMemBankId(req.getId());
+        memBankRelation.setMemBankId(req.getMemBankId());
         memBankRelation.setStatus(req.getStatus());
        return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
     }

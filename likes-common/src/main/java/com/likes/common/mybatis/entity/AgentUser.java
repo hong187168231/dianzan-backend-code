@@ -18,6 +18,8 @@ public class AgentUser {
     @Column(name = "`accno`")
     private String accno;
 
+    @Column(name = "`email`")
+    private String email;
     @Column(name = "`singel_add_money`")
     private Integer singleAddMoney;
 

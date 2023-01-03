@@ -119,6 +119,7 @@ public class AgentUserServiceImpl implements AgentUserService {
         AgentUser agentUser = new AgentUser();
         agentUser.setAccno(newUser.getAccno());
         agentUser.setCreateTime(new Date());
+        agentUser.setEmail(newUser.getEmail());
         agentUser.setSingleAddMoney(request.getSingleAddMoney());
         return agentUserMapper.insertSelective(agentUser) > 0;
     }
@@ -151,6 +152,7 @@ public class AgentUserServiceImpl implements AgentUserService {
     @Override
     public PageResult userList(AgentUserQuery query, PageBounds page) {
         AgentUser agentUser = new AgentUser();
+        agentUser.setEmail(query.getEmail());
         PageHelper.startPage(page.getPageNo(), page.getPageSize());
         List<AgentUser> agentUserList = agentUserMapper.select(agentUser);
         return PageResult.getPageResult(agentUserList.size(), page, agentUserList);

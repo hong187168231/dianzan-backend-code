@@ -66,11 +66,7 @@ public class WebAppConfig implements WebMvcConfigurer {
 
 
 
-    @Bean
-    @Order(0)
-    public BeanNameViewResolver beanNameViewResolver() {
-        return new BeanNameViewResolver();
-    }
+
 
     /**
      * 增加字符串转日期的功能
@@ -114,15 +110,21 @@ public class WebAppConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(systemInterceptor).addPathPatterns("/**")
-                .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**", "/docs.html/**");
-
+                .excludePathPatterns("/js/**")
+                .excludePathPatterns("/swagger**/**")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/v3/**")
+                .excludePathPatterns("/swagger-ui.html/**")
+                .excludePathPatterns("/doc.html");
     }
-
-
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html","docs.html")
+        registry.addResourceHandler("/**").
+                addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");

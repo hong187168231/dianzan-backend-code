@@ -34,10 +34,10 @@
     <select id="existCashOrder"
             parameterType="com.likes.common.model.bank.OrderDTO"
             resultType="com.likes.common.mybatis.entity.TraApplycash">
-        SELECT * FROM pay_take_cash t WHERE 1=1
+        SELECT * FROM tra_applycash t WHERE 1=1
         and t.accno = #{accno}
         <if test="orderStatusList != null and orderStatusList.size != 0">
-            AND t.cash_status in
+            AND t.apycstatus in
             <foreach close=")" collection="orderStatusList" index="index" item="s" open="("
                      separator=",">
                 #{s}

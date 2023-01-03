@@ -37,6 +37,7 @@ import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.modules.admin.business.service.IncarnateService;
 import com.github.pagehelper.Page;
 import com.likes.modules.admin.pay.service.MemWalletService;
+import com.likes.modules.admin.users.service.AppMemBankService;
 import com.uduncloud.sdk.client.UdunClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -82,6 +83,8 @@ public class IncarnateServiceImpl implements IncarnateService {
     private MemLoginService memLoginService;
     @Resource
     private MemBankaccountService memBankaccountService;
+    @Resource
+    private AppMemBankService appMemBankService;
     @Resource
     private SysPaysetService sysPaysetService;
     @Resource
@@ -440,13 +443,10 @@ public class IncarnateServiceImpl implements IncarnateService {
         if (response.equals(null) || response.getLevelSeq() < 1) {
             throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "vip0无法申请提现");
         }
-        MemBankaccount bankaccount = memBankaccountService.findBankByAccno(loginUserAPP.getAccno());
-        if (ObjectUtil.isNull(bankaccount) || StringUtils.isBlank(bankaccount.getBankaddress())) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1199.getCode(), "请先绑定钱包地址");
+        MemBank memBank = appMemBankService.findMemBankByAccno(loginUserAPP.getAccno());
+        if (ObjectUtil.isNull(memBank) || StringUtils.isBlank(memBank.getBankCardNo())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1199.getCode(), "请先绑定银行卡");
         }
-        req.setMoneyAddress(bankaccount.getBankaddress());
-        DzCoin dzCoin = memWalletService.getCoinType(req.getCoinName());
-        memWalletService.checkAddress(dzCoin.getMainCoinType(), req.getMoneyAddress());
 //        SysPayset syspayset = sysPaysetService.getUseOne(2);
 //        if (ObjectUtils.isEmpty(syspayset)) {
 //            throw new BusinessException(StatusCode.LIVE_ERROR_1103.getCode(), "支付设定不存在");
@@ -525,7 +525,6 @@ public class IncarnateServiceImpl implements IncarnateService {
         String businessId = SnowflakeIdWorker.generateShortId();
         // 创建订单
         Long orderid = doCreateTixianOrder(req, businessId, loginUserAPP, xiangti, sxf, 0);
-
         // 创建提现申请
         this.doCreateTraApplycashV2(req, loginUserAPP, orderid, sumamt, null, 0D, haixudamaliang);
         // 金币变化
@@ -646,7 +645,7 @@ public class IncarnateServiceImpl implements IncarnateService {
         traOrderinfom.setOrderstatus(Constants.ORDER_ORD05);
         traOrderinfom.setAccountstatus(Constants.ORDER_ACC04);
         traOrderinfom.setCancelreason(null);
-        traOrderinfom.setPayimg(req.getMoneyAddress());
+        traOrderinfom.setMemBankId(req.getMemBankId());
         traOrderinfom.setPaywechat(null);
         traOrderinfom.setPaydate(null);
         traOrderinfom.setOrdernote("用户[" + loginUserAPP.getNickname() + "]提现");

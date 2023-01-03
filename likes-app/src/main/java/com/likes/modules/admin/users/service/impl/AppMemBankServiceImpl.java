@@ -85,6 +85,9 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         BeanUtils.copyProperties(req, memBankRelation);
         memBankRelation.setAccno(loginUser.getAccno());
         memBankRelation.setBankName(payBank.getBankName());
+        memBankRelation.setStatus(1);
+        memBankRelation.setAccno(loginUser.getAccno());
+        memBankRelation.setEmail(loginUser.getEmail());
         return memBankMapper.insertSelective(memBankRelation) > 0;
     }
 
@@ -151,6 +154,13 @@ public class AppMemBankServiceImpl implements AppMemBankService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public MemBank findMemBankByAccno(String accno) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setAccno(accno);
+        return memBankMapper.selectOne(memBankParam);
     }
 
 }

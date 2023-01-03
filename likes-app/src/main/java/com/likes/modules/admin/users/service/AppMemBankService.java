@@ -3,6 +3,8 @@ package com.likes.modules.admin.users.service;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.bank.AddBankCardReq;
 import com.likes.common.model.bank.MemBankVO;
+import com.likes.common.mybatis.entity.MemBank;
+import com.likes.common.mybatis.entity.MemBankaccount;
 
 /**
  * <p>
@@ -21,6 +23,9 @@ public interface AppMemBankService {
     MemBankVO findPage(LoginUser loginUser);
 
     boolean getBindStatus(LoginUser loginUser);
+
+
+    MemBank findMemBankByAccno(String accno);
 
 
 }

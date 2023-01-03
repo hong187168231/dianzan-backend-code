@@ -14,8 +14,8 @@ import java.util.Date;
 public class MemBankPageReq extends BaseDTO {
 
 
-    @ApiModelProperty("手机号")
-    private String mobile;
+    @ApiModelProperty("会员账号")
+    private String email;
 
     @ApiModelProperty("银行卡号")
     private String bankCardNo;

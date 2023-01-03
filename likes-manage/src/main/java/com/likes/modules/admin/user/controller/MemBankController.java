@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.bank.MemBankPageReq;
 import com.likes.common.model.bank.MemBankSwitchReq;
+import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.modules.admin.user.service.IMemBankService;
@@ -32,7 +33,7 @@ public class MemBankController {
     @Autowired
     private IMemBankService iMemBankService;
 
-    @ApiOperation(value = "分页查询")
+    @ApiOperation(value = "分页查询",response = MemBankVO.class)
     @PostMapping(value = "/page")
     public ResultInfo page(MemBankPageReq req, PageBounds pageBounds) {
         long start = System.currentTimeMillis();

@@ -114,4 +114,25 @@ public class MemBankController extends BaseController {
         return response;
     }
 
+    @ApiOperation(value = "查询会员是否绑定银行卡")
+    @GetMapping("/getBindStatus")
+    @AllowAccess
+    public ResultInfo getBindStatus() {
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            LoginUser loginUserAPP = getLoginUserAPP();
+            response.setData(appMemBankService.getBindStatus(loginUserAPP));
+        } catch (BusinessException e) {
+            response.setResultInfo(e.getCode(), e.getMessage());
+            log.error("{}.getBindStatus 失败:{}", getClass().getName(), e.getMessage(), e);
+        } catch (Exception e) {
+            response = ResultInfo.error("获取会员是否绑定银行卡出错");
+            log.error("{}.getBindStatus 出错:{}", getClass().getName(), e.getMessage(), e);
+        }
+        log.info("/getBindStatus{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
+
+
 }

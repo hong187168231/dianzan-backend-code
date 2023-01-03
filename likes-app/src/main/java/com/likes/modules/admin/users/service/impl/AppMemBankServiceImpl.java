@@ -1,19 +1,20 @@
 package com.likes.modules.admin.users.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.likes.common.constant.Constants;
 import com.likes.common.constant.GlobalConstants;
+import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.bank.AddBankCardReq;
 import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.bank.OrderDTO;
-import com.likes.common.mybatis.entity.MemBank;
-import com.likes.common.mybatis.entity.MemBaseinfo;
-import com.likes.common.mybatis.entity.PayBank;
-import com.likes.common.mybatis.entity.TraApplycash;
+import com.likes.common.model.dto.order.OrderRequest;
+import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.MemBankMapper;
 import com.likes.common.mybatis.mapper.PayBankMapper;
 import com.likes.common.service.member.MemBaseinfoService;
+import com.likes.common.service.money.TraOrderinfomService;
 import com.likes.common.util.CollectionUtil;
 import com.likes.common.util.uploadFile.DTOUtil;
 import com.likes.modules.admin.users.service.AppMemBankService;
@@ -21,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +46,8 @@ public class AppMemBankServiceImpl implements AppMemBankService {
 
     @Autowired
     private MemBaseinfoService memBaseinfoService;
+    @Resource
+    private TraOrderinfomService traOrderinfomMapperService;
 
 
     @Override
@@ -58,6 +62,18 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         if (ObjectUtil.isNull(payBank)) {
             throw new BusinessException("无效银行id!");
         }
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setAccno(loginUser.getAccno());
+        List<String> orderstatusList = new ArrayList<>();
+        // ord05提现申请 ord07提现处理中
+        orderstatusList.add(Constants.ORDER_ORD05);
+        orderstatusList.add(Constants.ORDER_ORD07);
+        orderRequest.setOrderstatusList(orderstatusList);
+        TraOrderinfom existOrderinfom = traOrderinfomMapperService.existOrderinfom(orderRequest);
+        if (existOrderinfom != null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "存在提现订单,不能更改钱包地址");
+        }
+
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){
 //            throw new BizException("请先完成实名认证！");
@@ -124,6 +140,17 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         PayBank payBank = payBankMapper.selectByPrimaryKey(memBank.getBankId());
         result.setBankName(payBank.getBankName());
         return result;
+    }
+
+    @Override
+    public boolean getBindStatus(LoginUser loginUser) {
+        MemBank countBank = new MemBank();
+        countBank.setUserId(loginUser.getMemid());
+        int levelCount = memBankMapper.selectCount(countBank);
+        if (levelCount > 0) {
+            return true;
+        }
+        return false;
     }
 
 }

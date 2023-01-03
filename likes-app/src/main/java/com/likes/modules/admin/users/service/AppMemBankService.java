@@ -20,5 +20,7 @@ public interface AppMemBankService {
 
     MemBankVO findPage(LoginUser loginUser);
 
+    boolean getBindStatus(LoginUser loginUser);
+
 
 }

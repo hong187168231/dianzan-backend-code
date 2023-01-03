@@ -72,6 +72,8 @@ public interface MemBaseinfoService {
 
     Page<MemBaseinfoDO> applyAnchorList(UserRequest req, RowBounds rowBounds);
 
+    Page<MemBaseinfoDO> agentUserList(UserRequest req, RowBounds rowBounds);
+
     int updatePayAgent(TraAgentclearing req);
 
     MemBaseinfo selectByAccno(String accno);

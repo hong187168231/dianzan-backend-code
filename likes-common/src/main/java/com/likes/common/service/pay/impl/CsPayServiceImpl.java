@@ -147,9 +147,9 @@ public class CsPayServiceImpl implements CsPayService {
             noticeMap.put("pay_time", "20221229194833");
             noticeMap.put("timestamp", timestamp);
 
-            String sign = PaySignUtil.getSignLower(noticeMap,key);
+            String sign = PaySignUtil.getSignLower(noticeMap, key);
             log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
-            noticeMap.put("sign",sign);
+            noticeMap.put("sign", sign);
 
             String params = base642(DESUtil.encrypt(JSONObject.toJSONString(noticeMap), key));
             System.out.println(params);
@@ -281,17 +281,17 @@ public class CsPayServiceImpl implements CsPayService {
         try {
             JSONObject jsonObject = JSONObject.parseObject(params);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
-            if(null!=business_type && !"".equals(business_type)){
-                if("10003".equals(business_type)){//收款接口回调
+            if (null != business_type && !"".equals(business_type)) {
+                if ("10003".equals(business_type)) {//收款接口回调
                     return this.callbackNotice10003(jsonObject);
-                }else if("10003".equals(business_type)) {//付款接口回调
+                } else if ("30003".equals(business_type)) {//付款接口回调
                     return this.callbackNotice30003(jsonObject);
-                }else {
-                    log.error("创世支付回调发生错误,错误信息 ===== 业务编码为：{}",business_type);
+                } else {
+                    log.error("创世支付回调发生错误,错误信息 ===== 业务编码为：{}", business_type);
                     csCallBackVoPrev.setCode("9999");
                     return csCallBackVoPrev;
                 }
-            }else {
+            } else {
                 log.error("创世支付回调发生错误,错误信息 ===== 业务编码为空");
                 csCallBackVoPrev.setCode("9999");
                 return csCallBackVoPrev;
@@ -343,6 +343,7 @@ public class CsPayServiceImpl implements CsPayService {
         memGoldchangeDO.setChangetype(GoldchangeEnum.RECHARGE.getValue());
         memBaseinfoWriteService.updateUserBalance(memGoldchangeDO);
     }
+
     /**
      * 六、	异步通知接口（收款接口）
      *
@@ -416,6 +417,7 @@ public class CsPayServiceImpl implements CsPayService {
 
     /**
      * 四、	付款接口
+     *
      * @param csPaymentDTO
      * @return
      * @throws Exception
@@ -492,6 +494,7 @@ public class CsPayServiceImpl implements CsPayService {
 
     /**
      * 七、	商户余额查询接口
+     *
      * @return
      * @throws Exception
      */
@@ -525,6 +528,7 @@ public class CsPayServiceImpl implements CsPayService {
         }
         return resultString;
     }
+
     /**
      * 六、	异步通知接口（付款接口）
      *
@@ -549,7 +553,6 @@ public class CsPayServiceImpl implements CsPayService {
             String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
 
 
-
             Map<String, Object> noticeMap = new TreeMap<>();
             noticeMap.put("business_type", business_type);
             noticeMap.put("mer_order_no", mer_order_no);
@@ -567,65 +570,109 @@ public class CsPayServiceImpl implements CsPayService {
                 csCallBackVoPrev.setCode("1001");
                 return csCallBackVoPrev;
             }
-            // 订单
             TraOrderinfom traOrderinfom = traOrderinfomMapperService.findByOrderno(mer_order_no);
-            // 提现申请
+            if (traOrderinfom == null) {
+                log.error("订单不存在");
+                throw new BusinessException("订单不存在");
+            }
+            if (!(traOrderinfom.getSumamt().intValue() == new BigDecimal(order_price).intValue())) {
+                throw new BusinessException("金额不一致");
+            }
+
+            if (!Constants.ORDER_ORD07.equals(traOrderinfom.getOrderstatus())) {
+                log.error("订单状态不为提现处理中");
+                throw new BusinessException("订单状态不为提现处理中");
+            }
+            // 获取订单对应的申请提现
             TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
+            if (traApplycash == null) {
+                throw new BusinessException("不存在提现申请");
+            }
+            if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
+                throw new BusinessException("状态不为提现申请");
+            }
+            if (Constants.ORDER_ORD12.equals(traOrderinfom.getOrderstatus())) {
+                throw new BusinessException("订单状态已提现");
+            }
+            // 用户
+            MemBaseinfo zhubo = memBaseinfoService.getUserByAccno(traOrderinfom.getAccno());
+            if (zhubo == null) {
+                log.error("用户不存在");
+                throw new BusinessException("用户不存在");
+            }
             // 申请状态 1提交申请 2提现处理中 3已经失败 4已打款 8已到账 9已取消
             traApplycash.setApycstatus(com.likes.common.constant.Constants.APYCSTATUS8);
             traApplycash.setApycamt(BigDecimal.valueOf(Long.parseLong(order_price)));//打款金额
             traApplycash.setOrderno(order_no);
             // 提现申请
-            int k = traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);
+            traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);
 
-            // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
-            MemGoldchange paramMemGoldchange = new MemGoldchange();
-            paramMemGoldchange.setAccno(traOrderinfom.getAccno());
-            paramMemGoldchange.setChangetype(GoldchangeEnum.WITHDRAWN.getValue());
-            paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
-            paramMemGoldchange.setUpdateUser(traOrderinfom.getAccno());
-            paramMemGoldchange.setOpnote("提现完成");
-            paramMemGoldchange.setSource(traOrderinfom.getSource());
+            // 订单
+            traOrderinfom.setOrderstatus(Constants.ORDER_ORD12);
+            traOrderinfom.setPaydate(new Date());
+            traOrderinfom.setUpdateUser("udun");
+            traOrderinfom.setOrdernote("udun 回调已到账");
+            int i = traOrderinfomMapperService.udunUpdateIncarnateConfirmOrder(traOrderinfom);
+            if(i>0){
+                // 提现数据修改
+                traApplycash.setPaydate(new Date());
+                traApplycash.setApycstatus(Constants.APYCSTATUS4);
+                traApplycash.setUpdateUser("udun");
+                // 提现申请
+                int k = traApplycashMapperService.udunUpdateIncarnateConfirmApplycash(traApplycash);
+                if (!(k > 0)) {
+                    throw new BusinessException("提现状态不为提现处理中");
+                }
+                // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
+                MemGoldchange paramMemGoldchange = new MemGoldchange();
+                paramMemGoldchange.setAccno(traOrderinfom.getAccno());
+                paramMemGoldchange.setChangetype(GoldchangeEnum.WITHDRAWN.getValue());
+                paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
+                paramMemGoldchange.setUpdateUser(traOrderinfom.getAccno());
+                paramMemGoldchange.setOpnote("提现完成");
+                paramMemGoldchange.setSource(traOrderinfom.getSource());
 
-            int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);
-            if (!(mg > 0)) {
-                throw new BusinessException(StatusCode.LIVE_ERROR_115.getCode(), "处理用户提现失败");
-            }
+                int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);
+                if (!(mg > 0)) {
+                    throw new BusinessException(StatusCode.LIVE_ERROR_115.getCode(), "处理用户提现失败");
+                }
+                // 修改 对应 充值订单的 结算状态
+                Long apyid = traApplycash.getApycid();
+                List<TraApplyaudit> traApplyaudits = traApplyauditMapperService.getListById(apyid);
+                if (CollectionUtils.isNotEmpty(traApplyaudits)) {
+                    List<Long> orderids = traApplyaudits.stream().map(ob -> ob.getOrderid()).collect(Collectors.toList());
+                    traOrderinfomMapperService.doJiesuanOrder(orderids);
+                }
+                MemBaseinfoExample membaseinfoExample = new MemBaseinfoExample();
+                membaseinfoExample.createCriteria().andAccnoEqualTo(traOrderinfom.getAccno());
+                MemBaseinfo membaseinfo = memBaseinfoService.selectOneByExample(membaseinfoExample);
+                // 设置提现金额
+                membaseinfo.setWithdrawalAmount(getTradeOffAmount(traOrderinfom.getSumamt()));
+                // 设置首次提现金额
+                if (membaseinfo.getWithdrawalFirst() == null || membaseinfo.getWithdrawalFirst().compareTo(BigDecimal.ZERO) == 0) {
+                    membaseinfo.setWithdrawalFirst(getTradeOffAmount(traOrderinfom.getSumamt()));
+                }
+                // 设置最大提现金额
+                if (membaseinfo.getWithdrawalMax() == null || membaseinfo.getWithdrawalMax().compareTo(getTradeOffAmount(traOrderinfom.getSumamt())) == -1) {
+                    membaseinfo.setWithdrawalMax(getTradeOffAmount(traOrderinfom.getSumamt()));
+                }
+                // 修改已提现金额
+                memBaseinfoService.updateWithdrawalAmount(membaseinfo);
+                // 发送系统消息
+                this.doInfSysremindinfo(traOrderinfom, traOrderinfom.getAccno());
 
-            // 修改 对应 充值订单的 结算状态
-            Long apyid = traApplycash.getApycid();
-            List<TraApplyaudit> traApplyaudits = traApplyauditMapperService.getListById(apyid);
-            if (CollectionUtils.isNotEmpty(traApplyaudits)) {
-                List<Long> orderids = traApplyaudits.stream().map(ob -> ob.getOrderid()).collect(Collectors.toList());
-                traOrderinfomMapperService.doJiesuanOrder(orderids);
+                // 会员提现成功日志
+                SysInfolog sysInfolog = new SysInfolog();
+                sysInfolog.setAccno(traOrderinfom.getAccno());
+                sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + traOrderinfom.getOrderno() + "]提现成功");
+                sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
+                sysInfolog.setModelname("会员提现");
+                sysInfolog.setOrginfo("doIncarnateConfirm");
+                commonService.insertSelective(sysInfolog);
+                RedisBusinessUtil.delIncarnateOrderListCahce();
+            }else {
+                throw new BusinessException("提现失败(订单已提现)");
             }
-            MemBaseinfoExample membaseinfoExample = new MemBaseinfoExample();
-            membaseinfoExample.createCriteria().andAccnoEqualTo(traOrderinfom.getAccno());
-            MemBaseinfo membaseinfo = memBaseinfoService.selectOneByExample(membaseinfoExample);
-            // 设置提现金额
-            membaseinfo.setWithdrawalAmount(getTradeOffAmount(traOrderinfom.getSumamt()));
-            // 设置首次提现金额
-            if (membaseinfo.getWithdrawalFirst() == null || membaseinfo.getWithdrawalFirst().compareTo(BigDecimal.ZERO) == 0) {
-                membaseinfo.setWithdrawalFirst(getTradeOffAmount(traOrderinfom.getSumamt()));
-            }
-            // 设置最大提现金额
-            if (membaseinfo.getWithdrawalMax() == null || membaseinfo.getWithdrawalMax().compareTo(getTradeOffAmount(traOrderinfom.getSumamt())) == -1) {
-                membaseinfo.setWithdrawalMax(getTradeOffAmount(traOrderinfom.getSumamt()));
-            }
-            // 修改已提现金额
-            memBaseinfoService.updateWithdrawalAmount(membaseinfo);
-            // 发送系统消息
-            this.doInfSysremindinfo(traOrderinfom, traOrderinfom.getAccno());
-
-            // 会员提现成功日志
-            SysInfolog sysInfolog = new SysInfolog();
-            sysInfolog.setAccno(traOrderinfom.getAccno());
-            sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + traOrderinfom.getOrderno() + "]提现成功");
-            sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
-            sysInfolog.setModelname("会员提现");
-            sysInfolog.setOrginfo("doIncarnateConfirm");
-            commonService.insertSelective(sysInfolog);
-            RedisBusinessUtil.delIncarnateOrderListCahce();
         } catch (Exception e) {
             log.error("创世支付回调发生错误(付款接口),错误信息 ===== params:{}", jsonObject);
             csCallBackVoPrev.setCode("9999");

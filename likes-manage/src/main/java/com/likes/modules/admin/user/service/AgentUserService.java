@@ -10,11 +10,9 @@ import com.likes.common.model.request.AgentUserRequest;
 
 public interface AgentUserService {
 
-    Long createUser(AgentUserRequest request, LoginUser loginUser);
+    boolean createUser(AgentUserRequest request, LoginUser loginUser);
 
-    int updateUser(AgentUserRequest request, LoginUser loginUser);
-
-    int UpdateUserStatus(Long repayMemId, Integer status, LoginUser loginUser);
+    boolean updateUser(AgentUserRequest request, LoginUser loginUser);
 
     AgentUserDetailDO userDetail(Long repayMemId);
 

@@ -5,6 +5,9 @@ import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.github.pagehelper.Page;
 import com.likes.common.annotation.ReadOnlyConnection;
+import com.likes.common.constant.Constants;
+import com.likes.common.enums.GoldchangeEnum;
+import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
@@ -13,23 +16,27 @@ import com.likes.common.model.dto.AgentData;
 import com.likes.common.model.dto.AgentMemberDTO;
 import com.likes.common.model.dto.PromotionDo;
 import com.likes.common.model.dto.member.FundsResponse;
+import com.likes.common.model.dto.member.MemGoldchangeDO;
+import com.likes.common.model.req.JackPotReq;
 import com.likes.common.model.request.*;
 import com.likes.common.model.response.AppTeamResponse;
 import com.likes.common.model.response.TeamBo;
 import com.likes.common.model.response.TeamResponse;
-import com.likes.common.mybatis.entity.MemBaseinfo;
-import com.likes.common.mybatis.entity.MemLogin;
-import com.likes.common.mybatis.entity.Task;
+import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.AgentMapper;
+import com.likes.common.mybatis.mapper.FinanceBalanceAdjustmentMapper;
 import com.likes.common.mybatis.mapper.MemBaseinfoMapper;
 import com.likes.common.mybatis.mapperext.member.MemLevelConfigMapperExt;
 import com.likes.common.mybatis.mapperext.member.MemLevelMapperExt;
 import com.likes.common.service.BaseServiceImpl;
 import com.likes.common.service.member.MemBaseinfoService;
+import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.service.member.MemLoginService;
+import com.likes.common.service.money.TraOrderinfomService;
 import com.likes.common.service.sys.SysParamService;
 import com.likes.common.util.CollectionUtil;
 import com.likes.common.util.DateUtils;
+import com.likes.common.util.SnowflakeIdWorker;
 import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.modules.agent.service.AgentMemberService;
 import io.swagger.models.auth.In;
@@ -37,12 +44,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.likes.common.util.ViewUtil.getTradeOffAmount;
 
 /**
  * @author abu
@@ -62,6 +72,12 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
     private MemBaseinfoService memBaseinfoService;
     @Resource
     private MemBaseinfoMapper memBaseinfoMapper;
+    private TraOrderinfomService traOrderinfomMapperService;
+    @Resource
+    private MemBaseinfoWriteService memBaseinfoWriteService;
+
+    @Resource
+    private FinanceBalanceAdjustmentMapper financeBalanceAdjustmentMapper;
     @Resource
     private AgentMapper agentMapper;
 
@@ -269,6 +285,62 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
         allList.addAll(levelTwoAccList);
         allList.addAll(levelThreeAccList);
         return allList;
+    }
+
+
+    @Transactional
+    public void adJackpot(JackPotReq jackPotReq) {
+        if (jackPotReq.getAmount() == null || jackPotReq.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("金额必须为正整数");
+        }
+        if (com.likes.common.util.StringUtils.isBlank(jackPotReq.getMemberAccno())) {
+            throw new BusinessException("账号为空");
+        }
+        jackPotReq.setAmount(jackPotReq.getAmount().setScale(3, BigDecimal.ROUND_DOWN));
+
+        MemBaseinfo membaseinfo = memBaseinfoService.getUserByAccno(jackPotReq.getMemberAccno());
+
+        FinanceBalanceAdjustment financeBalanceAdjustment = new FinanceBalanceAdjustment();
+        financeBalanceAdjustment.setAccno(jackPotReq.getMemberAccno());
+        financeBalanceAdjustment.setAmount(jackPotReq.getAmount());
+        financeBalanceAdjustment.setType(jackPotReq.getType());
+        financeBalanceAdjustment.setUpdateUser(jackPotReq.getUpdateUser());
+        financeBalanceAdjustment.setCreateUser(jackPotReq.getCreateUser());
+        financeBalanceAdjustmentMapper.insertSelective(financeBalanceAdjustment);
+
+        TraOrderinfom traOrderinfom = new TraOrderinfom();
+        //给会员代充
+        traOrderinfom.setOrdertype(Constants.ORDERTYPE5);
+        traOrderinfom.setOrderno(SnowflakeIdWorker.generateShortId());
+        traOrderinfom.setAccno(membaseinfo.getAccno());
+        traOrderinfom.setOrderdate(new Date());
+
+        //实际到账金额（赠送后的金额）
+        traOrderinfom.setSumamt(financeBalanceAdjustment.getAmount());
+        traOrderinfom.setRealamt(financeBalanceAdjustment.getAmount());
+
+        traOrderinfom.setIsinvoice(9);
+        traOrderinfom.setOrderstatus(Constants.ORDER_ORD30);
+        traOrderinfom.setAccountstatus(Constants.ORDER_ACC08);
+        traOrderinfom.setOrdernote("用户[" + membaseinfo.getNickname() + "]增加彩金: ");
+        traOrderinfom.setPaydate(new Date());
+        int i = traOrderinfomMapperService.insertOrder(traOrderinfom);
+        if (i < 0) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_10004.getCode(), "增加彩金失败");
+        }
+        MemGoldchangeDO memGoldchangeDO = new MemGoldchangeDO();
+        memGoldchangeDO.setRefid(financeBalanceAdjustment.getId());
+        memGoldchangeDO.setUserId(membaseinfo.getMemid().intValue());
+        memGoldchangeDO.setShowChange(getTradeOffAmount(financeBalanceAdjustment.getAmount()));
+        memGoldchangeDO.setOpnote(financeBalanceAdjustment.getRemark());
+        memGoldchangeDO.setCreateUser(membaseinfo.getAccno());
+        memGoldchangeDO.setUpdateUser(membaseinfo.getAccno());
+
+        memGoldchangeDO.setQuantity(financeBalanceAdjustment.getAmount());
+        memGoldchangeDO.setAmount(getTradeOffAmount(financeBalanceAdjustment.getAmount()));
+        memGoldchangeDO.setChangetype(GoldchangeEnum.JACKPOT.getValue());
+        memBaseinfoWriteService.updateUserBalance(memGoldchangeDO);
+
     }
 
 }

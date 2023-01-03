@@ -267,6 +267,11 @@ public class MemBaseinfoServiceImpl implements MemBaseinfoService {
         return memBaseinfoMapperExt.applyAnchorList(req, rowBounds);
     }
 
+    @Override
+    public Page<MemBaseinfoDO> agentUserList(UserRequest req, RowBounds rowBounds) {
+        return memBaseinfoMapperExt.applyAnchorList(req, rowBounds);
+    }
+
     //删缓存
     @Override
     public int updatePayAgent(TraAgentclearing req) {

@@ -13,8 +13,6 @@ public class AgentUser {
     @Column(name = "`agent_id`")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long agentId;
-
-
     @Column(name = "`accno`")
     private String accno;
 
@@ -26,8 +24,6 @@ public class AgentUser {
 
     @Column(name = "`update_user`")
     private Date updateUser;
-
-
     @Column(name = "`create_time`")
     private Date createTime;
 

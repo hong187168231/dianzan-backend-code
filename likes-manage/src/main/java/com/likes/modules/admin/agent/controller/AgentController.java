@@ -16,6 +16,7 @@ import com.likes.common.service.sys.SysRecordService;
 import com.likes.common.util.LogUtils;
 import com.likes.modules.admin.agent.service.AgentService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ import javax.annotation.Resource;
  */
 
 @Controller
-@Api(tags = "代理管理")
+//@Api(tags = "代理管理")
 @RequestMapping(value = "/agent")
 public class AgentController extends BaseController {
 
@@ -45,6 +46,8 @@ public class AgentController extends BaseController {
     @Resource
     private MemRelationshipService memRelationshipService;
 
+
+    @ApiOperation("代理列表")
     @ResponseBody
     @RequestMapping(name = "代理列表", value = "/getList", method = RequestMethod.GET)
     public ResultInfo getList(SysAgentinfoReq req, PageBounds page) {
@@ -61,6 +64,7 @@ public class AgentController extends BaseController {
         return response;
     }
 
+    @ApiOperation("代理新增")
     @ResponseBody
     @RequestMapping(name = "代理新增", value = "/add", method = RequestMethod.POST)
     public ResultInfo doAdd(AgentUsersRequest req) {
@@ -79,6 +83,7 @@ public class AgentController extends BaseController {
         return response;
     }
 
+    @ApiOperation("代理编辑")
     @ResponseBody
     @RequestMapping(name = "代理设置编辑", value = "/edit", method = RequestMethod.POST)
     public ResultInfo doEdt(AgentUsersRequest req) {

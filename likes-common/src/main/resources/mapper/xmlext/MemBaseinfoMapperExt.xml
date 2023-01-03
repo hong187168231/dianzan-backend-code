@@ -280,6 +280,26 @@
         ORDER BY mc.update_time ASC
     </select>
 
+
+    <select id="agentUserList" parameterType="com.likes.common.model.request.UserRequest" resultType="com.likes.common.model.dto.member.MemBaseinfoDO">
+        SELECT mb.*
+        FROM mem_baseinfo mb
+        INNER JOIN mem_certification mc ON mc.accno = mb.accno
+        WHERE mb.is_delete = b'0' AND mc.is_delete = b'0'
+        AND mc.certstatus = 1
+        <if test="username != null  and  username != '' ">
+            and
+            (
+            mb.nickname like CONCAT('%',#{username},'%')
+            or
+            mb.memname like CONCAT('%',#{username},'%')
+            or
+            mb.mobileno like CONCAT('%',#{username},'%')
+            )
+        </if>
+        ORDER BY mc.update_time ASC
+    </select>
+
     <update id="updatePayAgent" parameterType="com.likes.common.mybatis.entity.TraAgentclearing">
     update mem_baseinfo mb
     set mb.goldnum = (mb.goldnum + #{reverseamt,jdbcType=DECIMAL}),

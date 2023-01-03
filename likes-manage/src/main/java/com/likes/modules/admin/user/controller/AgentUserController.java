@@ -10,6 +10,8 @@ import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.model.request.AgentUserRequest;
 import com.likes.modules.admin.user.service.AgentUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import javax.annotation.Resource;
  * 代充人
  */
 @RestController
+@Api(tags = "代理用户管理")
 @RequestMapping(value = "/agent/user")
 public class AgentUserController extends BaseController {
 
@@ -30,8 +33,10 @@ public class AgentUserController extends BaseController {
     @Resource
     private AgentUserService agentUserService;
 
-    @Syslog("代充人新增")
-    @RequestMapping(name = "代充人新增", value = "/create", method = RequestMethod.POST)
+
+    @ApiOperation("代理新增")
+    @Syslog("代理新增")
+    @RequestMapping(name = "代理新增", value = "/create", method = RequestMethod.POST)
     public ResultInfo createUser(AgentUserRequest request) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
@@ -46,22 +51,23 @@ public class AgentUserController extends BaseController {
         return response;
     }
 
-    @RequestMapping(name = "代充人详情", value = "/detail", method = RequestMethod.GET)
-    public ResultInfo userDetail(Long repaymemid) {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        try {
-            response.setData(agentUserService.userDetail(repaymemid));
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            logger.info("/userDetail失败:{}", e.getMessage());
-        }
-        logger.info("/userDetail耗时{}毫秒：", (System.currentTimeMillis() - start));
-        return response;
-    }
+//    @RequestMapping(name = "代理详情", value = "/detail", method = RequestMethod.GET)
+//    public ResultInfo userDetail(Long repaymemid) {
+//        long start = System.currentTimeMillis();
+//        ResultInfo response = ResultInfo.ok();
+//        try {
+//            response.setData(agentUserService.userDetail(repaymemid));
+//        } catch (BusinessException e) {
+//            response.setResultInfo(e.getCode(), e.getMessage());
+//            logger.info("/userDetail失败:{}", e.getMessage());
+//        }
+//        logger.info("/userDetail耗时{}毫秒：", (System.currentTimeMillis() - start));
+//        return response;
+//    }
 
-    @Syslog("代充人编辑")
-    @RequestMapping(name = "代充人编辑", value = "/update", method = RequestMethod.POST)
+    @ApiOperation("代理编辑")
+    @Syslog("代理编辑")
+    @RequestMapping(name = "代理编辑", value = "/update", method = RequestMethod.POST)
     public ResultInfo updateUser(AgentUserRequest request) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
@@ -76,23 +82,9 @@ public class AgentUserController extends BaseController {
         return response;
     }
 
-    @Syslog("代充人启用禁用")
-    @RequestMapping(name = "代充人启用禁用", value = "/status", method = RequestMethod.POST)
-    public ResultInfo UpdateUserStatus(Long repaymemid, Integer status) {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        try {
-            LoginUser loginUser = getLoginAdmin();
-            response.setData(agentUserService.UpdateUserStatus(repaymemid, status, loginUser));
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            logger.info("/UpdateUserStatus失败:{}", e.getMessage());
-        }
-        logger.info("/UpdateUserStatus耗时{}毫秒：", (System.currentTimeMillis() - start));
-        return response;
-    }
 
-    @RequestMapping(name = "代充人管理", value = "/list", method = RequestMethod.GET)
+    @ApiOperation("代理列表")
+    @RequestMapping(name = "代理列表", value = "/list", method = RequestMethod.GET)
     public ResultInfo userList(AgentUserQuery query, PageBounds page) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();

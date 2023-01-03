@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "银行卡接口")
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/users/bank")
+@RequestMapping("/member/bank")
 public class MemBankController extends BaseController {
 
     @Autowired
@@ -37,7 +37,7 @@ public class MemBankController extends BaseController {
 
     @ApiOperation(value = "添加银行卡", httpMethod = "POST")
     @PostMapping(value = "/add")
-    public ResultInfo addBankCard(@RequestBody AddBankCardReq req) {
+    public ResultInfo addBankCard(AddBankCardReq req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -55,9 +55,9 @@ public class MemBankController extends BaseController {
     }
 
 
-    @ApiOperation(value = "修改银行卡", httpMethod = "PUT")
-    @PutMapping(value = "/edit")
-    public ResultInfo editBankCard(@RequestBody AddBankCardReq req) {
+    @ApiOperation(value = "修改银行卡", httpMethod = "POST")
+    @PostMapping(value = "/edit")
+    public ResultInfo editBankCard(AddBankCardReq req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {

@@ -10,6 +10,7 @@ import com.likes.common.model.bank.OrderDTO;
 import com.likes.common.mybatis.entity.MemBank;
 import com.likes.common.mybatis.entity.MemBaseinfo;
 import com.likes.common.mybatis.entity.PayBank;
+import com.likes.common.mybatis.entity.TraApplycash;
 import com.likes.common.mybatis.mapper.MemBankMapper;
 import com.likes.common.mybatis.mapper.PayBankMapper;
 import com.likes.common.service.member.MemBaseinfoService;
@@ -97,10 +98,10 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         orderStatusList.add(GlobalConstants.PAY_CASH_STATUS_PENDING);
         orderStatusList.add(GlobalConstants.PAY_CASH_STATUS_LOCK);
         orderRequest.setOrderStatusList(orderStatusList);
-//        PayTakeCash existOrderInfo = memBankMapper.existCashOrder(orderRequest);
-//        if (existOrderInfo != null) {
-//            throw new BizException("存在提现订单,不能更改银行卡");
-//        }
+        TraApplycash existOrderInfo = memBankMapper.existCashOrder(orderRequest);
+        if (existOrderInfo != null) {
+            throw new BusinessException("存在提现订单,不能更改银行卡");
+        }
         MemBank memBankRelation = new MemBank();
         BeanUtils.copyProperties(req, memBankRelation);
         memBankRelation.setUserId(loginUser.getMemid());

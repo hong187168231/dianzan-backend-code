@@ -3,6 +3,7 @@ package com.likes.modules.agent.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.likes.common.BaseController;
 import com.likes.common.annotation.AllowAccess;
+import com.likes.common.annotation.Syslog;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -11,27 +12,31 @@ import com.likes.common.model.common.ResultInfo;
 import com.likes.common.model.dto.AgentData;
 import com.likes.common.model.dto.AgentMemberDTO;
 import com.likes.common.model.dto.member.FundsResponse;
+import com.likes.common.model.req.JackPotReq;
 import com.likes.common.model.request.AgentMemberOrderReq;
 import com.likes.common.model.request.AgentOrderReq;
 import com.likes.common.model.request.FundsRequest;
 import com.likes.common.model.request.TeamRequest;
 import com.likes.common.model.response.TeamResponse;
+import com.likes.common.mybatis.entity.FinanceBalanceAdjustment;
 import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemRelationshipService;
+import com.likes.common.util.LogUtils;
+import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.agent.service.AgentMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Tag;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -53,6 +58,10 @@ public class AgentMemberController extends BaseController {
 
     @Resource
     private MemBaseinfoService memBaseinfoService;
+
+    @Resource
+    private RedissonClient redissonClient;
+
 
 
     @ApiOperation("下级列表")
@@ -163,6 +172,35 @@ public class AgentMemberController extends BaseController {
         }
         logger.info("/getRecomcode耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
+    }
+
+
+    @Syslog("增加彩金")
+    @PostMapping("/adJackpot")
+    public ResultInfo adJackpot(@RequestBody JackPotReq req) {
+        RLock lock = null;
+        try {
+            lock = redissonClient.getReadWriteLock(RedisLock.FINANCE_MANAGE_BALANCE_ADJACKPOT_ + req.getMemberAccno()).writeLock();
+            boolean bool = lock.tryLock(0, 60, TimeUnit.SECONDS);
+            if (!bool) {
+                throw new BusinessException("操作太频繁，请稍后再试！");
+            }
+            req.setCreateUser(getLoginUserAPP().getAccno());
+            req.setUpdateUser(getLoginUserAPP().getAccno());
+            req.setType(70);
+            agentMemberService.adJackpot(req);
+            return ResultInfo.ok();
+        } catch (BusinessException e) {
+            logger.error("{}/adJackpot,出错信息:{}", getClass().getName(), e.getMessage(), e);
+            return ResultInfo.error(e.getMessage());
+        } catch (Exception e) {
+            logger.error("{}/adJackpot,出错信息:{}", getClass().getName(), e.getMessage(), e);
+            return ResultInfo.error();
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
     }
 
 

@@ -5,10 +5,12 @@ import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.model.dto.AgentData;
 import com.likes.common.model.dto.PromotionDo;
+import com.likes.common.model.req.JackPotReq;
 import com.likes.common.model.request.AgentMemberOrderReq;
 import com.likes.common.model.request.AgentOrderReq;
 import com.likes.common.model.request.FundsRequest;
 import com.likes.common.model.request.TeamRequest;
+import com.likes.common.mybatis.entity.FinanceBalanceAdjustment;
 import com.likes.common.service.BaseService;
 
 import java.util.List;
@@ -33,6 +35,8 @@ public interface AgentMemberService extends BaseService {
     List<PromotionDo> agentTree(String accno);
 
     String getRecomcode(LoginUser loginUser);
+
+     void adJackpot(JackPotReq req);
 
 
 }

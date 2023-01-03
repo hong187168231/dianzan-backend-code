@@ -1,14 +1,9 @@
 package com.likes.modules.admin.agent.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.constant.Constants;
 import com.likes.common.enums.LoginUserTypeEnum;
-import com.likes.common.model.SysRecord;
-import com.likes.common.model.request.AgentUsersEditRequest;
 import com.likes.common.model.request.AgentUsersRequest;
-import com.likes.common.model.request.UsersRequest;
 import com.likes.common.mybatis.entity.*;
-import com.likes.common.mybatis.mapper.SysRecordMapper;
 import com.likes.common.service.BaseServiceImpl;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
@@ -24,13 +19,11 @@ import com.likes.common.service.member.MemLevelService;
 import com.likes.common.service.member.MemLoginService;
 import com.likes.common.service.member.MemRelationshipService;
 import com.likes.common.service.sys.SysBusParamService;
-import com.likes.common.service.sys.SysRecordService;
 import com.likes.common.util.*;
 import com.likes.modules.admin.agent.service.AgentService;
-import com.likes.modules.admin.agent.service.AgentUserService;
+import com.likes.modules.admin.agent.service.AgentUser2Service;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -63,7 +56,7 @@ public class AgentServiceImpl extends BaseServiceImpl implements AgentService {
     @Resource
     private MemLevelService memLevelService;
     @Resource
-    private AgentUserService agentUserService;
+    private AgentUser2Service agentUserService;
 
     @Resource
     private MemRelationshipService memRelationshipService;

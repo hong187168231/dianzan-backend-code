@@ -7,6 +7,7 @@ import com.likes.common.model.bank.OrderDTO;
 import com.likes.common.model.dto.member.MemFamilyReq;
 import com.likes.common.model.dto.member.MemFamilyResponse;
 import com.likes.common.mybatis.entity.MemBank;
+import com.likes.common.mybatis.entity.TraApplycash;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
@@ -33,7 +34,7 @@ public interface MemBankMapper extends BaseMapper<MemBank> {
      */
     Page<MemBankVO> queryList(@Param("req") MemBankPageReq req, RowBounds rowBounds);
 
-//    PayTakeCash existCashOrder(OrderDTO orderDTO);
+    TraApplycash existCashOrder(OrderDTO orderDTO);
 
 
     /**

@@ -1,6 +1,7 @@
 package com.likes.common.service.pay.impl;
 
 import com.likes.common.mybatis.entity.PayMerchant;
+import com.likes.common.mybatis.mapper.PayBankMapper;
 import com.likes.common.mybatis.mapper.PayMerchantMapper;
 import com.likes.common.service.pay.PayMerchantService;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public class PayMerchantServiceImpl implements PayMerchantService {
     private PayMerchantMapper payMerchantMapper;
 
     @Resource
-    private PayBanksMapper payBanksMapper;
+    private PayBankMapper payBanksMapper;
 
     @Override
     public List<PayMerchant> payMerchantList(String merchantCode) {

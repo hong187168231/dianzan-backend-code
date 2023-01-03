@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * @author puff
  * @since 2021-11-06
  */
-@Api(tags = "用户管理-会员银行卡")
+@Api(tags = "会员银行卡")
 @RestController
 @Slf4j
 @RequestMapping("/mem/bank")

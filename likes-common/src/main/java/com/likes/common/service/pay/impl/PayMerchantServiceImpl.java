@@ -33,10 +33,4 @@ public class PayMerchantServiceImpl implements PayMerchantService {
         PayMerchant merchant = payMerchantMapper.selectOne(payMerchant);
         return merchant;
     }
-
-    @Override
-    public List<PayBank> queryBanks() {
-        List<PayBank> merchants = payBanksMapper.selectAll();
-        return merchants;
-    }
 }

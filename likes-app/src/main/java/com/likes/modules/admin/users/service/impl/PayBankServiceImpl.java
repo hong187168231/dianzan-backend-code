@@ -24,7 +24,6 @@ public class PayBankServiceImpl implements PayBankService {
     @Resource
     private PayBankMapper payBankMapper;
 
-
     @Override
     public List<PayBankVO> bankList() {
         PayBank payBank = new PayBank();

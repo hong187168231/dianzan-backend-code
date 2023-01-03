@@ -105,12 +105,12 @@ public class MemBankController extends BaseController {
             response.setData(payBankService.bankList());
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
-            log.error("{}.myLevel 失败:{}", getClass().getName(), e.getMessage(), e);
+            log.error("{}.payBankList 失败:{}", getClass().getName(), e.getMessage(), e);
         } catch (Exception e) {
-            response = ResultInfo.error("获取我的等级出错");
-            log.error("{}.myLevel 出错:{}", getClass().getName(), e.getMessage(), e);
+            response = ResultInfo.error("获取会员可绑定银行列表出错");
+            log.error("{}.payBankList 出错:{}", getClass().getName(), e.getMessage(), e);
         }
-        log.info("/myLevel耗时{}毫秒", (System.currentTimeMillis() - start));
+        log.info("/payBankList耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
     }
 

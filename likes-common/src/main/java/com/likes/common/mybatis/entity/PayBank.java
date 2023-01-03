@@ -8,14 +8,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Date;
 
 
 @Data
 @Table(name = "`pay_bank`")
 public class PayBank {
-    /**
-     * udun 订单id
-     */
+
     @Id
     @Column(name = "`bank_id`")
     @GeneratedValue(generator = "JDBC")
@@ -28,10 +27,10 @@ public class PayBank {
     @ApiModelProperty(value = "银行名称")
     private String bankName;
 
-    @ApiModelProperty(value = "图标地址")
-    private String iconUrl;
-
     @ApiModelProperty(value = "银行名称")
     private Integer status;
+
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
 }

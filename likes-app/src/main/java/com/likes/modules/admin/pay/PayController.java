@@ -69,10 +69,6 @@ public class PayController extends BaseController {
         return response;
     }
 
-
-
-
-
     @RequestMapping(name = "获取币种类型", value = "/coinList", method = RequestMethod.POST)
     public ResultInfo coinList( ) {
         long start = System.currentTimeMillis();
@@ -85,23 +81,6 @@ public class PayController extends BaseController {
             logger.error("{}.moneyAddress 失败:{}", getClass().getName(), e.getMessage(), e);
         } catch (Exception e) {
             response = ResultInfo.error("获取钱包地址出错");
-            logger.error("{}.moneyAddress 出错:{}", getClass().getName(), e.getMessage(), e);
-        }
-        logger.info("/moneyAddress耗时{}毫秒", (System.currentTimeMillis() - start));
-        return response;
-    }
-
-    @RequestMapping(name = "查询银行列表", value = "/queryBanks", method = RequestMethod.GET)
-    public ResultInfo queryBanks() {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        try {
-            response.setData(payMerchantService.queryBanks());
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            logger.error("{}.moneyAddress 失败:{}", getClass().getName(), e.getMessage(), e);
-        } catch (Exception e) {
-            response = ResultInfo.error("查询银行列表");
             logger.error("{}.moneyAddress 出错:{}", getClass().getName(), e.getMessage(), e);
         }
         logger.info("/moneyAddress耗时{}毫秒", (System.currentTimeMillis() - start));

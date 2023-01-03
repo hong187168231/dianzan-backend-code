@@ -12,5 +12,4 @@ public interface PayMerchantService {
 
     PayMerchant getMerchant(String mCode);
 
-    public List<PayBank> queryBanks();
 }

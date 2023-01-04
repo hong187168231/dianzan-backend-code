@@ -132,10 +132,6 @@ public class AgentUserServiceImpl implements AgentUserService {
         }
         // 检验参数
 //        this.validateParams(request);
-        MemRepayuser oldMemRepayuser = memRepayuserMapper.selectByPrimaryKey(request.getMemId());
-        if (oldMemRepayuser == null) {
-            throw new BusinessException(StatusCode.ACCOUNT_EMPTY.getCode(), "代充人不存在");
-        }
         AgentUser agentUser = new AgentUser();
         agentUser.setUpdateTime(new Date());
         agentUser.setUpdateUser(loginUser.getAcclogin());

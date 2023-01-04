@@ -72,6 +72,7 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
     private MemBaseinfoService memBaseinfoService;
     @Resource
     private MemBaseinfoMapper memBaseinfoMapper;
+    @Resource
     private TraOrderinfomService traOrderinfomMapperService;
     @Resource
     private MemBaseinfoWriteService memBaseinfoWriteService;

@@ -362,6 +362,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             throw new BusinessException(StatusCode.LIVE_ERROR_105.getCode(), "用户不存在");
         }
 
+
         // 提现申请
         TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
         if (traApplycash == null) {
@@ -387,28 +388,17 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         dataMap.put("goldnum", traOrderinfom.getSumamt().setScale(3, BigDecimal.ROUND_HALF_DOWN));
 
         Long bankaccid = traApplycash.getBankaccid();
-        MemBankaccount o = memBankaccountMapper.selectByPrimaryKey(bankaccid);
+        MemBank o = iMemBankService.selectByMemBankId(bankaccid);
         if (o != null) {
-            dataMap.put("accountname", o.getAccountname());
-            dataMap.put("accountno", o.getAccountno());
-            dataMap.put("bankname", o.getBankname());
-            dataMap.put("bankaddress", o.getBankaddress());
-            // 账号类型 1支付宝 2微信 3银联
-            dataMap.put("accounttypename", MemBankAccountTypeEnum.valueOf(o.getAccounttype()).getName());
-            if (o.getAccounttype().equals(MemBankAccountTypeEnum.NETBANK.getValue())) {
-                dataMap.put("accounttypename", "银联");
-                SysBusparameter sysBusparameter = sysBusParamService.selectByBusparamcode(o.getBankname());
-                if (sysBusparameter != null) {
-                    dataMap.put("banknamealias", sysBusparameter.getBusparamname());
-                }
-            }
+            dataMap.put("email", zhubo.getEmail());
+            dataMap.put("bankCardNo", o.getBankCardNo());
+            dataMap.put("bankName", o.getBankName());
+            dataMap.put("userName", o.getUserName());
         } else {
-            dataMap.put("accountname", null);
-            dataMap.put("accountno", null);
-            dataMap.put("bankaddress", null);
-            dataMap.put("bankname", null);
-            dataMap.put("banknamealias", null);
-            dataMap.put("accounttypename", null);
+            dataMap.put("email",null);
+            dataMap.put("bankCardNo", null);
+            dataMap.put("bankName", null);
+            dataMap.put("userName", null);
         }
 
         return dataMap;

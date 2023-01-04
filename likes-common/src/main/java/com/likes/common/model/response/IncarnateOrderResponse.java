@@ -34,6 +34,8 @@ public class IncarnateOrderResponse {
     private String bankCardNo;
     private String bankCode;
     private String banName;
+
+    private String userName;
     private BigDecimal realamt;
     private Long paysetid;
     private BigDecimal sumamt;

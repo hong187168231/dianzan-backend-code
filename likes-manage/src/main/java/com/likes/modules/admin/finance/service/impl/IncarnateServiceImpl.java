@@ -459,6 +459,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 if(ObjectUtil.isNotNull(memBank)){
                     o.setBankCardNo(memBank.getBankCardNo());
                     o.setBankname(memBank.getBankName());
+                    o.setUserName(memBank.getUserName());
                 }
                 if (Constants.ORDER_ORD05.equals(o.getOrderstatus())) {
                     o.setUpdateUser(null);

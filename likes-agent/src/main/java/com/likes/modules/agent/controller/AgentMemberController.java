@@ -177,7 +177,7 @@ public class AgentMemberController extends BaseController {
 
     @ApiOperation("增加彩金")
     @PostMapping("/adJackpot")
-    public ResultInfo adJackpot(@RequestBody JackPotReq req) {
+    public ResultInfo adJackpot(JackPotReq req) {
         RLock lock = null;
         try {
             LoginUser loginUserAPP = getLoginUserAPP();

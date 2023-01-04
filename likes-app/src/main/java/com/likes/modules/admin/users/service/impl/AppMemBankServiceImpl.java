@@ -76,6 +76,10 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         }
 
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
+        MemBank bankAddress = findBankCardNo(req.getBankCardNo());
+        if (bankAddress != null && memBaseinfo.getLevel() < 5) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+        }
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){
 //            throw new BizException("请先完成实名认证！");
 //        }
@@ -108,7 +112,11 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         if (!ids.contains(req.getMemBankId())) {
             throw new BusinessException("请输入自己的银行卡!");
         }
-        MemBaseinfo memBaseinfo = memBaseinfoService.selectByPrimaryKey(loginUser.getMemid());
+        MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
+        MemBank bankAddress = findBankCardNo(req.getBankCardNo());
+        if (bankAddress != null && memBaseinfo.getLevel() < 5) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+        }
 //        if(!req.getUserName().equals(memBaseinfo.getRealName())){
 //            throw new BusinessException("银行卡户名和认证户名不一致!");
 //        }
@@ -161,6 +169,18 @@ public class AppMemBankServiceImpl implements AppMemBankService {
     public MemBank findMemBankByAccno(String accno) {
         MemBank memBankParam = new MemBank();
         memBankParam.setAccno(accno);
+        return memBankMapper.selectOne(memBankParam);
+    }
+
+    public MemBank findBankCardNo(String bankCardNo) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setBankCardNo(bankCardNo);
+        return memBankMapper.selectOne(memBankParam);
+    }
+
+    public MemBank findByMemBankId(Long memBankId) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setMemBankId(memBankId);
         return memBankMapper.selectOne(memBankParam);
     }
 

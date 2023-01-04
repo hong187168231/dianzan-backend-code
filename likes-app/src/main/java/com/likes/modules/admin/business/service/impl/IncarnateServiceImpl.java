@@ -585,7 +585,7 @@ public class IncarnateServiceImpl implements IncarnateService {
     private Long doCreateTraApplycashV2(IncarnateRequest req, LoginUser loginUserAPP, Long orderid, double sumamt, Long paysetid, Double xingzhenfei, Double haixudamaliang) {
         // Integer jineInteger = req.getApycamt().intValue();
         TraApplycash traApplycash = new TraApplycash();
-        traApplycash.setBankaccid(req.getBankaccid());
+        traApplycash.setBankaccid(req.getMemBankId());
         traApplycash.setOrderid(orderid);
         traApplycash.setAccno(loginUserAPP.getAccno());
         traApplycash.setApycdate(new Date());

@@ -27,5 +27,7 @@ public interface AppMemBankService {
 
     MemBank findMemBankByAccno(String accno);
 
+    MemBank findByMemBankId(Long memBankId);
+
 
 }

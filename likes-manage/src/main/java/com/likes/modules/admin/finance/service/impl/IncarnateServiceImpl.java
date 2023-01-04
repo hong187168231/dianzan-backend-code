@@ -317,6 +317,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         MemBaseinfo zhubo = memBaseinfoService.getUserByAccno(traOrderinfom.getAccno());
         if (zhubo != null) {
             dataMap.put("nickname", zhubo.getNickname());
+            dataMap.put("email", zhubo.getEmail());
         } else {
             dataMap.put("nickname", null);
         }
@@ -327,28 +328,15 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         }
 
         Long bankaccid = traApplycash.getBankaccid();
-        MemBankaccount o = memBankaccountMapper.selectByPrimaryKey(bankaccid);
+        MemBank o = iMemBankService.selectByMemBankId(bankaccid);
         if (o != null) {
-            dataMap.put("accountname", o.getAccountname());
-            dataMap.put("accountno", o.getAccountno());
-            dataMap.put("bankname", o.getBankname());
-            dataMap.put("bankaddress", o.getBankaddress());
-            // 账号类型 1支付宝 2微信 3银联
-            dataMap.put("accounttypename", MemBankAccountTypeEnum.valueOf(o.getAccounttype()).getName());
-            if (o.getAccounttype().equals(MemBankAccountTypeEnum.NETBANK.getValue())) {
-                dataMap.put("accounttypename", "银联");
-                SysBusparameter sysBusparameter = sysBusParamService.selectByBusparamcode(o.getBankname());
-                if (sysBusparameter != null) {
-                    dataMap.put("banknamealias", sysBusparameter.getBusparamname());
-                }
-            }
+            dataMap.put("bankCardNo", o.getBankCardNo());
+            dataMap.put("bankName", o.getBankName());
+            dataMap.put("userName", o.getUserName());
         } else {
-            dataMap.put("accountname", null);
-            dataMap.put("accountno", null);
-            dataMap.put("bankaddress", null);
-            dataMap.put("bankname", null);
-            dataMap.put("banknamealias", null);
-            dataMap.put("accounttypename", null);
+            dataMap.put("bankCardNo", null);
+            dataMap.put("bankName", null);
+            dataMap.put("userName", null);
         }
 
         return dataMap;
@@ -494,7 +482,6 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         for (IncarnateOrderResponse incarnateOrderResponse : list) {
             SysBusparameter w_audit_amout = this.sysBusParamService.selectByBusparamcode("w_audit_amout");
             if (new BigDecimal(String.valueOf(incarnateOrderResponse.getSumamt())).intValue() >= Integer.parseInt(w_audit_amout.getBusparamname())) {
-
                 Integer businessIdNum = udunRechargeMapper.countBusinessId(incarnateOrderResponse.getOrderno());
                 if (businessIdNum < 1) {
                     incarnateOrderResponse.setShowThirdButton(true);

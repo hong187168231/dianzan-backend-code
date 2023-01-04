@@ -368,7 +368,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         if (inviteUser.getRecomcode().length()>6 &&  inviteUser.getRecomcode().contains("px")) {
             memRelationship.setHeadAccno(inviteUser.getAccno());
         }
-        if (StringUtils.isNotBlank(superMem.getHeadAccno())) {
+        if (StringUtils.isNotBlank(superMem.getHeadAccno()) && superMem.getHeadAccno().equals("root")) {
             memRelationship.setHeadAccno(superMem.getHeadAccno());
         }
         if (ObjectUtil.isNotNull(superMem)) {

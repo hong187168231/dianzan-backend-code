@@ -43,6 +43,7 @@ import com.likes.common.util.redis.RedisLock;
 import com.likes.common.service.common.CommonService;
 import com.likes.modules.admin.finance.service.IncarnateService;
 import com.github.pagehelper.Page;
+import com.likes.modules.admin.user.service.IMemBankService;
 import com.uduncloud.sdk.client.UdunClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -108,6 +109,8 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     SysPayaccountMapper sysPayaccountMapper;
     @Resource
     private PayMerchantService payMerchantService;
+    @Resource
+    private IMemBankService iMemBankService;
 
   /*  @Override
     public PageResult incarnateOrderList(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin) {
@@ -457,13 +460,18 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             req.setEndDate(req.getEndDate() + " 23:59:59");
         }
         BigDecimal realamt = traOrderinfomMapperService.incarnateOrderActualTotal(req);
-        if(ObjectUtil.isNotNull(req.getLevelSeq())){
+        if (ObjectUtil.isNotNull(req.getLevelSeq())) {
             MemLevelConfig levelConfig = memLevelConfigService.getMemLevelConfigForConfigId(req.getLevelSeq());
             req.setLevelSeq(levelConfig.getLevelSeq().longValue());
         }
         Page<IncarnateOrderResponse> list = traOrderinfomMapperService.incarnateOrderListBySuper(req, page.toRowBounds());
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(o -> {
+                MemBank memBank = iMemBankService.selectByMemBankId(o.getMemBankId());
+                if(ObjectUtil.isNotNull(memBank)){
+                    o.setBankCardNo(memBank.getBankCardNo());
+                    o.setBankname(memBank.getBankName());
+                }
                 if (Constants.ORDER_ORD05.equals(o.getOrderstatus())) {
                     o.setUpdateUser(null);
                 }
@@ -488,10 +496,10 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             if (new BigDecimal(String.valueOf(incarnateOrderResponse.getSumamt())).intValue() >= Integer.parseInt(w_audit_amout.getBusparamname())) {
 
                 Integer businessIdNum = udunRechargeMapper.countBusinessId(incarnateOrderResponse.getOrderno());
-                if (businessIdNum <1) {
+                if (businessIdNum < 1) {
                     incarnateOrderResponse.setShowThirdButton(true);
                 }
-                }
+            }
         }
         RedisBusinessUtil.addIncarnateOrderListCahce(list, req, page.toRowBounds());
         return incarnateOrderPageToMap(page, list, realamt);
@@ -552,7 +560,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         if (traApplycash == null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_104.getCode(), "不存在提现申请");
         }
-        boolean flag = submitWithdraw(req, loginAdmin,traOrderinfom);
+        boolean flag = submitWithdraw(req, loginAdmin, traOrderinfom);
         if (!flag) {
             throw new RuntimeException("发起提现失败");
         }
@@ -561,7 +569,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
 
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean submitWithdraw(IncarnateOrderReq req, LoginUser loginAdmin,TraOrderinfom traOrderinfom) {
+    public boolean submitWithdraw(IncarnateOrderReq req, LoginUser loginAdmin, TraOrderinfom traOrderinfom) {
 
         // 提现申请
         TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());

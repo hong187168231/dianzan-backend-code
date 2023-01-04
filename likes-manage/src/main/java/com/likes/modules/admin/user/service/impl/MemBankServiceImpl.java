@@ -47,5 +47,12 @@ public class MemBankServiceImpl implements IMemBankService {
         return memBankMapper.updateByPrimaryKeySelective(memBank) > 0;
     }
 
+    @Override
+    public MemBank selectByMemBankId(Long memBankId) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setMemBankId(memBankId);
+        return memBankMapper.selectOne(memBankParam);
+    }
+
 
 }

@@ -1631,6 +1631,7 @@
         tr.apycid,
         tr.damaliang,
         A.payimg as moneyAddress,
+        A.mem_bank_id as memBankId,
         tr.xingzhengfei,
         mbase.email AS email,
         mbase.level as memLevel

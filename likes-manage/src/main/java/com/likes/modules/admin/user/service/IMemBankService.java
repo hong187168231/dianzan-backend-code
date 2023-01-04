@@ -6,6 +6,7 @@ import com.likes.common.model.bank.MemBankSwitchReq;
 import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
+import com.likes.common.mybatis.entity.MemBank;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -23,5 +24,7 @@ public interface IMemBankService {
     boolean switchStatus(MemBankSwitchReq req);
 
     boolean edit(Long memBankId, String bankCardNo);
+
+    MemBank  selectByMemBankId(Long memBankId);
 
 }

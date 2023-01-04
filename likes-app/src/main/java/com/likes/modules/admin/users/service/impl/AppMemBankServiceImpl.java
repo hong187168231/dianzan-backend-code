@@ -10,6 +10,7 @@ import com.likes.common.model.bank.AddBankCardReq;
 import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.bank.OrderDTO;
 import com.likes.common.model.dto.order.OrderRequest;
+import com.likes.common.model.response.level.MemberLevelResponse;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.MemBankMapper;
 import com.likes.common.mybatis.mapper.PayBankMapper;

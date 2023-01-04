@@ -96,7 +96,7 @@ public class AgentUserServiceImpl implements AgentUserService {
         // 用户基本信息
         memBaseinfoService.insertSelective(newUser);
         // 设置注册用户的邀请码
-        newUser.setRecomcode(InvitationCodeGnerateUtil.generateInvitationCodeTwo(newUser));
+        newUser.setRecomcode("px"+InvitationCodeGnerateUtil.generateInvitationCodeTwo(newUser));
         memBaseinfoService.updateByPrimaryKeySelective(newUser);
 
         // 登陆用户

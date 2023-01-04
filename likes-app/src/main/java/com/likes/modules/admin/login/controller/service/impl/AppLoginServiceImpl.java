@@ -365,8 +365,8 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         memRelationship.setAccno(newUser.getAccno());
         memRelationship.setCreateUser(newUser.getAccno());
         memRelationship.setUpdateUser(newUser.getAccno());
-        if (inviteUser.getRecomcode().equals("86yl74")) {
-            memRelationship.setHeadAccno(newUser.getAccno());
+        if (inviteUser.getRecomcode().length()>6 &&  inviteUser.getRecomcode().contains("px")) {
+            memRelationship.setHeadAccno(inviteUser.getAccno());
         }
         if (StringUtils.isNotBlank(superMem.getHeadAccno())) {
             memRelationship.setHeadAccno(superMem.getHeadAccno());

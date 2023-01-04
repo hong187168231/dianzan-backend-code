@@ -458,8 +458,9 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 MemBank memBank = iMemBankService.selectByMemBankId(o.getMemBankId());
                 if(ObjectUtil.isNotNull(memBank)){
                     o.setBankCardNo(memBank.getBankCardNo());
-                    o.setBankname(memBank.getBankName());
+                    o.setBankName(memBank.getBankName());
                     o.setUserName(memBank.getUserName());
+                    o.setBankCode(memBank.getBankCode());
                 }
                 if (Constants.ORDER_ORD05.equals(o.getOrderstatus())) {
                     o.setUpdateUser(null);
@@ -471,12 +472,6 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                     o.setAccounttypename(MemBankAccountTypeEnum.valueOf(o.getAccounttype()).getName());
                     String name = o.getAccountno().substring(0, 3) + "***" + o.getAccountno().substring(o.getAccountno().length() - 4);
                     o.setAccountno(name);
-                    if (StringUtils.isNotBlank(o.getBankname())) {
-                        SysBusparameter sysBusparameter = sysBusParamService.selectByBusparamcode(o.getBankname());
-                        if (sysBusparameter != null) {
-                            o.setBanknamealias(sysBusparameter.getBusparamname());
-                        }
-                    }
                 }
             });
         }

@@ -241,13 +241,13 @@
     <insert id="insertIncarateOrder" keyColumn="orderid" keyProperty="orderid"
             parameterType="com.likes.common.mybatis.entity.TraOrderinfom"
             useGeneratedKeys="true">
-        insert into tra_orderinfom (mealid, ordertype,
+        insert into tra_orderinfom (mealid,mem_bank_id, ordertype,
                                     orderno, accno, paycode,
                                     orderdate, expiredate, paytype,
                                     oldamt, sumamt, realamt,
                                     isinvoice, orderstatus, accountstatus,payimg, paywechat, ordernote,
                                     create_user, update_user,
-                                    source) value ( #{mealid,jdbcType=BIGINT}, #{ordertype,jdbcType=DECIMAL},
+                                    source) value ( #{mealid,jdbcType=BIGINT}, #{memBankId,jdbcType=BIGINT},#{ordertype,jdbcType=DECIMAL},
             #{orderno,jdbcType=VARCHAR},
             #{accno,jdbcType=VARCHAR}, #{paycode,jdbcType=VARCHAR},
             #{orderdate,jdbcType=TIMESTAMP}, #{expiredate,jdbcType=TIMESTAMP},

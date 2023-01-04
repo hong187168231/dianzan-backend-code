@@ -136,7 +136,9 @@ public class AppMemBankServiceImpl implements AppMemBankService {
 //        memBankRelation.setMobile(loginUser.getMobile());
         memBankRelation.setMemBankId(req.getMemBankId());
         memBankRelation.setBankId(payBank.getBankId());
-        return memBankMapper.updateByPrimaryKey(memBankRelation) > 0;
+        memBankRelation.setBankCode(payBank.getBankCode());
+        memBankRelation.setBankName(payBank.getBankName());
+        return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
     }
 
     @Override

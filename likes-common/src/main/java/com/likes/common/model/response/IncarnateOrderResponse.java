@@ -22,7 +22,7 @@ public class IncarnateOrderResponse {
     private String accounttypename;
     private String accountno;
     private String accountname;
-    private String bankname;
+
     private String banknamealias;
     private String bankaddress;
     private Long memBankId;
@@ -33,7 +33,7 @@ public class IncarnateOrderResponse {
     private String moneyAddress;
     private String bankCardNo;
     private String bankCode;
-    private String banName;
+    private String bankName;
 
     private String userName;
     private BigDecimal realamt;

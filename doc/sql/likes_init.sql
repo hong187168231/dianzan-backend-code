@@ -1,72 +1,5 @@
-/*
-Navicat MySQL Data Transfer
-
-Source Server         : likes
-Source Server Version : 80024
-Source Host           : 45.207.49.136:3306
-Source Database       : likes
-
-Target Server Type    : MYSQL
-Target Server Version : 80024
-File Encoding         : 65001
-
-Date: 2023-01-03 20:14:05
-*/
 
 SET FOREIGN_KEY_CHECKS=0;
-
--- ----------------------------
--- Table structure for ad_basic
--- ----------------------------
-DROP TABLE IF EXISTS `ad_basic`;
-CREATE TABLE `ad_basic` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '标题',
-  `start_time` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '有效开始时间',
-  `end_time` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '有效结束时间',
-  `hide` int NOT NULL DEFAULT '1' COMMENT '自动隐藏：0，否；1，是',
-  `close` int NOT NULL DEFAULT '0' COMMENT '是否关闭：0，否；1，是',
-  `sort` int NOT NULL COMMENT '排序值',
-  `publish` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '发布系统',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='广告基本信息';
-
--- ----------------------------
--- Table structure for ad_photo
--- ----------------------------
-DROP TABLE IF EXISTS `ad_photo`;
-CREATE TABLE `ad_photo` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `type` int NOT NULL COMMENT '系统类型：1--android,2--ios,3--web',
-  `site_id` int NOT NULL COMMENT '广告位置id',
-  `basic_id` int NOT NULL COMMENT '广告基础信息表id',
-  `photo` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '图片路径',
-  `url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '跳转地址',
-  `target_id` int DEFAULT NULL COMMENT '跳转ID',
-  `target_type` int DEFAULT NULL COMMENT '-1，使用原有的跳转url，0，前端原生界面跳转，1,跳转ID活动',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='广告图片信息';
-
--- ----------------------------
--- Table structure for ad_site
--- ----------------------------
-DROP TABLE IF EXISTS `ad_site`;
-CREATE TABLE `ad_site` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
-  `size` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '规格',
-  `type` int NOT NULL COMMENT '系统类型：1android,2ios,3web',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='广告位置';
 
 -- ----------------------------
 -- Table structure for agent_user
@@ -83,281 +16,6 @@ CREATE TABLE `agent_user` (
   PRIMARY KEY (`agent_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ----------------------------
--- Table structure for app
--- ----------------------------
-DROP TABLE IF EXISTS `app`;
-CREATE TABLE `app` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `share_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '分享网址',
-  `two_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '二维码',
-  `android_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '安卓下载包',
-  `ios_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'IOS下载包',
-  `about_us` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '关于我们',
-  `service_contract` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '服务协议',
-  `service_qq1` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '客服qq1',
-  `service_qq2` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '客服qq2',
-  `h5_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'h5地址',
-  `app_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'app-api地址(运维管理)',
-  `web_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'web-api地址(运维管理)',
-  `fp_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '封盘api(运维管理)',
-  `chat_websocket` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '聊天websocket(运维管理)',
-  `sg_websocket` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '开奖websocket(运维管理)',
-  `direct_kj` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '直播开奖(运维管理)',
-  `file_upload` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '文件上传(运维管理)',
-  `h5url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'h5地址(运维管理)',
-  `download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '下载地址(运维管理)',
-  `ios_download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'ios下载地址(运维管理)',
-  `android_download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'android下载地址(运维管理)',
-  `pay_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '支付地址(运维管理)',
-  `bbsweb_interface` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'bbsweb接口(运维管理)',
-  `bbsapp_interface` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'bbsapp接口(运维管理)',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='APP管理';
-
--- ----------------------------
--- Table structure for app_personal_setting
--- ----------------------------
-DROP TABLE IF EXISTS `app_personal_setting`;
-CREATE TABLE `app_personal_setting` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `setting_id` int NOT NULL COMMENT 'app_setting_type表id',
-  `on_off` int DEFAULT '1' COMMENT '开关：1打开0关闭',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_p_s` (`user_id`,`setting_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='app个人设置';
-
--- ----------------------------
--- Table structure for app_setting_type
--- ----------------------------
-DROP TABLE IF EXISTS `app_setting_type`;
-CREATE TABLE `app_setting_type` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `parent_id` int DEFAULT '0' COMMENT '父id(存在子设置时用)',
-  `classify` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '归类',
-  `tag` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '标识',
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
-  `sort` int NOT NULL DEFAULT '1' COMMENT '排序',
-  `operater` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '操作管理员',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='app个人设置类型';
-
--- ----------------------------
--- Table structure for app_vest_bag
--- ----------------------------
-DROP TABLE IF EXISTS `app_vest_bag`;
-CREATE TABLE `app_vest_bag` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `share_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '分享网址',
-  `two_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '二维码',
-  `android_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '安卓下载包',
-  `ios_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'IOS下载包',
-  `about_us` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '关于我们',
-  `service_contract` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '服务协议',
-  `service_qq1` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '客服qq1',
-  `service_qq2` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '客服qq2',
-  `h5_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'h5地址',
-  `app_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'app-api地址(运维管理)',
-  `web_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'web-api地址(运维管理)',
-  `fp_api` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '封盘api(运维管理)',
-  `chat_websocket` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '聊天websocket(运维管理)',
-  `sg_websocket` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '开奖websocket(运维管理)',
-  `direct_kj` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '直播开奖(运维管理)',
-  `file_upload` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '文件上传(运维管理)',
-  `h5url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'h5地址(运维管理)',
-  `download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '下载地址(运维管理)',
-  `ios_download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'ios下载地址(运维管理)',
-  `android_download_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'android下载地址(运维管理)',
-  `pay_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '支付地址(运维管理)',
-  `bbsweb_interface` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'bbsweb接口(运维管理)',
-  `bbsapp_interface` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'bbsapp接口(运维管理)',
-  `chat_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '聊天服务器地址(运维管理)',
-  `chat_type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '聊天平台类型(运维管理)',
-  `plat_form` int DEFAULT NULL COMMENT '平台类型',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='ios马甲包所需要的所有平台信息';
-
--- ----------------------------
--- Table structure for bas_anchorroom
--- ----------------------------
-DROP TABLE IF EXISTS `bas_anchorroom`;
-CREATE TABLE `bas_anchorroom` (
-  `roomid` bigint NOT NULL AUTO_INCREMENT COMMENT '主播房间',
-  `lotkindid` bigint DEFAULT NULL COMMENT '彩种id',
-  `channelid` bigint DEFAULT NULL COMMENT '频道id',
-  `accno` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '主播会员标识号',
-  `roomname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '房间名称',
-  `roomtheme` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '房间主题',
-  `cover` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '房间封面',
-  `manageaccno` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '房间管理员accno',
-  `praisenum` bigint DEFAULT NULL COMMENT '点赞量',
-  `sharenum` bigint DEFAULT NULL COMMENT '分享量',
-  `viewnum` bigint DEFAULT NULL COMMENT '浏览量',
-  `onlinenum` bigint DEFAULT NULL COMMENT '直播在线人数',
-  `roomstatus` decimal(1,0) DEFAULT NULL COMMENT '房间状态 0在線 9離線',
-  `toolstatus` decimal(1,0) DEFAULT NULL COMMENT '情趣用品状态 0 在线 9下线',
-  `istalk` decimal(1,0) DEFAULT NULL COMMENT '开启聊天室 0开启聊天 9关闭聊天',
-  `clientid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '客户端id',
-  `streamkey` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '串流秘钥',
-  `onlinedate` datetime DEFAULT NULL COMMENT '最近一次直播开始时间',
-  `offlinedate` datetime DEFAULT NULL COMMENT '最近一次直播结束时间',
-  `server_source` int DEFAULT NULL COMMENT '服务器来源 0腾讯',
-  `client_address` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '房间地址',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '最后修改人',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `client_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '直播ip',
-  PRIMARY KEY (`roomid`),
-  KEY `fk_reference_39` (`channelid`) USING BTREE,
-  KEY `fk_reference_40` (`lotkindid`) USING BTREE,
-  KEY `idx_s` (`streamkey`) USING BTREE,
-  KEY `idx_a_s` (`accno`,`streamkey`) USING BTREE,
-  KEY `idx_a_t` (`accno`,`istalk`) USING BTREE,
-  KEY `idx_a_r_c` (`accno`,`roomstatus`,`clientid`) USING BTREE,
-  KEY `idx_a_r_t_t` (`accno`,`roomstatus`,`toolstatus`,`istalk`) USING BTREE,
-  KEY `idx_r_d` (`roomstatus`,`is_delete`) USING BTREE,
-  KEY `idx_d` (`is_delete`) USING BTREE,
-  KEY `idx_d_r` (`is_delete`,`roomid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='主播房间';
-
--- ----------------------------
--- Table structure for bas_gift
--- ----------------------------
-DROP TABLE IF EXISTS `bas_gift`;
-CREATE TABLE `bas_gift` (
-  `giftid` bigint NOT NULL AUTO_INCREMENT COMMENT '礼物id',
-  `giftname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '礼物名称',
-  `gifttype` decimal(1,0) DEFAULT NULL COMMENT '礼物类型 0普通礼物 1大礼物',
-  `giftdesc` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `gold` decimal(16,2) DEFAULT NULL COMMENT '价值乐币数',
-  `gifticon` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '礼物图标id',
-  `sortby` int DEFAULT NULL COMMENT '排序权重',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '最后修改人',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`giftid`),
-  KEY `idx_name` (`giftname`,`is_delete`,`create_time`) USING BTREE,
-  KEY `idx_type` (`gifttype`,`is_delete`,`create_time`) USING BTREE,
-  KEY `idx_delete` (`is_delete`,`create_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='礼物管理';
-
--- ----------------------------
--- Table structure for bas_reward
--- ----------------------------
-DROP TABLE IF EXISTS `bas_reward`;
-CREATE TABLE `bas_reward` (
-  `rewardid` bigint NOT NULL AUTO_INCREMENT COMMENT '打赏id',
-  `giftid` bigint DEFAULT NULL COMMENT '礼物id',
-  `roomid` bigint DEFAULT NULL COMMENT '主播房间',
-  `nickname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '呢称',
-  `accno` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '会员标识号',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  PRIMARY KEY (`rewardid`),
-  KEY `fk_reference_35` (`giftid`) USING BTREE,
-  KEY `fk_reference_36` (`roomid`,`accno`,`is_delete`) USING BTREE,
-  KEY `idx_r_name` (`roomid`,`nickname`,`is_delete`) USING BTREE,
-  KEY `idx_accno` (`accno`,`roomid`,`is_delete`) USING BTREE,
-  KEY `idx_nickname` (`nickname`,`roomid`,`is_delete`) USING BTREE,
-  CONSTRAINT `bas_reward_ibfk_1` FOREIGN KEY (`giftid`) REFERENCES `bas_gift` (`giftid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `bas_reward_ibfk_2` FOREIGN KEY (`roomid`) REFERENCES `bas_anchorroom` (`roomid`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员打赏记录';
-
--- ----------------------------
--- Table structure for bas_video
--- ----------------------------
-DROP TABLE IF EXISTS `bas_video`;
-CREATE TABLE `bas_video` (
-  `videoid` bigint NOT NULL AUTO_INCREMENT COMMENT '视频id',
-  `accno` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '会员标识号',
-  `videoname` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频名称',
-  `videoinfo` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频简介',
-  `videoimg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频封面',
-  `videourl` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频url',
-  `videosize` decimal(6,2) DEFAULT NULL COMMENT '视频大小 單位M',
-  `viewnum` bigint DEFAULT NULL COMMENT '收藏量',
-  `praisenum` bigint DEFAULT NULL COMMENT '点赞量',
-  `sharenum` bigint DEFAULT NULL COMMENT '分享量',
-  `seenum` bigint DEFAULT NULL COMMENT '浏览数量',
-  `sortby` int DEFAULT NULL COMMENT '排序权重',
-  `checkstatus` decimal(1,0) DEFAULT NULL COMMENT '审核状态 1未审核  8审核通过 9审核未通过',
-  `checknote` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '审核说明',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '最后修改人',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`videoid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='点播视频';
-
--- ----------------------------
--- Table structure for batch_log
--- ----------------------------
-DROP TABLE IF EXISTS `batch_log`;
-CREATE TABLE `batch_log` (
-  `accno` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`accno`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
-
--- ----------------------------
--- Table structure for bd_bannerpicinfo
--- ----------------------------
-DROP TABLE IF EXISTS `bd_bannerpicinfo`;
-CREATE TABLE `bd_bannerpicinfo` (
-  `bannerpicid` bigint NOT NULL AUTO_INCREMENT COMMENT '广告详情id',
-  `bseatid` bigint DEFAULT NULL COMMENT '位置id',
-  `investorsid` bigint DEFAULT NULL COMMENT '冠名商家id',
-  `linktype` int DEFAULT NULL COMMENT '链接跳转类型 1 文本,2 图片,3链接,4 参数',
-  `bndispic` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '广告图片id',
-  `bndisptxt` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '广告显示文字',
-  `expirydates` datetime DEFAULT NULL COMMENT '有效期起',
-  `expirydatee` datetime DEFAULT NULL COMMENT '有效期止',
-  `bndlink` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '链接',
-  `specparame` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '特殊参数',
-  `sortby` int DEFAULT NULL COMMENT '排序权重',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '最后修改人',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '标题',
-  `path_url` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '图片路径',
-  `within_link` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内部链接',
-  PRIMARY KEY (`bannerpicid`),
-  KEY `fk_relationship_100` (`bseatid`) USING BTREE,
-  KEY `fk_reference_32` (`investorsid`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='广告(banner)图片详情';
-
--- ----------------------------
--- Table structure for bd_bannerseat
--- ----------------------------
-DROP TABLE IF EXISTS `bd_bannerseat`;
-CREATE TABLE `bd_bannerseat` (
-  `bseatid` bigint NOT NULL AUTO_INCREMENT COMMENT '位置id',
-  `sitearea` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '所在地(国家省市区)',
-  `seatname` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '位置名称',
-  `seatcode` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '位置代码,此编码固定，比如apphome标示app主页上banner广告，pchome标示web网站主页上banner广告',
-  `seatdesc` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '位置说明',
-  `is_delete` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `create_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '创建人',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '最后修改人',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `is_enable` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否启用（0未启用，1启用）',
-  PRIMARY KEY (`bseatid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='广告(banner)位置';
 
 -- ----------------------------
 -- Table structure for bd_user
@@ -386,7 +44,7 @@ CREATE TABLE `bd_user` (
   KEY `idx_no` (`accno`,`is_delete`,`create_time`) USING BTREE,
   KEY `idx_phone` (`phoneno`,`is_delete`,`create_time`) USING BTREE,
   KEY `idx_delete` (`is_delete`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台系统用户信息';
+) ENGINE=InnoDB AUTO_INCREMENT= 1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台系统用户信息';
 
 -- ----------------------------
 -- Table structure for coin_deposit
@@ -405,7 +63,7 @@ CREATE TABLE `coin_deposit` (
   `create_user` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `update_user` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for dz_broker_message
@@ -438,7 +96,7 @@ CREATE TABLE `dz_coin` (
   `symbol` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '主币种单位',
   `token_status` int DEFAULT NULL COMMENT '0： 主币 1：代币',
   PRIMARY KEY (`coin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for dz_level_record
@@ -457,7 +115,7 @@ CREATE TABLE `dz_level_record` (
   `create_time` timestamp NULL DEFAULT NULL,
   `update_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`level_record_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1327 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for dz_task
@@ -497,7 +155,7 @@ CREATE TABLE `dz_task` (
   KEY `id_index` (`id`) USING BTREE,
   KEY `category_id_index` (`category_id`) USING BTREE,
   KEY `Idx_level_ids` (`task_level_ids`,`apiece_num`,`finish_date`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3594 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
 -- ----------------------------
 -- Table structure for dz_task_category
@@ -528,7 +186,7 @@ CREATE TABLE `dz_task_category` (
   PRIMARY KEY (`id`),
   KEY `id_index` (`id`) USING BTREE,
   KEY `name_index` (`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=405 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
 -- ----------------------------
 -- Table structure for dz_task_order
@@ -562,7 +220,7 @@ CREATE TABLE `dz_task_order` (
   KEY `status_create_index` (`status`,`create_time`,`mem_no`) USING BTREE,
   KEY `status_update_index_m` (`status`,`update_time`,`mem_no`,`send_status`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4291873 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
 -- ----------------------------
 -- Table structure for dz_task_reward_fail
@@ -575,7 +233,7 @@ CREATE TABLE `dz_task_reward_fail` (
   `create_time` timestamp NULL DEFAULT NULL,
   `update_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`fail_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
 -- ----------------------------
 -- Table structure for dz_udun_order
@@ -602,7 +260,7 @@ CREATE TABLE `dz_udun_order` (
   PRIMARY KEY (`undu_order_id`),
   KEY `idx_acc` (`accno`,`coin_name`,`main_coin_type`) USING BTREE,
   KEY `idx_buId` (`business_Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9794 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for every_day_report
@@ -620,7 +278,7 @@ CREATE TABLE `every_day_report` (
   `create_time` timestamp NULL DEFAULT NULL,
   `update_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for finance_balance_adjustment
@@ -643,7 +301,7 @@ CREATE TABLE `finance_balance_adjustment` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `accno` (`accno`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2829 DEFAULT CHARSET=utf8mb3 COMMENT='财务管理手动加款表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 COMMENT='财务管理手动加款表';
 
 -- ----------------------------
 -- Table structure for finance_dama_adjustment
@@ -763,7 +421,7 @@ CREATE TABLE `inf_sysnotice` (
   KEY `idx3` (`accno`,`is_delete`,`expirydates`,`expirydatee`) USING BTREE,
   KEY `idx4` (`is_delete`,`expirydates`,`expirydatee`) USING BTREE,
   KEY `idx_d_w_t_s_e` (`is_delete`,`work_status`,`type`,`expirydates`,`expirydatee`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统公告';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统公告';
 
 -- ----------------------------
 -- Table structure for inf_sysremindinfo
@@ -793,7 +451,7 @@ CREATE TABLE `inf_sysremindinfo` (
   PRIMARY KEY (`rmdid`),
   KEY `fk_relationship_337` (`bdpushid`) USING BTREE,
   KEY `index_num` (`recipienter`,`issee`,`is_delete`,`rmtype`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统提醒消息';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统提醒消息';
 
 -- ----------------------------
 -- Table structure for kill_config
@@ -837,7 +495,7 @@ CREATE TABLE `member_credit_change` (
   `integral` int DEFAULT NULL,
   `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for member_credit_detail
@@ -886,21 +544,6 @@ CREATE TABLE `member_online_calc` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='在线人数统计';
 
--- ----------------------------
--- Table structure for member_youke_calc
--- ----------------------------
-DROP TABLE IF EXISTS `member_youke_calc`;
-CREATE TABLE `member_youke_calc` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `total_count` int NOT NULL DEFAULT '0' COMMENT '总人数',
-  `android_count` int NOT NULL DEFAULT '0' COMMENT '安卓在线人数',
-  `ios_count` int NOT NULL DEFAULT '0' COMMENT 'ios人数',
-  `h5_count` int NOT NULL DEFAULT '0' COMMENT 'h5人数',
-  `web_count` int NOT NULL DEFAULT '0' COMMENT 'pc人数',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='在线人数统计(包括游客)';
 
 -- ----------------------------
 -- Table structure for mem_bank
@@ -923,7 +566,7 @@ CREATE TABLE `mem_bank` (
   `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mem_bank_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for mem_bankaccount
@@ -952,7 +595,7 @@ CREATE TABLE `mem_bankaccount` (
   PRIMARY KEY (`bankaccid`),
   KEY `idx1` (`accno`,`accounttype`,`is_delete`) USING BTREE,
   KEY `idx2` (`familyid`,`is_delete`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5826 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='提现账户';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='提现账户';
 
 -- ----------------------------
 -- Table structure for mem_baseinfo
@@ -1036,7 +679,7 @@ CREATE TABLE `mem_baseinfo` (
   KEY `idx_name_mb_d` (`email`,`is_delete`,`unique_id`,`register_ip`) USING BTREE,
   KEY `idx_time` (`is_delete`,`registerdate`,`accno`) USING BTREE,
   KEY `idx_level` (`level`,`is_delete`,`registerdate`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=424229 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员基本信息';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员基本信息';
 
 -- ----------------------------
 -- Table structure for mem_certification
@@ -1078,7 +721,7 @@ CREATE TABLE `mem_daily_report` (
   `create_time` timestamp NULL DEFAULT NULL,
   `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17684 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for mem_faceset
@@ -1195,7 +838,7 @@ CREATE TABLE `mem_goldchange` (
   KEY `idx_refaccno` (`refaccno`,`changetype`,`is_delete`,`create_time`,`update_time`) USING BTREE,
   KEY `idx_time_up` (`update_time`) USING BTREE,
   KEY `idx_changtype` (`changetype`,`create_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4472582 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员金币变动明细';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员金币变动明细';
 
 -- ----------------------------
 -- Table structure for mem_level
@@ -1220,7 +863,7 @@ CREATE TABLE `mem_level` (
   KEY `tp_reference_02` (`accno`,`is_delete`,`locked`) USING BTREE,
   KEY `idx_config` (`accno`,`is_delete`,`update_time`,`expire_time`,`level_config_id`) USING BTREE,
   KEY `idx_id` (`levelid`,`is_delete`,`expire_time`,`level_config_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=413306 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员等级';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员等级';
 
 -- ----------------------------
 -- Table structure for mem_level_config
@@ -1248,7 +891,7 @@ CREATE TABLE `mem_level_config` (
   KEY `idx_taskTime` (`do_task_times`) USING BTREE,
   KEY `idx_up_ex_time` (`expire_time`,`update_time`) USING BTREE,
   KEY `idx_cr_time` (`create_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员等级配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员等级配置表';
 
 -- ----------------------------
 -- Table structure for mem_login
@@ -1272,7 +915,7 @@ CREATE TABLE `mem_login` (
   KEY `idx2` (`accstatus`) USING BTREE,
   KEY `idx3` (`accno`) USING BTREE,
   KEY `Unique_acclogin` (`acclogin`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=415859 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员登录账号';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='会员登录账号';
 
 -- ----------------------------
 -- Table structure for mem_relationship
@@ -1301,7 +944,7 @@ CREATE TABLE `mem_relationship` (
   KEY `idx_relaid` (`relaid`) USING BTREE,
   KEY `idx2` (`refaccno`,`is_delete`,`accno`) USING BTREE,
   KEY `idx_accno_head` (`accno`,`head_accno`,`is_delete`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=411224 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员推荐关系';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员推荐关系';
 
 -- ----------------------------
 -- Table structure for mem_repayuser
@@ -1330,7 +973,7 @@ CREATE TABLE `mem_repayuser` (
   KEY `mem_repayuser_union1` (`onlinedates`,`onlinedatee`) USING BTREE,
   KEY `mem_repayuser_accno` (`accno`) USING BTREE,
   KEY `mem_repayuser_nickname` (`nickname`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='代充人信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='代充人信息表';
 
 -- ----------------------------
 -- Table structure for mem_signin
@@ -1601,7 +1244,7 @@ CREATE TABLE `pay_bank` (
   `status` int DEFAULT '0',
   `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`bank_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for pay_merchant
@@ -1622,7 +1265,7 @@ CREATE TABLE `pay_merchant` (
   `update_user` varchar(0) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for pay_recharge_order
@@ -1641,7 +1284,7 @@ CREATE TABLE `pay_recharge_order` (
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`recharge_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Table structure for pay_type
@@ -1846,7 +1489,7 @@ CREATE TABLE `sys_bduserrole` (
   PRIMARY KEY (`refurid`),
   KEY `fk_relationship_259` (`sysroleid`) USING BTREE,
   KEY `fk_relationship_260` (`accno`,`is_delete`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台用户角色关系';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台用户角色关系';
 
 -- ----------------------------
 -- Table structure for sys_busparameter
@@ -1866,7 +1509,7 @@ CREATE TABLE `sys_busparameter` (
   `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '最后修改人',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`busparamid`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='业务参数';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='业务参数';
 
 -- ----------------------------
 -- Table structure for sys_cdn
@@ -1930,7 +1573,7 @@ CREATE TABLE `sys_errorlog` (
   KEY `idx2` (`serverstatus`,`create_time`) USING BTREE,
   KEY `idx3` (`systemname`,`modelname`,`optuser`,`level`,`serverstatus`,`create_time`) USING BTREE,
   KEY `idx4` (`systemname`,`level`,`serverstatus`,`create_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=12306 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='异常错误日志';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='异常错误日志';
 
 -- ----------------------------
 -- Table structure for sys_feedback
@@ -2105,7 +1748,7 @@ CREATE TABLE `sys_operlog` (
   `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `create_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7269 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for sys_parameter
@@ -2224,7 +1867,7 @@ CREATE TABLE `sys_record` (
   `recordevent` int DEFAULT NULL,
   `recordremark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`recordid`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Table structure for sys_reffuncinitfc
@@ -2309,7 +1952,7 @@ CREATE TABLE `sys_roleinfo` (
   `sysrolename` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '角色名称',
   `sysrolestatus` decimal(1,0) DEFAULT NULL COMMENT '角色状态  0正常  9停用',
   PRIMARY KEY (`sysroleid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台系统角色';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台系统角色';
 
 -- ----------------------------
 -- Table structure for sys_sensitive_word
@@ -2344,7 +1987,7 @@ CREATE TABLE `sys_shortmsg` (
   KEY `idx1` (`email`,`msgtype`,`msgcode`,`masstatus`) USING BTREE,
   KEY `idx2` (`email`,`msgtype`,`masstatus`) USING BTREE,
   KEY `idx3` (`email`,`msgtype`,`masdate`,`masstatus`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8585 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='短信收发记录';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='短信收发记录';
 
 -- ----------------------------
 -- Table structure for sys_tags
@@ -2454,7 +2097,7 @@ CREATE TABLE `sys_whitelist` (
   `update_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '最后修改人',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`whiteid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统登录白名单管理';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统登录白名单管理';
 
 -- ----------------------------
 -- Table structure for tra_agentclearing
@@ -2481,7 +2124,7 @@ CREATE TABLE `tra_agentclearing` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`cleanid`),
   KEY `fk_reference_77` (`agentid`,`cleantype`,`is_delete`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=31625 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='代理结算表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='代理结算表';
 
 -- ----------------------------
 -- Table structure for tra_anchor
@@ -2579,7 +2222,7 @@ CREATE TABLE `tra_applycash` (
   PRIMARY KEY (`apycid`),
   KEY `fk_reference_25` (`bankaccid`) USING BTREE,
   KEY `fk_reference_44` (`orderid`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8722 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='提现申请';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='提现申请';
 
 -- ----------------------------
 -- Table structure for tra_artrepayorder
@@ -2701,7 +2344,7 @@ CREATE TABLE `tra_ordertracking` (
   `orderstatus` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '订单状态 ord01新订单 ord04已审核待付款  ord08已付款待评价 ord12已发货 ord16已完成（已收货） ord10已评价 ord99已取消  ord07退款中  ord11已退款  ',
   PRIMARY KEY (`trackid`),
   KEY `fk_relationship_37` (`orderid`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=19369 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单追踪';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单追踪';
 
 -- ----------------------------
 -- Table structure for tra_paymentinfo

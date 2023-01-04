@@ -574,14 +574,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         } else {
             String resultString = "";
             for (PayMerchant payMerchant : payMerchantList) {
-                SysPayaccount sysPayaccount = sysPayaccountMapper.selectByPrimaryKey(traOrderinfom.getBankid());
+                MemBank memBank = iMemBankService.selectByMemBankId(traOrderinfom.getMemBankId());
                 CsPaymentDTO csPaymentDTO = new CsPaymentDTO();
                 csPaymentDTO.setOrderNo(req.getOrderno());
                 csPaymentDTO.setAmount(traApplycash.getApycgold().intValue());
                 csPaymentDTO.setNotifyUrl(payMerchant.getNotifyUrl());
-                csPaymentDTO.setBankId(sysPayaccount.getBankcode());
-                csPaymentDTO.setBeneNo(sysPayaccount.getAccountno());
-                csPaymentDTO.setPayee(sysPayaccount.getAccountname());
+                csPaymentDTO.setBankId(memBank.getBankCode());
+                csPaymentDTO.setBeneNo(memBank.getBankCardNo());
+                csPaymentDTO.setPayee(memBank.getUserName());
                 try {
                     csPayService.submitPayment(csPaymentDTO);
                 } catch (Exception e) {
@@ -605,94 +605,10 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 }
             }
         }
-// 订单状态 ord01新订单 ord04待付款 ord05提现申请 ord06提现取消 ord07提现处理中 ord08已付款
-        // ord09用户取消 ord10已评价 ord11已退款 ord12已提现 ord13充值失败 ord14t提现失败 ord99已过期  ord98 有注单数据
-        // 修改为已提现
-        // 订单
-        traOrderinfom.setOrderstatus(Constants.ORDER_ORD12);
-        traOrderinfom.setPaydate(new Date());
-        traOrderinfom.setUpdateUser(loginAdmin.getAccno());
-        traOrderinfom.setOrdernote(req.getReason());
-        int i = traOrderinfomMapperService.updateIncarnateConfirmOrder(traOrderinfom);
-        if (i > 0) {
-            // 订单轨迹信息
-            TraOrdertracking traOrdertracking = new TraOrdertracking();
-            traOrdertracking.setOrderid(traOrderinfom.getOrderid());
-            traOrdertracking.setTrackdate(new Date());
-            traOrdertracking.setOrderstatus(Constants.ORDER_ORD12);
-            traOrdertracking.setOperuse(loginAdmin.getAccno());
-            traOrdertracking.setTrackbody("管理员[" + loginAdmin.getBdusername() + "]确认转账");
-            // 最后状态
-            int tc = traOrdertrackingMapperService.insertTraOrdertracking(traOrdertracking);
-            if (!(tc > 0)) {
-                throw new BusinessException(StatusCode.LIVE_ERROR_202.getCode(), "已处理过该订单");
-            }
-            // 提现数据修改
-            traApplycash.setPaydate(new Date());
-            // 申请状态 1提交申请 2提现处理中 3已经失败 4已打款 8已到账 9已取消
-            traApplycash.setApycstatus(Constants.APYCSTATUS4);
-            traApplycash.setUpdateUser(loginAdmin.getAccno());
 
-            // 提现申请
-            int k = traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);
-            if (!(k > 0)) {
-                throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "提现状态不为提现处理中");
-            }
-
-//            // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
-//            MemGoldchange paramMemGoldchange = new MemGoldchange();
-//            paramMemGoldchange.setAccno(traOrderinfom.getAccno());
-//            paramMemGoldchange.setChangetype(GoldchangeEnum.WITHDRAWAL_APPLY.getValue());
-//            paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
-//            paramMemGoldchange.setUpdateUser(loginAdmin.getAccno());
-//            paramMemGoldchange.setOpnote("提现完成");
-//            paramMemGoldchange.setSource(traOrderinfom.getSource());
-//
-//            int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);
-//            if (!(mg > 0)) {
-//                throw new BusinessException(StatusCode.LIVE_ERROR_115.getCode(), "处理用户提现失败");
-//            }
-
-//            // 修改 对应 充值订单的 结算状态
-//            Long apyid = traApplycash.getApycid();
-//            List<TraApplyaudit> traApplyaudits = traApplyauditMapperService.getListById(apyid);
-//            if (CollectionUtils.isNotEmpty(traApplyaudits)) {
-//                List<Long> orderids = traApplyaudits.stream().map(ob -> ob.getOrderid()).collect(Collectors.toList());
-//                traOrderinfomMapperService.doJiesuanOrder(orderids);
-//            }
-//            MemBaseinfoExample membaseinfoExample = new MemBaseinfoExample();
-//            membaseinfoExample.createCriteria().andAccnoEqualTo(traOrderinfom.getAccno());
-//            MemBaseinfo membaseinfo = memBaseinfoService.selectOneByExample(membaseinfoExample);
-//            // 设置提现金额
-//            membaseinfo.setWithdrawalAmount(getTradeOffAmount(traOrderinfom.getSumamt()));
-//            // 设置首次提现金额
-//            if (membaseinfo.getWithdrawalFirst() == null || membaseinfo.getWithdrawalFirst().compareTo(BigDecimal.ZERO) == 0) {
-//                membaseinfo.setWithdrawalFirst(getTradeOffAmount(traOrderinfom.getSumamt()));
-//            }
-//            // 设置最大提现金额
-//            if (membaseinfo.getWithdrawalMax() == null || membaseinfo.getWithdrawalMax().compareTo(getTradeOffAmount(traOrderinfom.getSumamt())) == -1) {
-//                membaseinfo.setWithdrawalMax(getTradeOffAmount(traOrderinfom.getSumamt()));
-//            }
-//            // 修改已提现金额
-//            memBaseinfoService.updateWithdrawalAmount(membaseinfo);
-//            // 发送系统消息
-//            this.doInfSysremindinfo(traOrderinfom, loginAdmin);
-//
-//            // 会员提现成功日志
-//            SysInfolog sysInfolog = new SysInfolog();
-//            sysInfolog.setAccno(loginAdmin.getAccno());
-//            sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + req.getOrderno() + "]提现成功");
-//            sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
-//            sysInfolog.setModelname("会员提现");
-//            sysInfolog.setOrginfo("doIncarnateConfirm");
-//            commonService.insertSelective(sysInfolog);
-//            RedisBusinessUtil.delIncarnateOrderListCahce();
-//            logger.info("{}{}处理订单{}用户{}提现完成", loginAdmin.getBdusername(), loginAdmin.getAccno(), traOrderinfom.getAccno(), zhubo.getNickname());
             return true;
 
-        } else {
-            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "提现失败(订单已提现)");
-        }
+
     }
 
 

@@ -175,18 +175,20 @@ public class AgentMemberController extends BaseController {
     }
 
 
-    @Syslog("增加彩金")
+    @ApiOperation("增加彩金")
     @PostMapping("/adJackpot")
     public ResultInfo adJackpot(@RequestBody JackPotReq req) {
         RLock lock = null;
         try {
+            LoginUser loginUserAPP = getLoginUserAPP();
             lock = redissonClient.getReadWriteLock(RedisLock.FINANCE_MANAGE_BALANCE_ADJACKPOT_ + req.getMemberAccno()).writeLock();
             boolean bool = lock.tryLock(0, 60, TimeUnit.SECONDS);
             if (!bool) {
                 throw new BusinessException("操作太频繁，请稍后再试！");
             }
-            req.setCreateUser(getLoginUserAPP().getAccno());
-            req.setUpdateUser(getLoginUserAPP().getAccno());
+            req.setCreateUser(loginUserAPP.getAccno());
+            req.setUpdateUser(loginUserAPP.getAccno());
+            req.setAgentAccno(loginUserAPP.getAccno());
             req.setType(70);
             agentMemberService.adJackpot(req);
             return ResultInfo.ok();

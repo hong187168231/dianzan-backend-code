@@ -14,6 +14,7 @@ import com.likes.common.util.JsonUtil;
 import com.likes.common.util.LogUtils;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.finance.service.IncarnateService;
+import io.swagger.annotations.Api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.redisson.api.RLock;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @author bjkj
  */
 @Controller
+@Api(tags = "提现管理")
 @RequestMapping(value = "/incarnate")
 public class IncarnateController extends BaseController {
 

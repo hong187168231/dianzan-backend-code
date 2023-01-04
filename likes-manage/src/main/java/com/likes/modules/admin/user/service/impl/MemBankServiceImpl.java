@@ -1,5 +1,6 @@
 package com.likes.modules.admin.user.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.Page;
 import com.likes.common.model.bank.MemBankPageReq;
 import com.likes.common.model.bank.MemBankSwitchReq;
@@ -37,7 +38,7 @@ public class MemBankServiceImpl implements IMemBankService {
         MemBank memBankRelation = new MemBank();
         memBankRelation.setMemBankId(req.getMemBankId());
         memBankRelation.setStatus(req.getStatus());
-       return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
+        return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
     }
 
     @Override
@@ -49,6 +50,9 @@ public class MemBankServiceImpl implements IMemBankService {
 
     @Override
     public MemBank selectByMemBankId(Long memBankId) {
+        if (ObjectUtil.isNull(memBankId)) {
+            return null;
+        }
         MemBank memBankParam = new MemBank();
         memBankParam.setMemBankId(memBankId);
         return memBankMapper.selectOne(memBankParam);

@@ -214,9 +214,9 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("registerIp", registerIp);
         Integer countIp = memBaseinfoMapper.selectCountByExample(example);
-//        if (countIp >= ipLimit) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册3个账号");
-//        }
+        if (countIp >= ipLimit) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+        }
 //        Example example2 = new Example(MemBaseinfo.class);
 //        Example.Criteria criteria2 = example2.createCriteria();
 //        criteria2.andEqualTo("registerDev", req.getDeviceCode());

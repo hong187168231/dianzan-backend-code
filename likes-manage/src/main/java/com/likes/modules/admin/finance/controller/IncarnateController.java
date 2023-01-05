@@ -3,6 +3,7 @@ package com.likes.modules.admin.finance.controller;
 import com.alibaba.excel.EasyExcel;
 import com.likes.common.BaseController;
 import com.likes.common.annotation.Syslog;
+import com.likes.common.constant.Constants;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
@@ -12,6 +13,7 @@ import com.likes.common.model.request.IncarnateOrderReq;
 import com.likes.common.model.response.EntryIncarnateOrderExcelResponse;
 import com.likes.common.util.JsonUtil;
 import com.likes.common.util.LogUtils;
+import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.finance.service.IncarnateService;
 import io.swagger.annotations.Api;
@@ -252,7 +254,11 @@ public class IncarnateController extends BaseController {
             if (redisTemplate.hasKey(keySuffix)) {
                 new BusinessException(StatusCode.LIVE_ERROR_501.getCode(), "第三方回调正在处理，请稍后再试！");
             }
-            response.setData(incarnateService.incarnateConfirmV2(req, loginAdmin));
+            if (!req.getBeSucceed()) {
+                response.setData(incarnateService.incarnateConfirmV2(req, loginAdmin));
+            }else{
+                response.setData(incarnateService.subUdun(req, loginAdmin));
+            }
             LogUtils.logUserModifyOperates(getClass().getName() + ".incarnateConfirmV2", req, loginAdmin);
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());

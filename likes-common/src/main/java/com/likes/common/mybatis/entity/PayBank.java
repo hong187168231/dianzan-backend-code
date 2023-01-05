@@ -19,7 +19,7 @@ public class PayBank {
     @Column(name = "`bank_id`")
     @GeneratedValue(generator = "JDBC")
     @ApiModelProperty(value = "id")
-    private Long bankId;
+    private Integer bankId;
 
     @ApiModelProperty(value = "银行编码")
     private String bankCode;

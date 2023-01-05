@@ -1,6 +1,7 @@
-package com.likes.modules.admin.users.service;
+package com.likes.common.service.pay;
 
 import com.likes.common.model.bank.PayBankVO;
+import com.likes.common.mybatis.entity.PayBank;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ import java.util.List;
 public interface PayBankService {
 
     List<PayBankVO> bankList();
+
+   PayBank selectByBankId(Integer bankId);
 
 }

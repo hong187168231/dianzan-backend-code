@@ -423,7 +423,7 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
-    public String submitPayment(CsPaymentDTO csPaymentDTO) throws Exception {
+    public String submitWithdraw(CsPaymentDTO csPaymentDTO) throws Exception {
 
         long timestamp = System.currentTimeMillis() / 1000;
 

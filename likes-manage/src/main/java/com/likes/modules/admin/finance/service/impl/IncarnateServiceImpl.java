@@ -33,6 +33,7 @@ import com.likes.common.service.money.TraApplycashService;
 import com.likes.common.service.money.TraOrderinfomService;
 import com.likes.common.service.money.TraOrdertrackingService;
 import com.likes.common.service.pay.CsPayService;
+import com.likes.common.service.pay.PayBankService;
 import com.likes.common.service.pay.PayMerchantService;
 import com.likes.common.service.sys.InfSysremindinfoService;
 import com.likes.common.service.sys.SysBusParamService;
@@ -111,6 +112,8 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     private PayMerchantService payMerchantService;
     @Resource
     private IMemBankService iMemBankService;
+    @Resource
+    private PayBankService payBankService;
 
   /*  @Override
     public PageResult incarnateOrderList(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin) {
@@ -395,7 +398,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             dataMap.put("bankName", o.getBankName());
             dataMap.put("userName", o.getUserName());
         } else {
-            dataMap.put("email",null);
+            dataMap.put("email", null);
             dataMap.put("bankCardNo", null);
             dataMap.put("bankName", null);
             dataMap.put("userName", null);
@@ -446,7 +449,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(o -> {
                 MemBank memBank = iMemBankService.selectByMemBankId(o.getMemBankId());
-                if(ObjectUtil.isNotNull(memBank)){
+                if (ObjectUtil.isNotNull(memBank)) {
                     o.setBankCardNo(memBank.getBankCardNo());
                     o.setBankName(memBank.getBankName());
                     o.setUserName(memBank.getUserName());
@@ -579,11 +582,18 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 csPaymentDTO.setOrderNo(req.getOrderno());
                 csPaymentDTO.setAmount(traApplycash.getApycgold().intValue());
                 csPaymentDTO.setNotifyUrl(payMerchant.getNotifyUrl());
+                if (StringUtils.isBlank(memBank.getBankCode())) {
+                    PayBank payBank = payBankService.selectByBankId(memBank.getBankId());
+                    if (ObjectUtil.isNull(payBank)) {
+                        throw new BusinessException("银行编码错误");
+                    }
+                    memBank.setBankCode(payBank.getBankCode());
+                }
                 csPaymentDTO.setBankId(memBank.getBankCode());
                 csPaymentDTO.setBeneNo(memBank.getBankCardNo());
                 csPaymentDTO.setPayee(memBank.getUserName());
                 try {
-                    csPayService.submitPayment(csPaymentDTO);
+                    csPayService.submitWithdraw(csPaymentDTO);
                 } catch (Exception e) {
                     logger.error("創世支付，(付款接口)失败Exception:{}", e);
                 }
@@ -606,7 +616,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             }
         }
 
-            return true;
+        throw new RuntimeException("");
 
 
     }

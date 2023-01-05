@@ -8,7 +8,7 @@ import com.likes.common.model.LoginUser;
 import com.likes.common.model.bank.AddBankCardReq;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.modules.admin.users.service.AppMemBankService;
-import com.likes.modules.admin.users.service.PayBankService;
+import com.likes.common.service.pay.PayBankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

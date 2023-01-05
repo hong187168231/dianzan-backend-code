@@ -46,7 +46,7 @@ public class MemBank {
     private String bankCode;
 
     @ApiModelProperty(value = "银行id")
-    private Long bankId;
+    private Integer bankId;
 
     @ApiModelProperty(value = "银行卡号")
     private String bankCardNo;

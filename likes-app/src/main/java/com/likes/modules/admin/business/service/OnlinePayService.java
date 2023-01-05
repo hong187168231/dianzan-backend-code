@@ -9,12 +9,15 @@ import com.likes.common.model.vo.pay.CsPayResultVo;
 import com.likes.common.mybatis.entity.MemBaseinfo;
 import com.likes.common.mybatis.entity.PayMerchant;
 import com.likes.common.mybatis.entity.PayRechargeOrder;
+import com.likes.common.mybatis.entity.SysParameter;
 import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
 import com.likes.common.mybatis.mapper.PaymentOrderFlowMapper;
 import com.likes.common.service.member.MemBaseinfoService;
+import com.likes.common.service.sys.SysParamService;
 import com.likes.common.util.SnowflakeIdWorker;
 import com.likes.common.service.pay.CsPayService;
 import com.likes.common.model.dto.pay.CsPayDTO;
+import com.likes.common.util.StringUtils;
 import com.likes.modules.admin.pay.dto.OnlinePayDTO;
 import com.likes.common.service.pay.PayMerchantService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +44,18 @@ public class OnlinePayService {
     private PaymentOrderFlowMapper paymentOrderFlowMapper;
     @Resource
     private PayRechargeOrderMapper payRechargeOrderMapper;
+    @Resource
+    private SysParamService sysParamService;
 
 
     public CsPayResultVo doOnlinePay(OnlinePayDTO onlinePayDTO, LoginUser loginUser) throws Exception {
+        SysParameter leastAmount = this.sysParamService.getByCode("LEAST_RECHARGE_AMOUNT");
+        if (leastAmount == null || StringUtils.isEmpty(leastAmount.getSysparamvalue())) {
+            Integer amount = Integer.parseInt(leastAmount.getSysparamvalue());
+            if (onlinePayDTO.getOrderPrice().intValue() < amount) {
+                throw new BusinessException("小于最大充值金额");
+            }
+        }
         CsPayResultVo csPayResultVo = new CsPayResultVo();
         CsPayDTO csPayDTO = new CsPayDTO();
         //獲取支付通道(本平台,開關打卡，失敗次數最小)
@@ -68,7 +80,7 @@ public class OnlinePayService {
                     if (null == resultString || "".equals(resultString)) {
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败");
                         //记录一次错误，进入下一个支付通道
-                       return csPayResultVo;
+                        return csPayResultVo;
                     } else {
                         JSONObject jsonObject = JSONObject.parseObject(resultString);
                         if (null == jsonObject) {
@@ -86,7 +98,7 @@ public class OnlinePayService {
 //                            paymentOrderFlow.setOrderNo(order_no);//	是	String	系统订单号（3方支付返回）
 //                            paymentOrderFlow.setUpdateTime(new Date());
 //                            paymentOrderFlowMapper.updateByPrimaryKey(paymentOrderFlow);
-                            insertPayment(csPayDTO,order_no, loginUser);
+                            insertPayment(csPayDTO, order_no, loginUser);
                             csPayResultVo.setToken(token);
                             csPayResultVo.setUrl(pay_url + "?token=" + token);
                             break;
@@ -102,7 +114,7 @@ public class OnlinePayService {
     }
 
 
-    public boolean insertPayment(CsPayDTO csPayDTO,String order_no, LoginUser loginUser) {
+    public boolean insertPayment(CsPayDTO csPayDTO, String order_no, LoginUser loginUser) {
         MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
         PayRechargeOrder payRechargeOrder = new PayRechargeOrder();
         payRechargeOrder.setAmount(new BigDecimal(csPayDTO.getAmount()));

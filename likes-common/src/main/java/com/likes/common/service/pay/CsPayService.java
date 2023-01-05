@@ -14,7 +14,7 @@ public interface CsPayService {
 
 //     JSONObject queryOrder(String orderNo) throws Exception;
 
-    public String submitPayment(CsPaymentDTO csPaymentDTO) throws Exception;
+    public String submitWithdraw(CsPaymentDTO csPaymentDTO) throws Exception;
 
     public String getCSAccountPrice() throws Exception;
 }

@@ -611,13 +611,15 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
                         //记录一次错误，进入下一个支付通道
                         return false;
+                    } else if ("0".equals(jsonObject.getString("code"))) {
+                        return true;
                     }
                 }
             }
         }
 
-        throw new RuntimeException("");
-
+//        throw new RuntimeException("");
+        return false;
 
     }
 

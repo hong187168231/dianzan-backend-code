@@ -16,6 +16,7 @@
         mb.email AS email,
         mb.accno AS accno,
         mb.unique_id AS uniqueId,
+        mb.level AS memlevel,
         mb.superior_id AS superiorId,
         mb.goldnum AS goldnum,
         mb.clintipadd AS clintipadd,

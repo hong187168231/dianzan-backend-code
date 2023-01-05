@@ -102,9 +102,8 @@ public class MemberOtherServiceImpl implements MemberOtherService {
 
     @Override
     public boolean deleteForManager(Long id, String uerid) {
-      return true;
+        return true;
     }
-
 
 
 //    @Override
@@ -131,24 +130,24 @@ public class MemberOtherServiceImpl implements MemberOtherService {
     @DS("slave")
     public PageResult vipRecordList(VipRecordRequest req) {
         PageHelper.startPage(req.getPageNo(), req.getPageSize());
-        Example example  = new Example(MemLevelRecord.class);
+        Example example = new Example(MemLevelRecord.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("userName",req.getEmail());
+        criteria.andEqualTo("userName", req.getEmail());
         if (StringUtils.isNotBlank(req.getBeginTime())) {
-            criteria.andGreaterThanOrEqualTo("createTime",req.getBeginTime() + " 00:00:00");
+            criteria.andGreaterThanOrEqualTo("createTime", req.getBeginTime() + " 00:00:00");
         }
         if (StringUtils.isNotBlank(req.getEndTime())) {
-            criteria.andLessThanOrEqualTo("createTime",req.getEndTime() + " 23:59:59");
+            criteria.andLessThanOrEqualTo("createTime", req.getEndTime() + " 23:59:59");
         }
         example.setOrderByClause("create_time desc");
         List<MemLevelRecord> tmp = memLevelRecordMapper.selectByExample(example);
-        tmp.forEach(item->{
-            if(item.getChangeType().equals(2)){
+        tmp.forEach(item -> {
+            if (item.getChangeType().equals(2)) {
                 item.setChangeAmount(new BigDecimal(0));
             }
         });
         PageInfo pageInfo = new PageInfo(tmp);
-        return PageResult.getPageResult(req.getPageNo(),req.getPageSize(),Integer.valueOf(pageInfo.getTotal()+""),pageInfo.getList());
+        return PageResult.getPageResult(req.getPageNo(), req.getPageSize(), Integer.valueOf(pageInfo.getTotal() + ""), pageInfo.getList());
     }
 
     @Override
@@ -357,7 +356,7 @@ public class MemberOtherServiceImpl implements MemberOtherService {
         timeReortDTO.setZtEnDTime(DateUtils.timeBeforeEndStr());
         timeReortDTO.setByBeginTime(DateUtils.date2Str(DateUtils.getBeginOfThisMonth()));
         timeReortDTO.setByEnDTime(DateUtils.date2Str(DateUtils.getEndOfThisMonth()));
-        Map<String,Long> zcMap  = memBaseinfoMapperExt.findAllUsersDate(timeReortDTO);
+        Map<String, Long> zcMap = memBaseinfoMapperExt.findAllUsersDate(timeReortDTO);
 
         // 会员所有余额
         BigDecimal balance = memBaseinfoMapperExt.countAllUserAmount();
@@ -550,6 +549,13 @@ public class MemberOtherServiceImpl implements MemberOtherService {
 
     @Override
     public AppTeamResponse appTeamReport(AppTeamReportRequest req, LoginUser loginUser) {
+        String startTime = req.getStartTime();
+        String endTime = req.getEndTime();
+        Date stareDate = DateUtils.str2date(startTime, DateUtils.FORMAT_YYYY_MM_DD_VN);
+        Date endDate = DateUtils.str2date(endTime, DateUtils.FORMAT_YYYY_MM_DD_VN);
+        req.setStartTime(DateUtils.date2StrAndPatten(stareDate,DateUtils.FORMAT_YYYY_MM_DD));
+        req.setEndTime( DateUtils.date2StrAndPatten(endDate,DateUtils.FORMAT_YYYY_MM_DD));
+
         if (req.getStartTime() != null && req.getStartTime() != "") {
             req.setStartTime(req.getStartTime() + " 00:00:00");
         }
@@ -560,13 +566,13 @@ public class MemberOtherServiceImpl implements MemberOtherService {
         Map<String, Object> recMap = new HashMap<>();
         Map<String, Object> cashMap = new HashMap<>();
         List<String> levelAccList = new ArrayList<>();
-        List<String> levelOneAccList = agentMapper.subNum(Arrays.asList(loginUser.getAccno()),"2022-04-11 00:00:00", "2022-09-11 00:00:00");
+        List<String> levelOneAccList = agentMapper.subNum(Arrays.asList(loginUser.getAccno()), "2023-01-01 00:00:00", "2023-09-11 00:00:00");
         List<String> levelTwoAccList = new LinkedList<>();
         List<String> levelThreeAccList = new LinkedList<>();
         if (CollectionUtil.isNotEmpty(levelOneAccList)) {
             levelTwoAccList = agentMapper.subNum(levelOneAccList, req.getStartTime(), req.getEndTime());
             if (CollectionUtil.isNotEmpty(levelTwoAccList)) {
-                 levelThreeAccList = agentMapper.subNum(levelTwoAccList, req.getStartTime(), req.getEndTime());
+                levelThreeAccList = agentMapper.subNum(levelTwoAccList, req.getStartTime(), req.getEndTime());
             }
         }
         if (req.getLevel().equals(1)) {
@@ -580,8 +586,8 @@ public class MemberOtherServiceImpl implements MemberOtherService {
             levelAccList.addAll(levelThreeAccList);
         }
         if (CollectionUtil.isNotEmpty(levelAccList)) {
-            List<Map<String, Object>> orderList = agentMapper.subTimeOrderList(levelAccList,req.getStartTime(), req.getEndTime());
-            Integer recMemNum = agentMapper.subRecMemNum(levelAccList,req.getStartTime(), req.getEndTime());
+            List<Map<String, Object>> orderList = agentMapper.subTimeOrderList(levelAccList, req.getStartTime(), req.getEndTime());
+            Integer recMemNum = agentMapper.subRecMemNum(levelAccList, req.getStartTime(), req.getEndTime());
             Integer taskNum = agentMapper.taskNum(levelAccList, req.getStartTime(), req.getEndTime());
             if (CollectionUtil.isNotEmpty(orderList)) {
                 for (Map<String, Object> order : orderList) {
@@ -744,7 +750,7 @@ public class MemberOtherServiceImpl implements MemberOtherService {
 //                        break;
 //                    case INVITE_USERS:
 //                        result.setSpread(result.getSpread().add(new BigDecimal(paramMap.get("quantity").toString())));
-                        // memDailyReport.setSpread(new BigDecimal(paramMap.get("quantity").toString()));
+                    // memDailyReport.setSpread(new BigDecimal(paramMap.get("quantity").toString()));
 //                        break;
                 }
             }

@@ -2247,6 +2247,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return date2Str(date, FORMAT_YYYY_MM_DD_HHMMSS);
     }
 
+    public static String date2StrAndPatten(Date date,String patten) {
+        return date2Str(date,patten);
+    }
+
     public static String todayStartTimeString() {
         return date2Str() + " " + TIMEZERO;
     }

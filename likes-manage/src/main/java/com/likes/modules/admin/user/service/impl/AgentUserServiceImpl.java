@@ -96,7 +96,7 @@ public class AgentUserServiceImpl implements AgentUserService {
         // 用户基本信息
         memBaseinfoService.insertSelective(newUser);
         // 设置注册用户的邀请码
-        newUser.setRecomcode("px"+InvitationCodeGnerateUtil.generateInvitationCodeTwo(newUser));
+        newUser.setRecomcode("px" + InvitationCodeGnerateUtil.generateInvitationCodeTwo(newUser));
         memBaseinfoService.updateByPrimaryKeySelective(newUser);
 
         // 登陆用户
@@ -151,7 +151,8 @@ public class AgentUserServiceImpl implements AgentUserService {
         agentUser.setEmail(query.getEmail());
         PageHelper.startPage(page.getPageNo(), page.getPageSize());
         List<AgentUser> agentUserList = agentUserMapper.select(agentUser);
-        return PageResult.getPageResult(agentUserList.size(), page, agentUserList);
+        int size = agentUserMapper.selectCount(agentUser);
+        return PageResult.getPageResult(size, page, agentUserList);
     }
 
     private void validateParams(AgentUserRequest request) {

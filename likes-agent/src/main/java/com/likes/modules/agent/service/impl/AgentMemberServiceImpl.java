@@ -24,6 +24,7 @@ import com.likes.common.model.response.TeamBo;
 import com.likes.common.model.response.TeamResponse;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.AgentMapper;
+import com.likes.common.mybatis.mapper.AgentUserMapper;
 import com.likes.common.mybatis.mapper.FinanceBalanceAdjustmentMapper;
 import com.likes.common.mybatis.mapper.MemBaseinfoMapper;
 import com.likes.common.mybatis.mapperext.member.MemLevelConfigMapperExt;
@@ -81,6 +82,9 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
     private FinanceBalanceAdjustmentMapper financeBalanceAdjustmentMapper;
     @Resource
     private AgentMapper agentMapper;
+
+    @Resource
+    private AgentUserMapper agentUserMapper;
 
     @Override
     @DS("slave")
@@ -297,10 +301,17 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
         if (com.likes.common.util.StringUtils.isBlank(jackPotReq.getMemberAccno())) {
             throw new BusinessException("账号为空");
         }
+        AgentUser agentUserParam = new AgentUser();
+        agentUserParam.setAccno(jackPotReq.getAgentAccno());
+        AgentUser agentUser= agentUserMapper.selectOne(agentUserParam);
+        if(ObjectUtil.isNotNull(agentUser)){
+            if(jackPotReq.getAmount().intValue()>agentUser.getSingleAddMoney()){
+                throw new BusinessException("操作金额大于当前可操作额度");
+            }
+        }
         jackPotReq.setAmount(jackPotReq.getAmount().setScale(3, BigDecimal.ROUND_DOWN));
 
         MemBaseinfo membaseinfo = memBaseinfoService.getUserByAccno(jackPotReq.getMemberAccno());
-
         FinanceBalanceAdjustment financeBalanceAdjustment = new FinanceBalanceAdjustment();
         financeBalanceAdjustment.setAccno(jackPotReq.getMemberAccno());
         financeBalanceAdjustment.setAmount(jackPotReq.getAmount());

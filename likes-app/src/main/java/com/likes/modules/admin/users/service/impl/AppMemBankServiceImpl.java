@@ -74,10 +74,9 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         if (existOrderinfom != null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "存在提现订单,不能更改钱包地址");
         }
-
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
-        MemBank bankAddress = findBankCardNo(req.getBankCardNo());
-        if (bankAddress != null && memBaseinfo.getLevel() < 5) {
+        MemBank memBank = findBankCardNo(req.getBankCardNo());
+        if (memBank != null && memBaseinfo.getLevel() < 5) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
         }
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){

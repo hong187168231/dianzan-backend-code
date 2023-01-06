@@ -208,12 +208,13 @@ public class AgentMemberController extends BaseController {
     @ResponseBody
     @RequestMapping(name = "代理客服链接", value = "/setAgentSer", method = RequestMethod.POST)
     public ResultInfo setAgentSer(String serUrl) {
-        logger.error("代理客服链接 传入参数:{}", serUrl);
+
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            LoginUser loginUserAPP = getLoginUserAPP();
-            response.setData(agentMemberService.updateAgentSerurl(loginUserAPP.getAcclogin(),serUrl));
+            LoginUser loginUserAPP = getLoginAgent();
+            logger.error("代理客服链接 传入参数:{},登录用户:{}", serUrl,JSONObject.toJSON(loginUserAPP));
+            response.setData(agentMemberService.updateAgentSerurl(loginUserAPP.getAccno(),serUrl));
         } catch (BusinessException e) {
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
             logger.error("{}.setAgentSer 失败:{}", getClass().getName(), e.getMessage(), e);
@@ -231,8 +232,9 @@ public class AgentMemberController extends BaseController {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            LoginUser loginUserAPP = getLoginUserAPP();
-            response.setData(agentMemberService.queryAgentSerurl(loginUserAPP.getAcclogin()));
+            LoginUser loginUserAPP = getLoginAgent();
+            logger.error("查询代理客服链接 登录用户:{}",JSONObject.toJSON(loginUserAPP));
+            response.setData(agentMemberService.queryAgentSerurl(loginUserAPP.getAccno()));
         } catch (BusinessException e) {
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
             logger.error("{}.queryAgentSer 失败:{}", getClass().getName(), e.getMessage(), e);

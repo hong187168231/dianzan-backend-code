@@ -27,4 +27,6 @@ public interface IMemBankService {
 
     MemBank  selectByMemBankId(Long memBankId);
 
+    MemBank  selectByAccno(String accno);
+
 }

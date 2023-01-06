@@ -1,6 +1,7 @@
 package com.likes.modules.admin.user.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.likes.common.model.bank.MemBankPageReq;
 import com.likes.common.model.bank.MemBankSwitchReq;
@@ -55,6 +56,16 @@ public class MemBankServiceImpl implements IMemBankService {
         }
         MemBank memBankParam = new MemBank();
         memBankParam.setMemBankId(memBankId);
+        return memBankMapper.selectOne(memBankParam);
+    }
+
+    @Override
+    public MemBank selectByAccno(String accno) {
+        if (StrUtil.isBlank(accno)) {
+            return null;
+        }
+        MemBank memBankParam = new MemBank();
+        memBankParam.setAccno(accno);
         return memBankMapper.selectOne(memBankParam);
     }
 

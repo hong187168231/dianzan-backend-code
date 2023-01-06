@@ -1,9 +1,12 @@
 package com.likes.common.model.vo.member;
 
 import com.likes.common.mybatis.entity.MemBaseinfo;
+import lombok.Data;
 
 import java.util.Date;
 
+
+@Data
 public class UserDetailForUpdateVO extends MemBaseinfo {
 
     /**
@@ -53,83 +56,7 @@ public class UserDetailForUpdateVO extends MemBaseinfo {
      */
     private String bankaddress;
 
-    public String getRefUniqueId() {
-        return refUniqueId;
-    }
+    private String bankCardNo;
 
-    public void setRefUniqueId(String refUniqueId) {
-        this.refUniqueId = refUniqueId;
-    }
 
-    public Integer getAccstatus() {
-        return accstatus;
-    }
-
-    public void setAccstatus(Integer accstatus) {
-        this.accstatus = accstatus;
-    }
-
-    public String getMemlevel() {
-        return memlevel;
-    }
-
-    public void setMemlevel(String memlevel) {
-        this.memlevel = memlevel;
-    }
-
-    public Boolean getLocked() {
-        return locked;
-    }
-
-    public void setLocked(Boolean locked) {
-        this.locked = locked;
-    }
-
-    public String getAccountno() {
-        return accountno;
-    }
-
-    public void setAccountno(String accountno) {
-        this.accountno = accountno;
-    }
-
-    public String getAccountname() {
-        return accountname;
-    }
-
-    public void setAccountname(String accountname) {
-        this.accountname = accountname;
-    }
-
-    public String getBankname() {
-        return bankname;
-    }
-
-    public void setBankname(String bankname) {
-        this.bankname = bankname;
-    }
-
-    public String getBankaddress() {
-        return bankaddress;
-    }
-
-    public void setBankaddress(String bankaddress) {
-        this.bankaddress = bankaddress;
-    }
-
-    public Date getLastlogindate() {
-        return lastlogindate;
-    }
-
-    public void setLastlogindate(Date lastlogindate) {
-        this.lastlogindate = lastlogindate;
-    }
-
-    public String getAcclogin() {
-        return acclogin;
-    }
-
-    public void setAcclogin(String acclogin) {
-        this.acclogin = acclogin;
-    }
 }

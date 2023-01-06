@@ -44,6 +44,7 @@ import com.likes.common.util.CommonFunction;
 import com.likes.common.util.DateUtils;
 import com.likes.common.util.redis.RedisBusinessUtil;
 import com.likes.common.service.common.CommonService;
+import com.likes.modules.admin.user.service.IMemBankService;
 import com.likes.modules.admin.user.service.UserService;
 import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
@@ -82,6 +83,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private MemRelationshipService memRelationshipService;
     @Resource
     private MemBankaccountService memBankaccountService;
+    @Resource
+    private IMemBankService iMemBankService;
     @Resource
     private MemCertificationService memCertificationService;
     @Resource
@@ -1023,12 +1026,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             vo.setLocked(memLevel.getLocked());
         }
         //银行
-        MemBankaccount bank = memBankaccountService.findByAccno(info.getAccno());
+        MemBank bank = iMemBankService.selectByAccno(info.getAccno());
         if (null != bank) {
-            vo.setAccountname(bank.getAccountname());
-            vo.setAccountno(bank.getAccountno());
-            vo.setBankaddress(bank.getBankaddress());
-            vo.setBankname(bank.getBankname());
+            vo.setAccountno(bank.getBankCardNo());
         }
         //上级代理
         MemRelationship relation = memRelationshipService.findByAccno(info.getAccno());

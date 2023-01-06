@@ -108,7 +108,7 @@ public class AgentController extends BaseController {
     @RequestMapping(name = "会员关系树", value = "agentTree", method = RequestMethod.GET)
     public ResultInfo agentTree(String accno,String email){
         if (StringUtils.isBlank(accno)) {
-            accno = "puff";
+            accno = "root";
         }
         return ResultInfo.ok( memRelationshipService.getMyPromotionListInfo(accno,email));
     }

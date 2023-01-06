@@ -16,6 +16,7 @@ import java.util.Map;
  */
 @Data
 public class LoginUser implements Serializable {
+    private static final long serialVersionUID = -2359328898380217910L;
 
     private String acctoken;
     /**

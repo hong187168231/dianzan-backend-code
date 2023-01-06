@@ -469,13 +469,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             });
         }
         for (IncarnateOrderResponse incarnateOrderResponse : list) {
-            SysBusparameter w_audit_amout = this.sysBusParamService.selectByBusparamcode("w_audit_amout");
-            if (new BigDecimal(String.valueOf(incarnateOrderResponse.getSumamt())).intValue() >= Integer.parseInt(w_audit_amout.getBusparamname())) {
-                Integer businessIdNum = udunRechargeMapper.countBusinessId(incarnateOrderResponse.getOrderno());
-                if (businessIdNum < 1) {
-                    incarnateOrderResponse.setShowThirdButton(true);
-                }
-            }
+//            SysBusparameter w_audit_amout = this.sysBusParamService.selectByBusparamcode("w_audit_amout");
+//            if (new BigDecimal(String.valueOf(incarnateOrderResponse.getSumamt())).intValue() >= Integer.parseInt(w_audit_amout.getBusparamname())) {
+//                Integer businessIdNum = udunRechargeMapper.countBusinessId(incarnateOrderResponse.getOrderno());
+//                if (businessIdNum < 1) {
+//
+//                }
+//            }
+            incarnateOrderResponse.setShowThirdButton(true);
         }
         RedisBusinessUtil.addIncarnateOrderListCahce(list, req, page.toRowBounds());
         return incarnateOrderPageToMap(page, list, realamt);
@@ -552,24 +553,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         if (traApplycash == null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_104.getCode(), "不存在提现申请");
         }
-        if (Constants.APYCSTATUS2 != traApplycash.getApycstatus()) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_106.getCode(), "状态不为提现处理中");
+        if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_106.getCode(), "状态不为提现申请中");
         }
         if (!(loginAdmin.getSysroleid().equals(Constants.SUPERADMINSYSROLEID))) {
             // 不是超级管理员 就验证是否属于你
             if (!traApplycash.getPaymemname().equals(loginAdmin.getAccno())) {
                 throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "该订单不属于您，无操作权限");
             }
-        }
-
-        if (req.getBeSucceed() == null) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "处理状态不能为空");
-        }
-
-        if (!req.getBeSucceed()) {
-            failedOrder(req, loginAdmin);
-            RedisBusinessUtil.delIncarnateOrderListCahce();
-            return false;
         }
         List<PayMerchant> payMerchantList = payMerchantService.payMerchantList(Constants.PAY_CHAN_CS_CODE);
         if (CollUtil.isEmpty(payMerchantList)) {
@@ -612,6 +603,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                         //记录一次错误，进入下一个支付通道
                         return false;
                     } else if ("0".equals(jsonObject.getString("code"))) {
+//                        // 设置
+//                        traApplycash.setApycstatus(Constants.APYCSTATUS2);
+//                        traApplycash.setUpdateUser(loginAdmin.getAccno());
+//                        // 提现申请
+//                        int k = traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
+//                        if (!(k > 0)) {
+//                            throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "提现状态不为提交申请");
+//                        }
                         return true;
                     }
                 }

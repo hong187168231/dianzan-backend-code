@@ -254,11 +254,7 @@ public class IncarnateController extends BaseController {
             if (redisTemplate.hasKey(keySuffix)) {
                 new BusinessException(StatusCode.LIVE_ERROR_501.getCode(), "第三方回调正在处理，请稍后再试！");
             }
-            if (!req.getBeSucceed()) {
-                response.setData(incarnateService.incarnateConfirmV2(req, loginAdmin));
-            }else{
-                response.setData(incarnateService.subUdun(req, loginAdmin));
-            }
+            response.setData(incarnateService.incarnateConfirmV2(req, loginAdmin));
             LogUtils.logUserModifyOperates(getClass().getName() + ".incarnateConfirmV2", req, loginAdmin);
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());

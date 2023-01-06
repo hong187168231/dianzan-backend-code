@@ -11,10 +11,7 @@ import com.likes.common.enums.SysParameterEnum;
 import com.likes.common.model.LoginUser;
 import com.likes.common.mybatis.entity.SysParameter;
 import com.likes.common.service.sys.SysParamService;
-import com.likes.common.util.BaseUtil;
-import com.likes.common.util.LanguageUtil;
-import com.likes.common.util.SpringUtil;
-import com.likes.common.util.StringUtils;
+import com.likes.common.util.*;
 import com.likes.common.util.redis.RedisBusinessUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,6 +121,13 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
                 RedisBusinessUtil.delete("Login_info:" +acctoken);
                 return false;
             }
+//            List<Object> blackList = RedisBusinessUtil.getBlackInvite();
+//            if(CollectionUtil.isNotEmpty(blackList)){
+//                if(blackList.contains(user.getRecomcode()) ||blackList.contains(user.getRecomcode()) ){
+//                    BaseUtil.writerResponse(response, StatusCode.INVITE_RESTRICT);
+//                    return false;
+//                }
+//            }
             RedisBusinessUtil.checkIn(user.getMemid());
             RedisBusinessUtil.set("Login_info:" + acctoken, jsonstr, sessiontime);
             RedisBusinessUtil.set("Login_info:" + user.getAccno(), acctoken, sessiontime);

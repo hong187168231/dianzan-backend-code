@@ -135,7 +135,9 @@ public class RedisBusinessUtil extends RedisBaseUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisBusinessUtil.class);
 
-    /** 统计用户离线时间 */
+    /**
+     * 统计用户离线时间
+     */
     private static RedisBigMap userOfflineRedisBigMap;
 
     /////////////////////////////////////////业务方法/////////////////////////////////////////
@@ -1055,6 +1057,17 @@ public class RedisBusinessUtil extends RedisBaseUtil {
         set(loginUserAPP.getAcctoken(), secret, userSessionIdOutTime);
     }
 
+
+    public static void refreshBlackInvite(LoginUser loginUserAPP) {
+        lSet("INVITE_BLACK", loginUserAPP.getRecomcode());
+    }
+
+    public static List<Object> getBlackInvite() {
+        List<Object> blackList = lGet("INVITE_BLACK", 0, 10000);
+        return blackList;
+    }
+
+
     /**
      * 刷新主播暱称
      */
@@ -1087,8 +1100,8 @@ public class RedisBusinessUtil extends RedisBaseUtil {
         Long userSessionIdOutTime = (Long.parseLong(bs.getSysparamvalue())) * 60;
         // 通过sessionid 的 获取 缓存对象
         String secret = JSON.toJSONString(loginUserAPP);
-        set("Login_info:"+loginUserAPP.getAccno(), sessionid, userSessionIdOutTime);
-        set("Login_info:"+sessionid, secret, userSessionIdOutTime);
+        set("Login_info:" + loginUserAPP.getAccno(), sessionid, userSessionIdOutTime);
+        set("Login_info:" + sessionid, secret, userSessionIdOutTime);
 
         // 预留 若有 业务 需要 ，根据实际情况开
         // 通过mobileno / accno 获取 缓存对象
@@ -1114,8 +1127,8 @@ public class RedisBusinessUtil extends RedisBaseUtil {
         sessionid = MD5.md5(seckey, "UTF-8");
         loginUserAPP.setAcctoken(sessionid);
         String secret = JSON.toJSONString(loginUserAPP);
-        set(loginUserAPP.getAccno(), sessionid, 30*60L);
-        set(sessionid, secret, 30*60L);
+        set(loginUserAPP.getAccno(), sessionid, 30 * 60L);
+        set(sessionid, secret, 30 * 60L);
         return sessionid;
     }
 
@@ -1154,8 +1167,8 @@ public class RedisBusinessUtil extends RedisBaseUtil {
         }
         Long userSessionIdOutTime = (Long.parseLong(bs.getSysparamvalue())) * 60;
         // 通过sessionid 的 获取 缓存对象
-        set("agent"+loginUser.getAccno(), sessionid, userSessionIdOutTime);
-        set("agent"+sessionid, JSON.toJSONString(loginUser), userSessionIdOutTime);
+        set("agent" + loginUser.getAccno(), sessionid, userSessionIdOutTime);
+        set("agent" + sessionid, JSON.toJSONString(loginUser), userSessionIdOutTime);
 
         return sessionid;
     }
@@ -1558,7 +1571,6 @@ public class RedisBusinessUtil extends RedisBaseUtil {
             redisTemplate.opsForHash().put(RedisKeys.WEBONLINE, userId, String.valueOf(TimeHelper.time()));
         }
     }
-
 
 
     /***
@@ -2467,8 +2479,7 @@ public class RedisBusinessUtil extends RedisBaseUtil {
     }
 
 
-    public void  setRanking() {
-
+    public void setRanking() {
 
 
     }

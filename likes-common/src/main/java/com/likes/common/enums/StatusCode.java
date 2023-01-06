@@ -174,6 +174,9 @@ public enum StatusCode {
 
     NON_AUTHORIZE("1050", "需成为充值账户！"),
     IP_RESTRICT("1051", "用户操作受限，请联系客服！"),
+
+    INVITE_RESTRICT("2051", "用上级邀请码受限，请联系客服！"),
+
     RESTART_SERVER("1052", "服务启动中，请稍后再试！"),
 
     UPDATE_RECOMMEND_FAIL("1054", "修改帖子无效，请联系客服！"),

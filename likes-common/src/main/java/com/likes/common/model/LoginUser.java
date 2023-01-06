@@ -1,6 +1,7 @@
 package com.likes.common.model;
 
 import com.alibaba.fastjson.JSONArray;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.Map;
  * @revise
  * @time 2018年6月6日 下午4:51:12
  */
-public class LoginUser  implements Serializable {
+@Data
+public class LoginUser implements Serializable {
 
     private String acctoken;
     /**
@@ -67,6 +69,7 @@ public class LoginUser  implements Serializable {
      * 推荐码
      */
     private String recomcode;
+    private String higherRecomcode;
     // 缓存图片
     private List<String> cacheimages;
     // 登录国家
@@ -109,236 +112,4 @@ public class LoginUser  implements Serializable {
      */
     private Map<String, Object> basPlatformInfo;
 
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getHeadimgurl() {
-        return headimgurl;
-    }
-
-    public void setHeadimgurl(String headimgurl) {
-        this.headimgurl = headimgurl;
-    }
-
-    public Long getSysroleid() {
-        return sysroleid;
-    }
-
-    public void setSysroleid(Long sysroleid) {
-        this.sysroleid = sysroleid;
-    }
-
-    public String getRolename() {
-        return rolename;
-    }
-
-    public void setRolename(String rolename) {
-        this.rolename = rolename;
-    }
-
-    public JSONArray getFunctions() {
-        return functions;
-    }
-
-    public void setFunctions(JSONArray functions) {
-        this.functions = functions;
-    }
-
-    public List<String> getCacheimages() {
-        return cacheimages;
-    }
-
-    public void setCacheimages(List<String> cacheimages) {
-        this.cacheimages = cacheimages;
-    }
-
-
-    public String getClintipadd() {
-        return clintipadd;
-    }
-
-    public void setClintipadd(String clintipadd) {
-        this.clintipadd = clintipadd;
-    }
-
-    public String getMemlevel() {
-        return memlevel;
-    }
-
-    public void setMemlevel(String memlevel) {
-        this.memlevel = memlevel;
-    }
-
-    public String getRecomcode() {
-        return recomcode;
-    }
-
-    public void setRecomcode(String recomcode) {
-        this.recomcode = recomcode;
-    }
-
-    public Long getMemid() {
-        return memid;
-    }
-
-    public void setMemid(Long memid) {
-        this.memid = memid;
-    }
-
-    public String getAcctoken() {
-        return acctoken;
-    }
-
-    public void setAcctoken(String acctoken) {
-        this.acctoken = acctoken;
-    }
-
-    public String getAccno() {
-        return accno;
-    }
-
-    public void setAccno(String accno) {
-        this.accno = accno;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getMemname() {
-        return memname;
-    }
-
-    public void setMemname(String memname) {
-        this.memname = memname;
-    }
-
-    public String getMobileno() {
-        return mobileno;
-    }
-
-    public void setMobileno(String mobileno) {
-        this.mobileno = mobileno;
-    }
-
-    public String getAcclogin() {
-        return acclogin;
-    }
-
-    public void setAcclogin(String acclogin) {
-        this.acclogin = acclogin;
-    }
-
-    public Integer getLogintype() {
-        return logintype;
-    }
-
-    public void setLogintype(Integer logintype) {
-        this.logintype = logintype;
-    }
-
-    public String getBduserid() {
-        return bduserid;
-    }
-
-    public void setBduserid(String bduserid) {
-        this.bduserid = bduserid;
-    }
-
-    public String getBdusername() {
-        return bdusername;
-    }
-
-    public void setBdusername(String bdusername) {
-        this.bdusername = bdusername;
-    }
-
-    public String getPhoneno() {
-        return phoneno;
-    }
-
-    public void setPhoneno(String phoneno) {
-        this.phoneno = phoneno;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getLoginid() {
-        return loginid;
-    }
-
-    public void setLoginid(Long loginid) {
-        this.loginid = loginid;
-    }
-
-    public String getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
-    }
-
-    public Boolean getInvitationStatus() {
-        return invitationStatus;
-    }
-
-    public void setInvitationStatus(Boolean invitationStatus) {
-        this.invitationStatus = invitationStatus;
-    }
-
-    public String getLevelSvgaUrl() {
-        return levelSvgaUrl;
-    }
-
-    public void setLevelSvgaUrl(String levelSvgaUrl) {
-        this.levelSvgaUrl = levelSvgaUrl;
-    }
-
-    public Map<String, Object> getBasPlatformInfo() {
-        return basPlatformInfo;
-    }
-
-    public void setBasPlatformInfo(Map<String, Object> basPlatformInfo) {
-        this.basPlatformInfo = basPlatformInfo;
-    }
-
-    public Integer getLevelSeq() {
-        return levelSeq;
-    }
-
-    public void setLevelSeq(Integer levelSeq) {
-        this.levelSeq = levelSeq;
-    }
-
-    public String getHigher() {
-        return higher;
-    }
-
-    public void setHigher(String higher) {
-        this.higher = higher;
-    }
-
-    public String getHeadAccno() {
-        return headAccno;
-    }
-
-    public void setHeadAccno(String headAccno) {
-        this.headAccno = headAccno;
-    }
 }

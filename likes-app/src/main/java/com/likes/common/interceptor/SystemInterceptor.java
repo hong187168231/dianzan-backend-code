@@ -123,7 +123,7 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
             }
 //            List<Object> blackList = RedisBusinessUtil.getBlackInvite();
 //            if(CollectionUtil.isNotEmpty(blackList)){
-//                if(blackList.contains(user.getRecomcode()) ||blackList.contains(user.getRecomcode()) ){
+//                if(blackList.contains(user.getRecomcode()) ||blackList.contains(user.getHigherRecomcode()) ){
 //                    BaseUtil.writerResponse(response, StatusCode.INVITE_RESTRICT);
 //                    return false;
 //                }

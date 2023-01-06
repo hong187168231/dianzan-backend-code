@@ -494,11 +494,13 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
 
         //上级代理
         String higher = "";
+        String higherRecomcode = "";
         MemRelationship relation = memRelationshipService.findByAccno(memLogin.getAccno());
         if (null != relation) {
             MemBaseinfo refUser = memBaseinfoService.getUserByAccno(relation.getRefaccno());
             if (null != refUser) {
                 higher = refUser.getEmail();
+                higherRecomcode = refUser.getRecomcode();
             }
         }
         // 设置loginUserAPP
@@ -510,6 +512,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         loginUserAPP.setMemname(memBaseinfo.getMemname());
         loginUserAPP.setMemid(memBaseinfo.getMemid());
         loginUserAPP.setRecomcode(memBaseinfo.getRecomcode());
+        loginUserAPP.setHigherRecomcode(higherRecomcode);
         loginUserAPP.setAcclogin(memLogin.getAcclogin());
         loginUserAPP.setHeadAccno(null!=relation?relation.getHeadAccno():"");
         loginUserAPP.setSourceType(source);

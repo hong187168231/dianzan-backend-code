@@ -29,6 +29,9 @@ public class AgentUser {
     @Column(name = "`update_user`")
     private String updateUser;
 
+    @Column(name = "`ser_url`")
+    private String serUrl;
+
     @Column(name = "`create_time`")
     private Date createTime;
 

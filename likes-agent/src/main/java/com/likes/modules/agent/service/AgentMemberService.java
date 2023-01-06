@@ -38,5 +38,6 @@ public interface AgentMemberService extends BaseService {
 
      void adJackpot(JackPotReq req);
 
+    public boolean updateAgentSerurl(String acct, String serUrl);
 
 }

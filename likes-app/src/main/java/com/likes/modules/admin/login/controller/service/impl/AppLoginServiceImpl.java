@@ -511,6 +511,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         loginUserAPP.setMemid(memBaseinfo.getMemid());
         loginUserAPP.setRecomcode(memBaseinfo.getRecomcode());
         loginUserAPP.setAcclogin(memLogin.getAcclogin());
+        loginUserAPP.setHeadAccno(null!=relation?relation.getHeadAccno():"");
         loginUserAPP.setSourceType(source);
         loginUserAPP.setHeadimgurl(memBaseinfo.getHeadimg());
         loginUserAPP.setHigher(higher);

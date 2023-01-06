@@ -588,9 +588,9 @@ public class CsPayServiceImpl implements CsPayService {
             if (traApplycash == null) {
                 throw new BusinessException("不存在提现申请");
             }
-            if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
-                throw new BusinessException("状态不为提现申请");
-            }
+//            if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
+//                throw new BusinessException("状态不为提现申请");
+//            }
             if (Constants.ORDER_ORD12.equals(traOrderinfom.getOrderstatus())) {
                 throw new BusinessException("订单状态已提现");
             }

@@ -603,14 +603,14 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                         //记录一次错误，进入下一个支付通道
                         return false;
                     } else if ("0".equals(jsonObject.getString("code"))) {
-//                        // 设置
-//                        traApplycash.setApycstatus(Constants.APYCSTATUS2);
-//                        traApplycash.setUpdateUser(loginAdmin.getAccno());
-//                        // 提现申请
-//                        int k = traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
-//                        if (!(k > 0)) {
-//                            throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "提现状态不为提交申请");
-//                        }
+                        // 设置
+                        traApplycash.setApycstatus(Constants.APYCSTATUS2);
+                        traApplycash.setUpdateUser(loginAdmin.getAccno());
+                        // 提现申请
+                        int k = traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
+                        if (!(k > 0)) {
+                            throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "提现状态不为提交申请");
+                        }
                         return true;
                     }
                 }

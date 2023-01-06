@@ -205,5 +205,23 @@ public class AgentMemberController extends BaseController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(name = "代理客服链接", value = "/setAgentSer", method = RequestMethod.POST)
+    public ResultInfo setAgentSer(String serUrl) {
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            LoginUser loginUserAPP = getLoginUserAPP();
+            response.setData(agentMemberService.updateAgentSerurl(loginUserAPP.getAcclogin(),serUrl));
+        } catch (BusinessException e) {
+            response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
+            logger.error("{}.getRecomcode 失败:{}", getClass().getName(), e.getMessage(), e);
+        } catch (Exception e) {
+            response = ResultInfo.error("代理客服链接出错");
+            logger.error("{}.getRecomcode 出错:{}", getClass().getName(), e.getMessage(), e);
+        }
+        logger.info("/getRecomcode耗时{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
 
 }

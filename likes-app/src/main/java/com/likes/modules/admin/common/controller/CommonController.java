@@ -3,11 +3,13 @@ package com.likes.modules.admin.common.controller;
 import cn.hutool.core.util.IdUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.likes.common.BaseController;
 import com.likes.common.annotation.AllowAccess;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.enums.UniqueCodeEnum;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.HelpManual;
+import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.model.request.BaseRequest;
 import com.likes.common.mybatis.entity.MemHotsearch;
@@ -30,6 +32,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
+import com.likes.modules.admin.users.service.AgentUserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +41,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.likes.common.mybatis.entity.AgentUser;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +52,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 @Controller
-public class CommonController {
+public class CommonController  extends BaseController {
 
     private final Logger logger = LogManager.getLogger(CommonController.class);
     @Resource
@@ -67,6 +70,8 @@ public class CommonController {
     @Resource
     private UplaodFileSevice uplaodFileSevice;
 
+    @Resource
+    private AgentUserService agentUserService;
 
     @PostMapping("/heartbeat")
     @ResponseBody
@@ -291,7 +296,26 @@ public class CommonController {
     public ResultInfo getChildBypcode(String pcode) {
         ResultInfo response = ResultInfo.ok();
         SysBusparameter list = sysBusparameterMapperExt.selectByBusparamcode(pcode);
-        response.setData(list);
+        if(null!=pcode && "service_url".equals(pcode)){//获取客服地址
+            LoginUser loginUserAPP = getLoginUserAPP();
+            if(null==loginUserAPP){
+                response.setData(list);
+            }else {
+                String headAccno = loginUserAPP.getHeadAccno();
+                if(null!=headAccno&&!"".equals(headAccno)){
+                    AgentUser agentUser = agentUserService.queryAgentSerurl(headAccno);
+                    if(null==agentUser || null == agentUser.getSerUrl() || "".equals(agentUser.getSerUrl())){
+                        response.setData(list);
+                    }else {
+                        list.setBusparamname(agentUser.getSerUrl());
+                    }
+                }else {
+                    response.setData(list);
+                }
+            }
+        }else {
+            response.setData(list);
+        }
         return response;
     }
 

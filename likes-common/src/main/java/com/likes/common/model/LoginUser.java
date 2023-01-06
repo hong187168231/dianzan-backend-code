@@ -100,6 +100,11 @@ public class LoginUser  implements Serializable {
     private Boolean invitationStatus;
 
     /**
+     * 总代理账号
+     */
+    private String headAccno;
+
+    /**
      * 主播端平台配置信息
      */
     private Map<String, Object> basPlatformInfo;
@@ -327,5 +332,13 @@ public class LoginUser  implements Serializable {
 
     public void setHigher(String higher) {
         this.higher = higher;
+    }
+
+    public String getHeadAccno() {
+        return headAccno;
+    }
+
+    public void setHeadAccno(String headAccno) {
+        this.headAccno = headAccno;
     }
 }

@@ -355,4 +355,14 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
 
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateAgentSerurl(String acct, String serUrl) {
+        AgentUser agentUserParam = new AgentUser();
+        agentUserParam.setAccno(acct);
+        AgentUser agentUser = agentUserMapper.selectOne(agentUserParam);
+        agentUser.setSerUrl(serUrl);
+        return agentUserMapper.updateByPrimaryKeySelective(agentUser) > 0;
+    }
+
 }

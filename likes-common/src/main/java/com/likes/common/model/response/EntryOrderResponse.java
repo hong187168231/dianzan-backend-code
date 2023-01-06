@@ -16,7 +16,7 @@ public class EntryOrderResponse {
     private String orderno;
     private String nickname;
     private String uniqueId;
-    private BigDecimal realamt;
+    private BigDecimal oldamt;
     private BigDecimal givepercent;
     private Double rechargegold;
     private Double givegold;
@@ -24,7 +24,7 @@ public class EntryOrderResponse {
     private String paynote;
     private String ordernote;
     private String remark;
-
+    private BigDecimal realamt;
     private String moneyAddress;
     @ApiModelProperty("付款地址")
     private String payAddress;

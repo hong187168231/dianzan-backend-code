@@ -570,6 +570,7 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
         sumamt = sumamt.setScale(2, BigDecimal.ROUND_HALF_DOWN);
         // 修改
         traOrderinfom.setSumamt(getTradeOffAmount(sumamt));
+        traOrderinfom.setRealamt(traOrderinfom.getSumamt());
 
         int t = traOrderinfomMapperService.doUpdateRechargeOrder(traOrderinfom);
         if (t > 0) {

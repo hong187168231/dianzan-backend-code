@@ -101,7 +101,9 @@
                                     orderno, accno, paycode,
                                     orderdate, expiredate, paytype,
                                     oldamt, sumamt, realamt,
-                                    isinvoice, orderstatus, accountstatus, paywechat, ordernote,
+                                    isinvoice, orderstatus, accountstatus,
+                                    pay_address,transfer_address,
+                                    paywechat, ordernote,
                                     create_user, update_user,
                                     payuser, paynote, source,
                                     buy_vip) value ( #{mealid,jdbcType=BIGINT}, #{ordertype,jdbcType=DECIMAL},
@@ -113,6 +115,7 @@
             #{oldamt,jdbcType=DECIMAL}, #{sumamt,jdbcType=DECIMAL}, #{realamt,jdbcType=DECIMAL},
             #{isinvoice,jdbcType=DECIMAL}, #{orderstatus,jdbcType=VARCHAR},
             #{accountstatus,jdbcType=VARCHAR},
+            #{payAddress,jdbcType=VARCHAR}, #{transferAddress,jdbcType=VARCHAR},
             #{paywechat,jdbcType=VARCHAR}, #{ordernote,jdbcType=VARCHAR},
             #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR},
             #{payuser,jdbcType=VARCHAR}, #{paynote,jdbcType=VARCHAR},
@@ -805,6 +808,7 @@
             resultType="com.likes.common.model.response.EntryOrderResponse">
         SELECT t.orderid,t.orderno,t.mealid,t.orderstatus,t.create_time as
         createdate,t.payuser ,t.paynote,t.ordernote,t.update_time updateTime,
+        t.oldamt as oldamt,
         t.realamt as realamt,
         t.pay_address as payAddress,
         t.transfer_address as transferAddress,

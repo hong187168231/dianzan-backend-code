@@ -1036,6 +1036,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //上级代理
         MemLogin memLogin = memLoginService.findByAccno(info.getAccno());
         vo.setAccstatus(memLogin.getAccstatus());
+        vo.setInvitStatus(info.getInvitStatus());
         vo.setLastlogindate(memLogin.getLastlogindate());
         return vo;
     }

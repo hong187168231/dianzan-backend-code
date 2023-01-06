@@ -208,6 +208,7 @@ public class AgentMemberController extends BaseController {
     @ResponseBody
     @RequestMapping(name = "代理客服链接", value = "/setAgentSer", method = RequestMethod.POST)
     public ResultInfo setAgentSer(String serUrl) {
+        logger.error("代理客服链接 传入参数:{}", serUrl);
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
@@ -215,12 +216,31 @@ public class AgentMemberController extends BaseController {
             response.setData(agentMemberService.updateAgentSerurl(loginUserAPP.getAcclogin(),serUrl));
         } catch (BusinessException e) {
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
-            logger.error("{}.getRecomcode 失败:{}", getClass().getName(), e.getMessage(), e);
+            logger.error("{}.setAgentSer 失败:{}", getClass().getName(), e.getMessage(), e);
         } catch (Exception e) {
             response = ResultInfo.error("代理客服链接出错");
-            logger.error("{}.getRecomcode 出错:{}", getClass().getName(), e.getMessage(), e);
+            logger.error("{}.setAgentSer 出错:{}", getClass().getName(), e.getMessage(), e);
         }
-        logger.info("/getRecomcode耗时{}毫秒", (System.currentTimeMillis() - start));
+        logger.info("/setAgentSer耗时{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
+
+    @ResponseBody
+    @RequestMapping(name = "查询代理客服链接", value = "/queryAgentSer", method = RequestMethod.GET)
+    public ResultInfo queryAgentSer() {
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            LoginUser loginUserAPP = getLoginUserAPP();
+            response.setData(agentMemberService.queryAgentSerurl(loginUserAPP.getAcclogin()));
+        } catch (BusinessException e) {
+            response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
+            logger.error("{}.queryAgentSer 失败:{}", getClass().getName(), e.getMessage(), e);
+        } catch (Exception e) {
+            response = ResultInfo.error("查询代理客服链接出错");
+            logger.error("{}.queryAgentSer 出错:{}", getClass().getName(), e.getMessage(), e);
+        }
+        logger.info("/queryAgentSer耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
     }
 

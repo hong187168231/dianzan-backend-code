@@ -814,7 +814,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         if (nickname.equals(info.getMemname())) {
             return;
         }
-        updateNickname(nickname, info.getAccno());
+        updateNickname(nickname, info.getAccno(),req.getInvitStatus());
         updateDescribes(req.getDescribes(), loginAdmin, info);
     }
 
@@ -840,17 +840,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     /**
      * 保持和PersonServiceImpl的updateNickname一致
      */
-    private void updateNickname(String nickname, String accno) {
-        List<String> nickNameList = new ArrayList<>();
-        nickNameList.add("BB直播");
-        nickNameList.add("bb直播");
-        nickNameList.add("BB");
-        nickNameList.add("bb");
-        nickNameList.add("逼逼");
-        nickNameList.add("官方");
-        if (nickNameList.contains(nickname)) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "昵称包含非法字符");
-        }
+    private void updateNickname(String nickname, String accno,Integer invitStatus) {
         MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(accno);
         //昵称相同不改昵称
         if (nickname.equals(memBaseinfo.getNickname())) {
@@ -865,7 +855,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         newinfo.setUpdateUser(accno);
         newinfo.setMemid(memBaseinfo.getMemid());
         newinfo.setNickname(nickname);
+        newinfo.setInvitStatus(invitStatus);
         memBaseinfoService.updateByPrimaryKeySelective(newinfo);
+
 
         // 昵称修改成功后 刷新redis
         String acctoken = RedisBusinessUtil.get(accno);
@@ -875,6 +867,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                 LoginUser loginUserAPP = JSONObject.parseObject((String) jsonstr, LoginUser.class);
                 loginUserAPP.setNickname(nickname);
                 RedisBusinessUtil.refreshUser(loginUserAPP, sysParamService);
+                if(newinfo.getInvitStatus() == 0){
+                    RedisBusinessUtil.refreshBlackInvite(loginUserAPP);
+                }
             }
         }
     }
@@ -1041,6 +1036,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //上级代理
         MemLogin memLogin = memLoginService.findByAccno(info.getAccno());
         vo.setAccstatus(memLogin.getAccstatus());
+        vo.setInvitStatus(info.getInvitStatus());
         vo.setLastlogindate(memLogin.getLastlogindate());
         return vo;
     }

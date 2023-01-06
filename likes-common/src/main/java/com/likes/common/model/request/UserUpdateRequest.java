@@ -19,6 +19,16 @@ public class UserUpdateRequest {
 
     private String resetPwd;
 
+    private Integer invitStatus = 1;
+
+    public Integer getInvitStatus() {
+        return invitStatus;
+    }
+
+    public void setInvitStatus(Integer invitStatus) {
+        this.invitStatus = invitStatus;
+    }
+
     public String getResetPwd() {
         return resetPwd;
     }
@@ -26,6 +36,8 @@ public class UserUpdateRequest {
     public void setResetPwd(String resetPwd) {
         this.resetPwd = resetPwd;
     }
+
+
 
     /**
      * 账号id

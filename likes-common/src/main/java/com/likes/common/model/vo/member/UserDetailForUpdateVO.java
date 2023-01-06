@@ -18,6 +18,7 @@ public class UserDetailForUpdateVO extends MemBaseinfo {
      * 说明: 账号状态 1正常 9禁止登陆
      */
     private Integer accstatus;
+    private Integer invitStatus;
 
     private String acclogin;
 

@@ -268,6 +268,9 @@ public class MemBaseinfo {
     @Column(name = "`chat_status`")
     private Integer chatStatus;
 
+    @Column(name = "`invit_status`")
+    private Integer invitStatus;
+
     /**
      * 冻结状态: 0,不冻结;1,冻结
      */

@@ -40,4 +40,6 @@ public interface AgentMemberService extends BaseService {
 
     public boolean updateAgentSerurl(String acct, String serUrl);
 
+    public String queryAgentSerurl(String acct);
+
 }

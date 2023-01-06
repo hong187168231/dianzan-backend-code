@@ -365,4 +365,14 @@ public class AgentMemberServiceImpl extends BaseServiceImpl implements AgentMemb
         return agentUserMapper.updateByPrimaryKeySelective(agentUser) > 0;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String queryAgentSerurl(String acct) {
+        AgentUser agentUserParam = new AgentUser();
+        agentUserParam.setAccno(acct);
+        AgentUser agentUser = agentUserMapper.selectOne(agentUserParam);
+
+        return null!=agentUser&&null!=agentUser.getSerUrl()?agentUser.getSerUrl():"";
+    }
+
 }

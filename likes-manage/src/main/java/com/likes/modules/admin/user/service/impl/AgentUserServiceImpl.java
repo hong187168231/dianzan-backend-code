@@ -33,6 +33,7 @@ import com.github.pagehelper.Page;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -147,11 +148,13 @@ public class AgentUserServiceImpl implements AgentUserService {
 
     @Override
     public PageResult userList(AgentUserQuery query, PageBounds page) {
-        AgentUser agentUser = new AgentUser();
-        agentUser.setEmail(query.getEmail());
+        Example example = new Example(AgentUser.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("email", query.getEmail());
+        criteria.andNotEqualTo("email","test");
         PageHelper.startPage(page.getPageNo(), page.getPageSize());
-        List<AgentUser> agentUserList = agentUserMapper.select(agentUser);
-        int size = agentUserMapper.selectCount(agentUser);
+        List<AgentUser> agentUserList = agentUserMapper.selectByExample(example);
+        int size = agentUserMapper.selectCountByExample(example);
         return PageResult.getPageResult(size, page, agentUserList);
     }
 

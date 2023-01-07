@@ -439,6 +439,7 @@ public class CsPayServiceImpl implements CsPayService {
 
         payMap.put("timestamp", timestamp);
 
+        log.info("CS付款接口请求参数", JSON.toJSONString(payMap));
         String sign = PaySignUtil.getSignLower(payMap, key);
         log.info("CS付款接口    (付款接口)输入加密前,sign：{}", sign);
 

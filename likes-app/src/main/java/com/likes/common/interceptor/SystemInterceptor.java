@@ -87,7 +87,9 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
         Method method = handlerMethod.getMethod();
 
         if (method.getAnnotation(AllowAccess.class) != null || isWhiteUri(uri)) {
-            request.getSession().setAttribute(Constants.APP_LOGIN_INFO, null);
+            if(StringUtils.isBlank(acctoken)){
+                request.getSession().setAttribute(Constants.APP_LOGIN_INFO, null);
+            }
             return super.preHandle(request, response, handler);
         } else if (org.apache.commons.lang3.StringUtils.isNotBlank(feginSign) && Constants.FEGIN_SIGN_VALUE.equals(feginSign) && StringUtils.isEmpty(acctoken)) {
             return super.preHandle(request, response, handler);

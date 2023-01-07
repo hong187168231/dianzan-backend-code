@@ -90,8 +90,11 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankRelation.setAccno(loginUser.getAccno());
         memBankRelation.setBankName(payBank.getBankName());
         memBankRelation.setStatus(1);
+        memBankRelation.setBankId(payBank.getBankId());
+        memBankRelation.setBankCode(payBank.getBankCode());
+        memBankRelation.setBankName(payBank.getBankName());
         memBankRelation.setAccno(loginUser.getAccno());
-        memBankRelation.setEmail(loginUser.getEmail());
+        memBankRelation.setEmail(loginUser.getAcclogin());
         return memBankMapper.insertSelective(memBankRelation) > 0;
     }
 

@@ -149,30 +149,10 @@ public class MemBaseinfoWriteServiceImpl implements MemBaseinfoWriteService {
                 }
                 BigDecimal consumeAcmount = getTradeOffAmount(caclConsumeAmount(namount, change.getChangetype()));
                 calcRechargeInfo(memBaseinfo.getAccno(), amount, change.getChangetype());
-                List<Integer> typeList = new LinkedList<>();
-//                typeList.add(101);
-//                typeList.add(102);
-//                typeList.add(103);
-                typeList.add(200);
-//                typeList.add(301);
-//                typeList.add(302);
-//                typeList.add(303);
-                if(memBaseinfo.getLevel()> 0 && typeList.contains(change.getChangetype())){
-                    logger.info("不增加余额 进入余额宝");
-                    YuebaoChangeBO dto = new YuebaoChangeBO();
-                    dto.setAccno(memBaseinfo.getAccno());
-                    dto.setAssetCfgId(1L);
-                    dto.setBuyAssetCfgId(1L);
-                    dto.setChangeAmount(amount);
-                    dto.setOperateEnum(YueaboOperateEnum.INTO);
-                    dto.setIsSystemWay(true);
-//                    yuebaoChangeService.updateYuebaoAmount(dto);
-                }else {
-                    int i = memBaseinfoService.updateMemberAmount(amount, pamount, bamount, namount, consumeAcmount, wamount, waitAmount, memBaseinfo.getAccno(), memBaseinfo.getMemid());
-                    if (i != 1) {
-                        logger.error("{} updateUserBalance updateMemberAmount 更新余额失败. return:{}", change.getUserId(), i);
-                        throw new BusinessException(StatusCode.OPERATION_FAILED.getCode(), "操作失败");
-                    }
+                int i = memBaseinfoService.updateMemberAmount(amount, pamount, bamount, namount, consumeAcmount, wamount, waitAmount, memBaseinfo.getAccno(), memBaseinfo.getMemid());
+                if (i != 1) {
+                    logger.error("{} updateUserBalance updateMemberAmount 更新余额失败. return:{}", change.getUserId(), i);
+                    throw new BusinessException(StatusCode.OPERATION_FAILED.getCode(), "操作失败");
                 }
                 logger.info("{} updateUserBalance updateMemberAmount 耗时 time, {}", change.getUserId(), System.currentTimeMillis() - begin);
                 return true;

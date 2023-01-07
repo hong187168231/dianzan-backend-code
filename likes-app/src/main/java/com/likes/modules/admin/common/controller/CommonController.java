@@ -296,7 +296,7 @@ public class CommonController  extends BaseController {
     public ResultInfo getChildBypcode(String pcode) {
         ResultInfo response = ResultInfo.ok();
         SysBusparameter list = sysBusparameterMapperExt.selectByBusparamcode(pcode);
-        if(null!=pcode && "service_url".equals(pcode)){//获取客服地址
+        if(null!=pcode && "service_url".equals(pcode)){
             LoginUser loginUserAPP = getLoginUserAPP();
             if(null==loginUserAPP){
                 response.setData(list);
@@ -308,6 +308,7 @@ public class CommonController  extends BaseController {
                         response.setData(list);
                     }else {
                         list.setBusparamname(agentUser.getSerUrl());
+                        response.setData(list);
                     }
                 }else {
                     response.setData(list);

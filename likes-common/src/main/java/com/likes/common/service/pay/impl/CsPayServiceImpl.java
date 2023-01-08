@@ -542,13 +542,14 @@ public class CsPayServiceImpl implements CsPayService {
         try {
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	30003
             String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
-            String order_no = jsonObject.getString("order_no");//	是	String	系统订单号
+            String msg = jsonObject.getString("msg");
+            String pay_account_no = jsonObject.getString("pay_account_no");
+            String order_no = jsonObject.getString("order_no");
             String order_price = jsonObject.getString("order_price");//	是	Int	订单金额
             Integer status = jsonObject.getInteger("status");//	是	Int	支付状态 2 执行失败 3 执行成功
             String bene_no = jsonObject.getString("bene_no");//		是	String	收款账号/卡号
             String payee = jsonObject.getString("payee");//		是	String	收款人姓名(urlencode编码)
             String bank_id = jsonObject.getString("bank_id");//		是	String	收款银行ID
-
             String pay_time = jsonObject.getString("pay_time");//	否	String	yyyyMMddHHmmss
             Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
             String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
@@ -558,6 +559,8 @@ public class CsPayServiceImpl implements CsPayService {
             noticeMap.put("business_type", business_type);
             noticeMap.put("mer_order_no", mer_order_no);
             noticeMap.put("order_no", order_no);
+            noticeMap.put("msg", msg);
+            noticeMap.put("pay_account_no", pay_account_no);
             noticeMap.put("order_price", order_price);
             noticeMap.put("status", status);
             noticeMap.put("bene_no", bene_no);
@@ -589,9 +592,9 @@ public class CsPayServiceImpl implements CsPayService {
             if (traApplycash == null) {
                 throw new BusinessException("不存在提现申请");
             }
-//            if (Constants.APYCSTATUS1 != traApplycash.getApycstatus()) {
-//                throw new BusinessException("状态不为提现申请");
-//            }
+            if (Constants.APYCSTATUS2 != traApplycash.getApycstatus()) {
+                throw new BusinessException("状态不为提现处理中");
+            }
             if (Constants.ORDER_ORD12.equals(traOrderinfom.getOrderstatus())) {
                 throw new BusinessException("订单状态已提现");
             }
@@ -603,7 +606,7 @@ public class CsPayServiceImpl implements CsPayService {
             }
             // 申请状态 1提交申请 2提现处理中 3已经失败 4已打款 8已到账 9已取消
             traApplycash.setApycstatus(com.likes.common.constant.Constants.APYCSTATUS8);
-            traApplycash.setApycamt(BigDecimal.valueOf(Long.parseLong(order_price)));//打款金额
+            traApplycash.setApycamt(new BigDecimal(order_price));//打款金额
             traApplycash.setOrderno(order_no);
             // 提现申请
             traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);

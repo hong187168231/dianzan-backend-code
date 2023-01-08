@@ -607,16 +607,19 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                         traApplycash.setApycstatus(Constants.APYCSTATUS2);
                         traApplycash.setUpdateUser(loginAdmin.getAccno());
                         // 提现申请
-                        int k = traApplycashMapperService.doUpdateIncarnateHandleOrder(traApplycash);
+                        int k = traApplycashMapperService.updateTraApplycash(traApplycash);
                         if (!(k > 0)) {
                             throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "提现状态不为提交申请");
                         }
+                        // 修改提现申请状态
+                        traOrderinfom.setOrderstatus(Constants.ORDER_ORD07);
+                        traOrderinfom.setUpdateUser(loginAdmin.getAccno());
+                        traOrderinfomMapperService.doUpdateIncarnateHandleOrder(traOrderinfom);
                         return true;
                     }
                 }
             }
         }
-
 //        throw new RuntimeException("");
         return false;
 

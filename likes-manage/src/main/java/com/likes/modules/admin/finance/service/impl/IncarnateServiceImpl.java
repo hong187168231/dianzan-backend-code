@@ -72,6 +72,8 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
 
     private final Logger logger = LogManager.getLogger(getClass());
 
+    private final Integer CS_SUCCESS = 0;
+
     @Resource
     private CommonService commonService;
     @Resource
@@ -584,7 +586,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 csPaymentDTO.setBeneNo(memBank.getBankCardNo());
                 csPaymentDTO.setPayee(memBank.getUserName());
                 try {
-                    csPayService.submitWithdraw(csPaymentDTO);
+                    resultString = csPayService.submitWithdraw(csPaymentDTO);
                 } catch (Exception e) {
                     logger.error("創世支付，(付款接口)失败Exception:{}", e);
                 }
@@ -598,11 +600,11 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
                         //记录一次错误，进入下一个支付通道
                         return false;
-                    } else if (!"0".equals(jsonObject.getString("code"))) {
+                    } else if (!CS_SUCCESS.equals(jsonObject.getInteger("code"))) {
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
                         //记录一次错误，进入下一个支付通道
                         return false;
-                    } else if ("0".equals(jsonObject.getString("code"))) {
+                    } else if (CS_SUCCESS.equals(jsonObject.getInteger("code"))) {
                         // 设置
                         traApplycash.setApycstatus(Constants.APYCSTATUS2);
                         traApplycash.setUpdateUser(loginAdmin.getAccno());

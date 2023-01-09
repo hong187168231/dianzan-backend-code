@@ -124,13 +124,13 @@ public class SystemInterceptor extends HandlerInterceptorAdapter {
                 RedisBusinessUtil.delete("Login_info:" +acctoken);
                 return false;
             }
-//            List<Object> blackList = RedisBusinessUtil.getBlackInvite();
-//            if(CollectionUtil.isNotEmpty(blackList)){
-//                if(blackList.contains(user.getRecomcode()) ||blackList.contains(user.getHigherRecomcode()) ){
-//                    BaseUtil.writerResponse(response, StatusCode.INVITE_RESTRICT);
-//                    return false;
-//                }
-//            }
+            List<Object> blackList = RedisBusinessUtil.getBlackInvite();
+            if(CollectionUtil.isNotEmpty(blackList)){
+                if(blackList.contains(user.getRecomcode()) ||blackList.contains(user.getHigherRecomcode()) ){
+                    BaseUtil.writerResponse(response, StatusCode.INVITE_RESTRICT);
+                    return false;
+                }
+            }
             RedisBusinessUtil.checkIn(user.getMemid());
             RedisBusinessUtil.set("Login_info:" + acctoken, jsonstr, sessiontime);
             RedisBusinessUtil.set("Login_info:" + user.getAccno(), acctoken, sessiontime);

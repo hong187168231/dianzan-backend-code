@@ -423,11 +423,8 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
-    public String submitWithdraw(CsPaymentDTO csPaymentDTO) throws Exception {
-
+    public String submitWithdraw(CsPaymentDTO csPaymentDTO){
         long timestamp = System.currentTimeMillis() / 1000;
-
-
         Map<String, Object> payMap = new TreeMap<>();
         payMap.put("business_type", "30001");
         payMap.put("mer_order_no", csPaymentDTO.getOrderNo());
@@ -436,15 +433,11 @@ public class CsPayServiceImpl implements CsPayService {
         payMap.put("bank_id", csPaymentDTO.getBankId());
         payMap.put("bene_no", csPaymentDTO.getBeneNo());
         payMap.put("payee", csPaymentDTO.getPayee());
-
         payMap.put("timestamp", timestamp);
-
         log.info("CS付款接口请求参数", JSON.toJSONString(payMap));
         String sign = PaySignUtil.getSignLower(payMap, key);
         log.info("CS付款接口    (付款接口)输入加密前,sign：{}", sign);
-
         payMap.put("sign", sign);
-
         String params = base64(DESUtil.encrypt(JSONObject.toJSONString(payMap), key));
         Map<String, String> reqParams = new HashMap<>();
         reqParams.put("mcode", mcode);
@@ -456,9 +449,10 @@ public class CsPayServiceImpl implements CsPayService {
             log.info("CS付款接口    (付款接口)返回,result：{}", resultString);
         } catch (Exception e) {
             log.info("CS付款接口    (付款接口)請求Exception：{}", e);
-            throw e;
+            return "";
+        }finally {
+            return resultString;
         }
-        return resultString;
     }
 
 

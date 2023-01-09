@@ -12,9 +12,9 @@ public interface CsPayService {
 
     CSCallBackVoPrev callbackNotice(CsPayNoticeReq csNoticeVo) throws Exception;
 
-//     JSONObject queryOrder(String orderNo) throws Exception;
+//    JSONObject queryOrder(String orderNo) throws Exception;
 
-    public String submitWithdraw(CsPaymentDTO csPaymentDTO) throws Exception;
+    String submitWithdraw(CsPaymentDTO csPaymentDTO) throws Exception;
 
-    public String getCSAccountPrice() throws Exception;
+    String getCSAccountPrice() throws Exception;
 }

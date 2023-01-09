@@ -590,13 +590,13 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 } catch (Exception e) {
                     logger.error("創世支付，(付款接口)失败Exception:{}", e);
                 }
-                if (null == resultString || "".equals(resultString)) {
+                if (StringUtils.isBlank(resultString)) {
                     logger.error("創世支付，获取收银台支付token    (收款接口)失败");
                     //记录一次错误，进入下一个支付通道
                     return false;
                 } else {
                     JSONObject jsonObject = JSONObject.parseObject(resultString);
-                    if (null == jsonObject) {
+                    if (ObjectUtil.isNull(jsonObject)) {
                         logger.error("創世支付，获取收银台支付token    (收款接口)失败resultString{}", resultString);
                         //记录一次错误，进入下一个支付通道
                         return false;
@@ -622,9 +622,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
                 }
             }
         }
-//        throw new RuntimeException("");
         return false;
-
     }
 
 

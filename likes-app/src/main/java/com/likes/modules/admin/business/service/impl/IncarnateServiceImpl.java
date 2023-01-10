@@ -484,23 +484,23 @@ public class IncarnateServiceImpl implements IncarnateService {
         MemBaseinfo membaseinfo = memBaseinfoService.getUserByAccno(loginUserAPP.getAccno());
         // 体现金额
         double xiangti = req.getApycamt().doubleValue();
-        int sxfInt = 2;
+        int sxfInt = 0;
 
         Integer memLevel = response.getLevelSeq();
         Integer applyAmount = req.getApycamt().intValue();
-        if (memLevel.equals(1) && applyAmount > 50) {
-            sxfInt = 0;
-        } else if (memLevel.equals(2) && applyAmount > 100) {
-            sxfInt = 0;
-        } else if (memLevel.equals(3) && applyAmount > 200) {
-            sxfInt = 0;
-        } else if (memLevel.equals(4) && applyAmount > 500) {
-            sxfInt = 0;
-        } else if (memLevel.equals(5) && applyAmount > 1000) {
-            sxfInt = 0;
-        } else if (memLevel.equals(6) && applyAmount > 2000) {
-            sxfInt = 0;
-        }
+//        if (memLevel.equals(1) && applyAmount > 50) {
+//            sxfInt = 0;
+//        } else if (memLevel.equals(2) && applyAmount > 100) {
+//            sxfInt = 0;
+//        } else if (memLevel.equals(3) && applyAmount > 200) {
+//            sxfInt = 0;
+//        } else if (memLevel.equals(4) && applyAmount > 500) {
+//            sxfInt = 0;
+//        } else if (memLevel.equals(5) && applyAmount > 1000) {
+//            sxfInt = 0;
+//        } else if (memLevel.equals(6) && applyAmount > 2000) {
+//            sxfInt = 0;
+//        }
 
         // 能体现金额等于 账户余额，在打码量为0的情况下 手续费为0,行政费均为0
         double incarnatemoney = membaseinfo.getGoldnum().doubleValue();

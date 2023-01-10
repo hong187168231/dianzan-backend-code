@@ -625,7 +625,8 @@
                     ml.email
                 FROM
                     mem_baseinfo ml
-                        INNER JOIN ( SELECT accno FROM mem_relationship WHERE refaccno = '7df4efdbc7dd4142838f4aa02c4dbcae' ) agentLine ON ml.accno = agentLine.accno
+                        INNER JOIN ( SELECT accno FROM mem_relationship WHERE refaccno = 'root' ) agentLine ON ml.accno = agentLine.accno
+                        and ml.email != 'test'
             ) k
 
     </select>

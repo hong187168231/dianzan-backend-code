@@ -440,6 +440,12 @@ public class IncarnateServiceImpl implements IncarnateService {
             throw new BusinessException(StatusCode.LIVE_ERROR_160.getCode(), "信誉分太低,不能进行该操作！");
         }
         MemberLevelResponse response = memLevelConfigService.getMemLevelConfig(loginUserAPP.getAccno());
+        MemLevelConfig config = memLevelConfigService.getMemLevelConfigForLevel(response.getLevel());
+        if(ObjectUtil.isNotNull(config.getTakeAmount())){
+            if(req.getApycamt().intValue() > config.getTakeAmount().intValue()){
+                throw new BusinessException(StatusCode.LIVE_ERROR_110041.getCode(), "大于当前等级可提现金额！");
+            }
+        }
 //        if (response.equals(null) || response.getLevelSeq() < 5) {
 //            throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "vip5无法申请提现");
 //        }

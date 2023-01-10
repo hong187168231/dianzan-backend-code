@@ -471,6 +471,8 @@ public enum StatusCode {
     LIVE_ERROR_11002("11002", ""),
     LIVE_ERROR_11003("11003", ""),
     LIVE_ERROR_11004("11004", ""),
+
+    LIVE_ERROR_110041("110041", ""),
     LIVE_ERROR_11005("11005", ""),
     LIVE_ERROR_11006("11006", ""),
     LIVE_ERROR_110061("110061", ""),

@@ -441,8 +441,8 @@ public class IncarnateServiceImpl implements IncarnateService {
         }
         MemberLevelResponse response = memLevelConfigService.getMemLevelConfig(loginUserAPP.getAccno());
         MemLevelConfig config = memLevelConfigService.getMemLevelConfigForLevel(response.getLevel());
-        if(ObjectUtil.isNotNull(config.getTakeAmount())){
-            if(req.getApycamt().intValue() > config.getTakeAmount().intValue()){
+        if (ObjectUtil.isNotNull(config.getTakeAmount()) && config.getTakeAmount().intValue() > 0) {
+            if (req.getApycamt().intValue() > config.getTakeAmount().intValue()) {
                 throw new BusinessException(StatusCode.LIVE_ERROR_110041.getCode(), "大于当前等级可提现金额！");
             }
         }

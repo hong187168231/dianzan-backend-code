@@ -1,5 +1,6 @@
 package com.likes.common.service.member.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.github.pagehelper.PageHelper;
 import com.likes.common.constant.RedisKeys;
@@ -29,6 +30,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -232,7 +234,9 @@ public class MemLevelConfigServiceImpl implements MemLevelConfigService {
      */
     @Override
     public boolean insertForManager(MemLevelConfig memLevelConfig) {
-
+        if(ObjectUtil.isNull(memLevelConfig.getTakeAmount())){
+            memLevelConfig.setTakeAmount(BigDecimal.ZERO);
+        }
         Example example = new Example(MemLevelConfig.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("levelSeq", memLevelConfig.getLevelSeq());
@@ -256,6 +260,9 @@ public class MemLevelConfigServiceImpl implements MemLevelConfigService {
      */
     @Override
     public boolean updateForManager(MemLevelConfig memLevelConfig) {
+        if(ObjectUtil.isNull(memLevelConfig.getTakeAmount())){
+            memLevelConfig.setTakeAmount(BigDecimal.ZERO);
+        }
         if (memLevelConfigMapper.updateByPrimaryKeySelective(memLevelConfig) > 0) {
             RedisBusinessUtil.delete(RedisKeys.MEM_LEVEL_CONFIG);
             RedisBusinessUtil.delete(RedisKeys.MEM_LEVEL_CONFIG_ALL);

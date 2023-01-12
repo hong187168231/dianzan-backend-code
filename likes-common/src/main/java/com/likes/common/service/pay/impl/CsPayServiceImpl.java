@@ -445,14 +445,13 @@ public class CsPayServiceImpl implements CsPayService {
         log.info("CS付款接口   (付款接口)帶請求參數输入,apiUrl：{},params：{}", apiUrl, JSONObject.toJSONString(reqParams));
         String resultString = "";
         try {
-            resultString = "{\"msg\":\"订单登记成功\",\"code\":0,\"data\":{\"order_no\":\"OT2023010916162574713895\",\"order_price\":30000,\"mer_order_no\":\"0377127242740672\"}";
+            resultString = HttpClient4Util.doPost(apiUrl, JSONObject.toJSONString(reqParams));
             log.info("CS付款接口    (付款接口)返回,result：{}", resultString);
         } catch (Exception e) {
             log.info("CS付款接口    (付款接口)請求Exception：{}", e);
             return "";
-        }finally {
-            return resultString;
         }
+        return resultString;
     }
 
 

@@ -16,6 +16,7 @@ import com.likes.common.model.dto.pay.CsPayDTO;
 import com.likes.common.model.dto.pay.CsPayNoticeReq;
 import com.likes.common.model.dto.pay.CsPaymentDTO;
 import com.likes.common.mybatis.entity.*;
+import com.likes.common.mybatis.mapper.CsCallBackRecordMapper;
 import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
 import com.likes.common.service.common.CommonService;
 import com.likes.common.service.member.MemBaseinfoService;
@@ -32,6 +33,7 @@ import com.likes.common.service.pay.CsPayService;
 import com.likes.common.service.pay.PayMerchantService;
 import com.likes.common.util.cs.DESUtil;
 import com.likes.common.util.cs.HttpClient4Util;
+import com.likes.common.util.uploadFile.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -73,6 +75,9 @@ public class CsPayServiceImpl implements CsPayService {
 
     @Resource
     private InfSysremindinfoService infSysremindinfoService;
+
+    @Resource
+    private CsCallBackRecordMapper csCallBackRecordMapper;
 
     public static String key = "d2fb04d8103613b8d391ebc2d34228bd";
     public static String mcode = "gxtnxaciwhdg";
@@ -547,6 +552,13 @@ public class CsPayServiceImpl implements CsPayService {
             Integer timestamp = jsonObject.getInteger("timestamp");//	是	Int(10)	十位时间戳
             String sign = jsonObject.getString("sign");//	否	String	yyyyMMddHHmmss
 
+            CsCallBackRecord csCallBackRecord = new CsCallBackRecord();
+            csCallBackRecord.setId(UUIDUtils.getUUID());
+            csCallBackRecord.setParam(JSON.toJSONString(jsonObject));
+            csCallBackRecord.setOrderNo(mer_order_no);
+            csCallBackRecord.setCreateTime(new Date());
+            csCallBackRecordMapper.insert(csCallBackRecord);
+
 
             Map<String, Object> noticeMap = new TreeMap<>();
             noticeMap.put("business_type", business_type);
@@ -657,7 +669,6 @@ public class CsPayServiceImpl implements CsPayService {
                 memBaseinfoService.updateWithdrawalAmount(membaseinfo);
                 // 发送系统消息
                 this.doInfSysremindinfo(traOrderinfom, traOrderinfom.getAccno());
-
                 // 会员提现成功日志
                 SysInfolog sysInfolog = new SysInfolog();
                 sysInfolog.setAccno(traOrderinfom.getAccno());

@@ -517,6 +517,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     }
 
     @Override
+    @Transactional
     public boolean subUdun(IncarnateOrderReq req, LoginUser loginAdmin) {
         if (StringUtils.isEmpty(req.getOrderno())) {
             throw new BusinessException(StatusCode.LIVE_ERROR_101.getCode(), "订单号为空");
@@ -547,7 +548,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
+
     public boolean submitWithdraw(IncarnateOrderReq req, LoginUser loginAdmin, TraOrderinfom traOrderinfom) {
 
         // 提现申请

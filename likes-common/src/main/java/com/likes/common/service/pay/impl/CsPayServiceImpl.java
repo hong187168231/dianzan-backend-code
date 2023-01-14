@@ -289,7 +289,7 @@ public class CsPayServiceImpl implements CsPayService {
             return csCallBackVoPrev;
         }
         //解密
-        String params = "{\"order_no\":\"OT2023011409294620412363\",\"msg\":\"銀行維護\",\"payee\":\"DAO+QUOC+DAT\",\"bank_id\":\"MB\",\"business_type\":\"30003\",\"sign\":\"3fb1dd2f358aa7b9ea77b4617ecaf14d\",\"order_price\":\"30000.000\",\"mer_order_no\":\"0377772184077248\",\"pay_time\":\"20230114095502\",\"bene_no\":\"26112007081128\",\"status\":2,\"timestamp\":1673664904}";
+        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()), payMerchant.getMerchantKey());
         try {
             JSONObject jsonObject = JSONObject.parseObject(params);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003

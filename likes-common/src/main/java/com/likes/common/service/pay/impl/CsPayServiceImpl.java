@@ -15,16 +15,14 @@ import com.likes.common.model.dto.pay.CSCallBackVoPrev;
 import com.likes.common.model.dto.pay.CsPayDTO;
 import com.likes.common.model.dto.pay.CsPayNoticeReq;
 import com.likes.common.model.dto.pay.CsPaymentDTO;
+import com.likes.common.model.request.IncarnateOrderReq;
 import com.likes.common.mybatis.entity.*;
 import com.likes.common.mybatis.mapper.CsCallBackRecordMapper;
 import com.likes.common.mybatis.mapper.PayRechargeOrderMapper;
 import com.likes.common.service.common.CommonService;
 import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemBaseinfoWriteService;
-import com.likes.common.service.money.MemGoldchangeService;
-import com.likes.common.service.money.TraApplyauditService;
-import com.likes.common.service.money.TraApplycashService;
-import com.likes.common.service.money.TraOrderinfomService;
+import com.likes.common.service.money.*;
 import com.likes.common.service.sys.InfSysremindinfoService;
 import com.likes.common.util.DateUtils;
 import com.likes.common.util.PaySignUtil;
@@ -33,9 +31,13 @@ import com.likes.common.service.pay.CsPayService;
 import com.likes.common.service.pay.PayMerchantService;
 import com.likes.common.util.cs.DESUtil;
 import com.likes.common.util.cs.HttpClient4Util;
+import com.likes.common.util.redis.RedisLock;
 import com.likes.common.util.uploadFile.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sun.misc.BASE64Decoder;
@@ -45,6 +47,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.likes.common.util.ViewUtil.getTradeOffAmount;
@@ -59,6 +62,8 @@ public class CsPayServiceImpl implements CsPayService {
     @Resource
     private CommonService commonService;
     @Resource
+    private RedissonClient redissonClient;
+    @Resource
     private TraOrderinfomService traOrderinfomService;
     @Resource
     private TraApplycashService traApplycashMapperService;
@@ -68,6 +73,8 @@ public class CsPayServiceImpl implements CsPayService {
     private TraApplyauditService traApplyauditMapperService;
     @Resource
     private PayRechargeOrderMapper payRechargeOrderMapper;
+    @Resource
+    private TraOrdertrackingService traOrdertrackingMapperService;
     @Resource
     private MemGoldchangeService memGoldchangeService;
     @Resource
@@ -282,7 +289,7 @@ public class CsPayServiceImpl implements CsPayService {
             return csCallBackVoPrev;
         }
         //解密
-        String params = DESUtil.decrypt(base64Decoder(csPayNoticeReq.getParams()), payMerchant.getMerchantKey());
+        String params = "{\"order_no\":\"OT2023011409294620412363\",\"msg\":\"銀行維護\",\"payee\":\"DAO+QUOC+DAT\",\"bank_id\":\"MB\",\"business_type\":\"30003\",\"sign\":\"3fb1dd2f358aa7b9ea77b4617ecaf14d\",\"order_price\":\"30000.000\",\"mer_order_no\":\"0377772184077248\",\"pay_time\":\"20230114095502\",\"bene_no\":\"26112007081128\",\"status\":2,\"timestamp\":1673664904}";
         try {
             JSONObject jsonObject = JSONObject.parseObject(params);
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	10003
@@ -428,7 +435,7 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
-    public String submitWithdraw(CsPaymentDTO csPaymentDTO){
+    public String submitWithdraw(CsPaymentDTO csPaymentDTO) {
         long timestamp = System.currentTimeMillis() / 1000;
         Map<String, Object> payMap = new TreeMap<>();
         payMap.put("business_type", "30001");
@@ -565,7 +572,9 @@ public class CsPayServiceImpl implements CsPayService {
             noticeMap.put("mer_order_no", mer_order_no);
             noticeMap.put("order_no", order_no);
             noticeMap.put("msg", msg);
-            noticeMap.put("pay_account_no", pay_account_no);
+            if (StringUtils.isNotBlank(pay_account_no)) {
+                noticeMap.put("pay_account_no", pay_account_no);
+            }
             noticeMap.put("order_price", order_price);
             noticeMap.put("status", status);
             noticeMap.put("bene_no", bene_no);
@@ -609,6 +618,10 @@ public class CsPayServiceImpl implements CsPayService {
                 log.error("用户不存在");
                 throw new BusinessException("用户不存在");
             }
+            if (status != 3) {
+                failedOrder(traOrderinfom,traApplycash,msg);
+                return csCallBackVoPrev;
+            }
             // 申请状态 1提交申请 2提现处理中 3已经失败 4已打款 8已到账 9已取消
             traApplycash.setApycstatus(com.likes.common.constant.Constants.APYCSTATUS8);
             traApplycash.setApycamt(new BigDecimal(order_price));//打款金额
@@ -620,9 +633,9 @@ public class CsPayServiceImpl implements CsPayService {
             traOrderinfom.setOrderstatus(Constants.ORDER_ORD12);
             traOrderinfom.setPaydate(new Date());
             traOrderinfom.setUpdateUser("udun");
-            traOrderinfom.setOrdernote("udun 回调已到账");
+            traOrderinfom.setOrdernote("cs " + msg);
             int i = traOrderinfomMapperService.udunUpdateIncarnateConfirmOrder(traOrderinfom);
-            if(i>0){
+            if (i > 0) {
                 // 提现数据修改
                 traApplycash.setPaydate(new Date());
                 traApplycash.setApycstatus(Constants.APYCSTATUS4);
@@ -678,7 +691,7 @@ public class CsPayServiceImpl implements CsPayService {
                 sysInfolog.setOrginfo("doIncarnateConfirm");
                 commonService.insertSelective(sysInfolog);
                 RedisBusinessUtil.delIncarnateOrderListCahce();
-            }else {
+            } else {
                 throw new BusinessException("提现失败(订单已提现)");
             }
         } catch (Exception e) {
@@ -707,6 +720,72 @@ public class CsPayServiceImpl implements CsPayService {
         infSysremindinfoService.insertSelective(infSysremindinfo);
         RedisBusinessUtil.delete(RedisKeys.LIVE_INF_SYSREMINDINFO_NUM + traOrderinfom.getAccno());
 
+    }
+
+
+    private void failedOrder(TraOrderinfom traOrderinfom,TraApplycash traApplycash, String msg) {
+        BigDecimal sumamt = traOrderinfom.getSumamt();
+        // 修改订单状态
+        traOrderinfom.setOrderstatus(Constants.ORDER_ORD14);
+        traOrderinfom.setUpdateUser("cs");
+        traOrderinfom.setUpdateTime(new Date());
+        traOrderinfom.setOrdernote("cs" + msg);
+        traOrderinfomMapperService.updateByPrimaryKeySelective(traOrderinfom);
+        Long mid = memBaseinfoService.selectByAccno(traOrderinfom.getAccno()).getMemid();
+        RReadWriteLock lock = redissonClient.getReadWriteLock(RedisLock.UPDATE_USER_BALANCE_ + mid);
+        try {
+            boolean bool = lock.writeLock().tryLock(100, 20, TimeUnit.SECONDS);
+            if (!bool) {
+                log.error("{}.failedOrder 未获得锁:{}", getClass().getName(), RedisLock.UPDATE_USER_BALANCE_ + mid);
+                throw new BusinessException("操作太频繁，请稍后再试");
+            }
+            // 插入订单轨迹
+            MemBaseinfo membaseinfo = memBaseinfoService.getUserByAccno(traOrderinfom.getAccno());
+            TraOrdertracking traOrdertracking = new TraOrdertracking();
+            traOrdertracking.setOrderid(traOrderinfom.getOrderid());
+            traOrdertracking.setTrackdate(new Date());
+            traOrdertracking.setOrderstatus(Constants.ORDER_ORD14);
+            traOrdertracking.setOperuse("cs");
+            traOrdertracking.setTrackbody("支付商[ cs ]将提现订单[" + traOrderinfom.getOrderno() + "]失败");
+            traOrdertrackingMapperService.insertSelective(traOrdertracking);
+            // 设置 提现申请为失败
+            traApplycash.setApycstatus(Constants.APYCSTATUS3);
+            traApplycash.setPaymemname("cs");
+            traApplycash.setUpdateUser("cs");
+            traApplycashMapperService.updateByPrimaryKeySelective(traApplycash);
+            //帐变
+            // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
+            MemGoldchange memGoldchange = memGoldchangeService.selectOneByExample(traOrderinfom.getOrderid(), traOrderinfom.getAccno());
+            BigDecimal tradeOffAmount = getTradeOffAmount(membaseinfo.getNoWithdrawalAmount());
+            BigDecimal tradeOffAmount1 = getTradeOffAmount(membaseinfo.getGoldnum());
+            memGoldchange.setAfterCgdml(tradeOffAmount);
+            memGoldchange.setPreCgdml(tradeOffAmount);
+            memGoldchange.setSource(traOrderinfom.getSource());
+            memGoldchange.setGoldnum(tradeOffAmount1);
+            memGoldchange.setQuantity(getTradeOffAmount(sumamt.multiply(new BigDecimal(Constants.CHONGZHIBILIE))));
+            memGoldchange.setAmount(getTradeOffAmount(sumamt));
+            memGoldchange.setRecgoldnum(tradeOffAmount1.add(sumamt));
+            memGoldchange.setChangetype(GoldchangeEnum.WITHDRAW_FAILED.getValue());
+            memGoldchange.setUpdateUser("cs");
+            memGoldchange.setUpdateTime(new Date());
+            memGoldchange.setOpnote("提现失败");
+            memGoldchangeService.updateByPrimaryKeySelective(memGoldchange);
+            memBaseinfoService.updateMemBalance(sumamt, BigDecimal.ZERO, BigDecimal.ZERO, membaseinfo.getAccno());
+
+            // 会员人工取消日志
+            SysInfolog sysInfolog = new SysInfolog();
+            sysInfolog.setAccno("cs");
+            sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + traOrderinfom.getOrderno() + "]三方失败");
+            sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
+            sysInfolog.setModelname("会员提现");
+            sysInfolog.setOrginfo("doIncarnateConfirm");
+            commonService.insertSelective(sysInfolog);
+        } catch (Exception e) {
+            log.error("{}.failedOrder 失败", getClass().getName(), e);
+            throw new BusinessException("修改账变失败");
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
 }

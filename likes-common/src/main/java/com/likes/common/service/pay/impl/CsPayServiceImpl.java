@@ -40,6 +40,7 @@ import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -274,6 +275,7 @@ public class CsPayServiceImpl implements CsPayService {
      * @throws Exception
      */
     @Override
+    @Transactional
     public CSCallBackVoPrev callbackNotice(CsPayNoticeReq csPayNoticeReq) throws Exception {
         CSCallBackVoPrev csCallBackVoPrev = new CSCallBackVoPrev();
         csCallBackVoPrev.setCode("success");
@@ -309,6 +311,7 @@ public class CsPayServiceImpl implements CsPayService {
                 return csCallBackVoPrev;
             }
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error("创世支付回调发生错误,错误信息 ===== params:{}", params);
             csCallBackVoPrev.setCode("9999");
             return csCallBackVoPrev;

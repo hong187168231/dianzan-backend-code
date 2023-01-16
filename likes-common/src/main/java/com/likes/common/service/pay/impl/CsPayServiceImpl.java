@@ -544,10 +544,10 @@ public class CsPayServiceImpl implements CsPayService {
      * @return
      * @throws Exception
      */
-    public CSCallBackVoPrev callbackNotice30003(JSONObject jsonObject) throws Exception {
+    public CSCallBackVoPrev callbackNotice30003(JSONObject jsonObject) {
         CSCallBackVoPrev csCallBackVoPrev = new CSCallBackVoPrev();
         csCallBackVoPrev.setCode("success");
-        try {
+
             String business_type = jsonObject.getString("business_type");//	是	String(5)	业务编码	30003
             String mer_order_no = jsonObject.getString("mer_order_no");//	是	String(20)	商户订单号
             String msg = jsonObject.getString("msg");
@@ -697,11 +697,6 @@ public class CsPayServiceImpl implements CsPayService {
             } else {
                 throw new BusinessException("提现失败(订单已提现)");
             }
-        } catch (Exception e) {
-            log.error("创世支付回调发生错误(付款接口),错误信息 ===== params:{}", jsonObject);
-            csCallBackVoPrev.setCode("9999");
-            return csCallBackVoPrev;
-        }
         return csCallBackVoPrev;
     }
 

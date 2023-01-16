@@ -23,6 +23,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -257,9 +258,11 @@ public class IncarnateController extends BaseController {
             response.setData(incarnateService.incarnateConfirmV2(req, loginAdmin));
             LogUtils.logUserModifyOperates(getClass().getName() + ".incarnateConfirmV2", req, loginAdmin);
         } catch (BusinessException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.error("{}/v2/incarnateConfirm出账订单处理,确认转账出错,出错信息:{}", getClass().getName(), e.getMessage(), e);
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             response = ResultInfo.error("出账订单处理,确认转账失败");
             logger.error("{}/v2/incarnateConfirm出账订单处理,确认转账出错,出错信息:{}", getClass().getName(), e.getMessage(), e);
         } finally {

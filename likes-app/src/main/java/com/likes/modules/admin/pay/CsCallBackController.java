@@ -45,12 +45,15 @@ public class CsCallBackController {
         try {
             csCallBackVoPrev = csPayService.callbackNotice(csPayNoticeReq);
         } catch (Exception e) {
+            log.error("/我方回调参数出现异常",params);
             csCallBackVoPrev = new CSCallBackVoPrev();
             csCallBackVoPrev.setCode("9999");
             csCallBackVoPrev.setMsg("系统异常错误");
             log.error("{}.callback创世异步通知出错,出错信息:{}", getClass().getName(), e);
+            return csCallBackVoPrev;
         }
         log.info("/callback耗时{}毫秒：", (System.currentTimeMillis() - start));
+        log.error("/我方回调参数", JSONObject.toJSONString(csCallBackVoPrev));
         return csCallBackVoPrev;
     }
 

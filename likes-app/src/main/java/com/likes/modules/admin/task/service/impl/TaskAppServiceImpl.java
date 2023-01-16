@@ -304,6 +304,9 @@ public class TaskAppServiceImpl implements TaskAppService {
         if (taskOrderVo == null) {
             throw new RuntimeException("获取订单详情失败");
         }
+        if (!taskOrderVo.getMemNo().equals(loginUser.getAccno())) {
+            throw new RuntimeException("获取订单详情失败");
+        }
         if (taskOrderVo.getStatus() != TaskOrderTypeEnum.UNDERWAY.getValue()) {
             throw new RuntimeException("订单状态异常");
         }
@@ -316,6 +319,7 @@ public class TaskAppServiceImpl implements TaskAppService {
         //用户余额账变
         MemGoldchangeDO dto = new MemGoldchangeDO();
         dto.setOpnote("任务奖励");
+        dto.setRefId(taskOrder.getId());
         if (ObjectUtil.isNotNull(taskOrder.getReceivePrice())) {
             dto.setQuantity(taskOrder.getReceivePrice());
         } else {

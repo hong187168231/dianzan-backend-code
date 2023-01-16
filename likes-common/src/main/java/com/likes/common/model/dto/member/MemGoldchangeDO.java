@@ -11,6 +11,8 @@ import java.util.Date;
 public class MemGoldchangeDO extends MemGoldchange {
 
 
+    private Long refId;
+
     /**
      * 会员账号
      */
@@ -148,6 +150,14 @@ public class MemGoldchangeDO extends MemGoldchange {
 
     public void setWithdrawalAmount(BigDecimal withdrawalAmount) {
         this.withdrawalAmount = withdrawalAmount;
+    }
+
+    public Long getRefId() {
+        return refId;
+    }
+
+    public void setRefId(Long refId) {
+        this.refId = refId;
     }
 
     @Override

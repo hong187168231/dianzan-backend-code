@@ -1,5 +1,6 @@
 package com.likes.common.service.member.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.constant.Constants;
 import com.likes.common.enums.GoldchangeEnum;
 import com.likes.common.enums.StatusCode;
@@ -143,6 +144,9 @@ public class MemBaseinfoWriteServiceImpl implements MemBaseinfoWriteService {
                     c.setSuperiorId(memBaseinfo.getSuperiorId());
                     c.setCreateTime(new Date());
                     c.setSnowSn(SnowflakeIdWorker.generateId());
+                    if(ObjectUtil.isNotNull(change.getRefId())){
+                        c.setRefid(change.getRefId());
+                    }
                     begin = System.currentTimeMillis();
                     memGoldchangeService.insertSelective(c);
                     logger.info("{} updateUserBalance memGoldchangeMapper.insertSelective 充值帐变 耗时 time, {}", change.getUserId(), System.currentTimeMillis() - begin);

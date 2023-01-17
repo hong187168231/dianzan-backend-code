@@ -1755,9 +1755,9 @@
         A.sumamt,
         A.create_time as createTime,
         A.update_time as updateTime,
-        A.paydate as paydate,
+        A.paydate as payDate,
         (SELECT unique_id FROM mem_baseinfo m WHERE m.accno = A.accno LIMIT 1) AS uniqueId,
-        mbase.email AS email
+        (SELECT email FROM mem_baseinfo m WHERE m.accno = A.accno LIMIT 1) AS email
         from
         (
         SELECT * FROM tra_orderinfom t
@@ -1773,13 +1773,10 @@
         ) AS A
 
         INNER JOIN tra_applycash tr ON A.orderid = tr.orderid AND tr.is_delete = b'0'
-        INNER JOIN mem_baseinfo mbase ON A.accno = mbase.accno
-            and mbase.superior_id = #{superiorId}
+        INNER JOIN mem_relationship mr ON A.accno = mr.accno
+            and mr.head_accno = #{accno}
         ) AS B
         WHERE 1 = 1
-<!--        <if test="accno != null and  accno !='' ">-->
-<!--            and B.accno=#{accno}-->
-<!--        </if>-->
         <if test="orderno != null and  orderno !='' ">
             and B.orderno = #{orderno}
         </if>

@@ -67,7 +67,7 @@ public class MemBankController {
     }
 
     @ApiOperation(value = "修改会员银行卡")
-    @PutMapping(value = "/edit")
+    @PostMapping(value = "/edit")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memBankId", value = "会员银行卡id", required = true, paramType = "query", dataType = "Long"),
             @ApiImplicitParam(name = "bankCardNo", value = "银行卡号", required = true, paramType = "query", dataType = "string")

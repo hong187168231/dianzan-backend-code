@@ -1768,7 +1768,6 @@
             t.orderstatus in ("ord05","ord12","ord14") or (t.orderstatus = 'ord07' )
             )
         </if>
-
         AND t.ordertype = 4
         ) AS A
 
@@ -1779,6 +1778,9 @@
         WHERE 1 = 1
         <if test="orderno != null and  orderno !='' ">
             and B.orderno = #{orderno}
+        </if>
+        <if test="acclogin != null and  acclogin !='' ">
+            and B.email = #{acclogin}
         </if>
         <if test="beginTime != null and  beginTime !='' ">
             <![CDATA[  and B.createTime >= #{beginTime} ]]>

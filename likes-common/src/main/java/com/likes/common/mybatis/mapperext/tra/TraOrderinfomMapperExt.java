@@ -284,4 +284,7 @@ public interface TraOrderinfomMapperExt {
 
     @Select("SELECT count(1) FROM tra_orderinfom  trf WHERE trf.ordertype = 3 or ordertype =  4  and orderstatus = 'ord12' and to_days(trf.create_time) = to_days(now()) and accno = #{accno}")
     int countTodayWithdrawal(String accno);
+
+    @Select("SELECT count(1) FROM tra_orderinfom  trf WHERE trf.ordertype = 3 or ordertype =  4  and orderstatus = 'ord12'  and accno = #{accno}")
+    int countAllWithdrawal(String accno);
 }

@@ -23,10 +23,7 @@ import com.likes.common.mybatis.mapper.TaskOrderMapper;
 import com.likes.common.mybatis.mapperext.member.MemBaseinfoMapperExt;
 import com.likes.common.mybatis.mapperext.member.MemLevelConfigMapperExt;
 import com.likes.common.service.credit.MemCreditService;
-import com.likes.common.service.member.MemBaseinfoWriteService;
-import com.likes.common.service.member.MemLevelConfigService;
-import com.likes.common.service.member.MemLevelService;
-import com.likes.common.service.member.MemRelationshipService;
+import com.likes.common.service.member.*;
 import com.likes.common.service.sys.SysBusParamService;
 import com.likes.common.service.sys.SysParamService;
 import com.likes.common.service.task.TaskOrderService;
@@ -88,6 +85,8 @@ public class TaskAppServiceImpl implements TaskAppService {
     private MemLevelConfigService memLevelConfigService;
     @Resource
     private SysParamService sysParamService;
+    @Resource
+    private MemBaseinfoService memBaseinfoService;
 
     @Override
     @DS("slave")
@@ -262,6 +261,14 @@ public class TaskAppServiceImpl implements TaskAppService {
         Integer taskNum = levelConfig.getDoTaskTimes();
         if (todayCount >= taskNum) {
             throw new BusinessException(StatusCode.LIVE_ERROR_134.getCode(), "您今天领取的任务已超限！");
+        }
+        MemBaseinfo memBaseinfo = memBaseinfoService.selectByAccno(loginUser.getAccno());
+        if (memBaseinfo.getLevel() < 1) {
+            Date register10Date = DateUtils.addDays(memBaseinfo.getRegisterdate(), 10);
+            Date now = new Date();
+            if(now.after(register10Date)){
+                throw new BusinessException(StatusCode.LIVE_ERROR_134.getCode(), "您今天领取的任务已超限！");
+            }
         }
         MemLevelConfig memLevelConfig = memLevelConfigMapperExt.selectMemLevel(loginUser.getAccno());
         TaskOrder taskOrder = new TaskOrder();

@@ -446,9 +446,6 @@ public class IncarnateServiceImpl implements IncarnateService {
                 throw new BusinessException(StatusCode.LIVE_ERROR_110041.getCode(), "大于当前等级可提现金额！");
             }
         }
-//        if (response.equals(null) || response.getLevelSeq() < 5) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "vip5无法申请提现");
-//        }
         MemBank memBank = appMemBankService.findMemBankByAccno(loginUserAPP.getAccno());
         if (ObjectUtil.isNull(memBank) || StringUtils.isBlank(memBank.getBankCardNo())) {
             throw new BusinessException(StatusCode.LIVE_ERROR_1199.getCode(), "请先绑定银行卡");
@@ -514,7 +511,12 @@ public class IncarnateServiceImpl implements IncarnateService {
         //首次最小提现金额
         SysBusparameter f_min_w = this.sysBusParamService.selectByBusparamcode("f_min_w");
         int todayWnum = traOrderinfomMapperExt.countTodayWithdrawal(loginUserAPP.getAccno());
-
+        int allWnum = traOrderinfomMapperExt.countAllWithdrawal(loginUserAPP.getAccno());
+        if (ObjectUtil.isNotNull(response) && response.getLevelSeq() < 1) {
+            if (allWnum > 0) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "超过今日限提笔数!");
+            }
+        }
         if (xiangti < Double.valueOf(f_min_w.getBusparamname())) {
             throw new BusinessException(StatusCode.LIVE_ERROR_11004.getCode(), "提现金额小于最低提现金额!");
         }

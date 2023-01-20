@@ -1270,10 +1270,12 @@
         mb.mobileno as mobileno,
         mb.accno as accno,
         mb.email as email
-        FROM tra_orderinfom t left join mem_baseinfo mb on t.accno = mb.accno
-        WHERE t.is_delete = b'0'
-        and mb.superior_id = #{superiorId}
-        AND t.ordertype = 1 or t.ordertype = 2
+        FROM tra_orderinfom t INNER join mem_baseinfo mb on t.accno = mb.accno
+        and t.is_delete = b'0'
+        AND (t.ordertype = 1 or t.ordertype = 2)
+        INNER JOIN mem_relationship mr ON t.accno = mr.accno
+        and mr.head_accno = #{accno}
+
 
         <if test="orderstatus != null and  orderstatus !='' ">
             and t.orderstatus = #{orderstatus}

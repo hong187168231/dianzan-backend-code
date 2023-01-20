@@ -3,13 +3,16 @@ package com.likes.modules.admin.user.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
+import com.likes.common.exception.BusinessException;
 import com.likes.common.model.bank.MemBankPageReq;
 import com.likes.common.model.bank.MemBankSwitchReq;
 import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.mybatis.entity.MemBank;
+import com.likes.common.mybatis.entity.PayBank;
 import com.likes.common.mybatis.mapper.MemBankMapper;
+import com.likes.common.mybatis.mapper.PayBankMapper;
 import com.likes.modules.admin.user.service.IMemBankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ public class MemBankServiceImpl implements IMemBankService {
     @Autowired
     private MemBankMapper memBankMapper;
 
+    @Autowired
+    private PayBankMapper payBankMapper;
+
     @Override
     public PageResult queryList(MemBankPageReq req, PageBounds page) {
         Page<MemBankVO> list = memBankMapper.queryList(req, page.toRowBounds());
@@ -43,10 +49,16 @@ public class MemBankServiceImpl implements IMemBankService {
     }
 
     @Override
-    public boolean edit(Long memBankId, String bankCardNo,String bankName) {
+    public boolean edit(Long memBankId, String bankCardNo,Long bankId) {
         MemBank memBank = memBankMapper.selectByPrimaryKey(memBankId);
         memBank.setBankCardNo(bankCardNo);
-        memBank.setBankName(bankName);
+        PayBank payBank = payBankMapper.selectByPrimaryKey(bankId);
+        if (ObjectUtil.isNull(payBank)) {
+            throw new BusinessException("无效银行id!");
+        }
+        memBank.setBankId(payBank.getBankId());
+        memBank.setBankCode(payBank.getBankCode());
+        memBank.setBankName(payBank.getBankName());
         return memBankMapper.updateByPrimaryKeySelective(memBank) > 0;
     }
 

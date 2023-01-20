@@ -1,12 +1,14 @@
 package com.likes.modules.admin.user.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.likes.common.annotation.AllowAccess;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.bank.MemBankPageReq;
 import com.likes.common.model.bank.MemBankSwitchReq;
 import com.likes.common.model.bank.MemBankVO;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
+import com.likes.common.service.pay.PayBankService;
 import com.likes.modules.admin.user.service.IMemBankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,6 +34,9 @@ public class MemBankController {
 
     @Autowired
     private IMemBankService iMemBankService;
+
+    @Autowired
+    private PayBankService payBankService;
 
     @ApiOperation(value = "分页查询",response = MemBankVO.class)
     @PostMapping(value = "/page")
@@ -71,19 +76,39 @@ public class MemBankController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memBankId", value = "会员银行卡id", required = true, paramType = "query", dataType = "Long"),
             @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "string"),
-            @ApiImplicitParam(name = "bankCardNo", value = "银行卡号", required = true, paramType = "query", dataType = "string")
+            @ApiImplicitParam(name = "bankId", value = "可绑定银行id", required = true, paramType = "query", dataType = "Long")
     })
     public ResultInfo edit(@RequestParam("memBankId") Long memBankId,
-                           @RequestParam("bankCardNo") String bankCardNo,@RequestParam("bankName") String bankName) {
+                           @RequestParam("bankCardNo") String bankCardNo,@RequestParam("bankId") Long bankId) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            response.setData(iMemBankService.edit(memBankId, bankCardNo,bankName));
+            response.setData(iMemBankService.edit(memBankId, bankCardNo,bankId));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             log.info("/createUser失败:{}", e.getMessage());
         }
         log.info("/createUser耗时{}毫秒：", (System.currentTimeMillis() - start));
+        return response;
+    }
+
+
+    @ApiOperation(value = "后台可绑定银行列表")
+    @GetMapping("/payBankList")
+    @AllowAccess
+    public ResultInfo payBankList() {
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        try {
+            response.setData(payBankService.bankList());
+        } catch (BusinessException e) {
+            response.setResultInfo(e.getCode(), e.getMessage());
+            log.error("{}.payBankList 失败:{}", getClass().getName(), e.getMessage(), e);
+        } catch (Exception e) {
+            response = ResultInfo.error("获取会员可绑定银行列表出错");
+            log.error("{}.payBankList 出错:{}", getClass().getName(), e.getMessage(), e);
+        }
+        log.info("/payBankList耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;
     }
 

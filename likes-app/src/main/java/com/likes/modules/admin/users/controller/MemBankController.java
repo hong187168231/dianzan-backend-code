@@ -55,24 +55,24 @@ public class MemBankController extends BaseController {
     }
 
 
-    @ApiOperation(value = "修改银行卡", httpMethod = "POST")
-    @PostMapping(value = "/edit")
-    public ResultInfo editBankCard(AddBankCardReq req) {
-        long start = System.currentTimeMillis();
-        ResultInfo response = ResultInfo.ok();
-        try {
-            LoginUser loginUserAPP = getLoginUserAPP();
-            response.setData(appMemBankService.editBankCard(req, loginUserAPP));
-        } catch (BusinessException e) {
-            response.setResultInfo(e.getCode(), e.getMessage());
-            log.error("{}.myLevel 失败:{}", getClass().getName(), e.getMessage(), e);
-        } catch (Exception e) {
-            response = ResultInfo.error("获取我的等级出错");
-            log.error("{}.myLevel 出错:{}", getClass().getName(), e.getMessage(), e);
-        }
-        log.info("/myLevel耗时{}毫秒", (System.currentTimeMillis() - start));
-        return response;
-    }
+//    @ApiOperation(value = "修改银行卡", httpMethod = "POST")
+//    @PostMapping(value = "/edit")
+//    public ResultInfo editBankCard(AddBankCardReq req) {
+//        long start = System.currentTimeMillis();
+//        ResultInfo response = ResultInfo.ok();
+//        try {
+//            LoginUser loginUserAPP = getLoginUserAPP();
+//            response.setData(appMemBankService.editBankCard(req, loginUserAPP));
+//        } catch (BusinessException e) {
+//            response.setResultInfo(e.getCode(), e.getMessage());
+//            log.error("{}.myLevel 失败:{}", getClass().getName(), e.getMessage(), e);
+//        } catch (Exception e) {
+//            response = ResultInfo.error("获取我的等级出错");
+//            log.error("{}.myLevel 出错:{}", getClass().getName(), e.getMessage(), e);
+//        }
+//        log.info("/myLevel耗时{}毫秒", (System.currentTimeMillis() - start));
+//        return response;
+//    }
 
 
     @ApiOperation(value = "查询个人银行卡列表", httpMethod = "GET")

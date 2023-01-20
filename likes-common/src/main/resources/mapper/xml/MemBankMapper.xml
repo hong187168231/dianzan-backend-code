@@ -6,6 +6,7 @@
         SELECT
         mb.email,
         mbb.accno AS accno,
+        mbb.bank_id as bankId,
         mbb.mem_bank_id as memBankId,
         mbb.user_name AS userName,
         pb.bank_name AS bankName,

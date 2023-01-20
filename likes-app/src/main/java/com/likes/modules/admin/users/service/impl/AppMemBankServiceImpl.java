@@ -79,6 +79,10 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         if (memBank != null && memBaseinfo.getLevel() < 5) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
         }
+        int  userNameCount = countByUserName(req.getUserName());
+        if (userNameCount >=1 && memBaseinfo.getLevel() < 5) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+        }
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){
 //            throw new BizException("请先完成实名认证！");
 //        }
@@ -117,6 +121,10 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
         MemBank bankAddress = findBankCardNo(req.getBankCardNo());
         if (bankAddress != null && memBaseinfo.getLevel() < 5) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+        }
+        int  userNameCount = countByUserName(req.getUserName());
+        if (userNameCount >=1 && memBaseinfo.getLevel() < 5) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
         }
 //        if(!req.getUserName().equals(memBaseinfo.getRealName())){
@@ -186,6 +194,12 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         MemBank memBankParam = new MemBank();
         memBankParam.setMemBankId(memBankId);
         return memBankMapper.selectOne(memBankParam);
+    }
+
+    public int countByUserName(String userName) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setUserName(userName);
+        return memBankMapper.selectCount(memBankParam);
     }
 
 }

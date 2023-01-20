@@ -43,9 +43,10 @@ public class MemBankServiceImpl implements IMemBankService {
     }
 
     @Override
-    public boolean edit(Long memBankId, String bankCardNo) {
+    public boolean edit(Long memBankId, String bankCardNo,String bankName) {
         MemBank memBank = memBankMapper.selectByPrimaryKey(memBankId);
         memBank.setBankCardNo(bankCardNo);
+        memBank.setBankName(bankName);
         return memBankMapper.updateByPrimaryKeySelective(memBank) > 0;
     }
 

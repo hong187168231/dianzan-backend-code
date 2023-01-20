@@ -23,7 +23,7 @@ public interface IMemBankService {
 
     boolean switchStatus(MemBankSwitchReq req);
 
-    boolean edit(Long memBankId, String bankCardNo);
+    boolean edit(Long memBankId, String bankCardNo,String bankName);
 
     MemBank  selectByMemBankId(Long memBankId);
 

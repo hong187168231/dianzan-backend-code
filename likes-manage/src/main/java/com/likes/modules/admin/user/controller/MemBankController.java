@@ -70,13 +70,15 @@ public class MemBankController {
     @PostMapping(value = "/edit")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memBankId", value = "会员银行卡id", required = true, paramType = "query", dataType = "Long"),
+            @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "string"),
             @ApiImplicitParam(name = "bankCardNo", value = "银行卡号", required = true, paramType = "query", dataType = "string")
     })
-    public ResultInfo edit(@RequestParam("memBankId") Long memBankId, @RequestParam("bankCardNo") String bankCardNo) {
+    public ResultInfo edit(@RequestParam("memBankId") Long memBankId,
+                           @RequestParam("bankCardNo") String bankCardNo,@RequestParam("bankName") String bankName) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            response.setData(iMemBankService.edit(memBankId, bankCardNo));
+            response.setData(iMemBankService.edit(memBankId, bankCardNo,bankName));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             log.info("/createUser失败:{}", e.getMessage());

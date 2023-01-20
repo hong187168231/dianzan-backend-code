@@ -1276,7 +1276,9 @@
         INNER JOIN mem_relationship mr ON t.accno = mr.accno
         and mr.head_accno = #{accno}
 
-
+        <if test="acclogin != null and  acclogin !='' ">
+            and mb.email = #{acclogin}
+        </if>
         <if test="orderstatus != null and  orderstatus !='' ">
             and t.orderstatus = #{orderstatus}
         </if>

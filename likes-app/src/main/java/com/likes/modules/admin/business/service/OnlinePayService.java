@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -48,6 +49,7 @@ public class OnlinePayService {
     private SysParamService sysParamService;
 
 
+    @Transactional
     public CsPayResultVo doOnlinePay(OnlinePayDTO onlinePayDTO, LoginUser loginUser) throws Exception {
         SysParameter leastAmount = this.sysParamService.getByCode("LEAST_RECHARGE_AMOUNT");
         if (leastAmount == null || StringUtils.isEmpty(leastAmount.getSysparamvalue())) {
@@ -104,7 +106,7 @@ public class OnlinePayService {
                             break;
                         } else {
                             //记录一次错误，进入下一个支付通道
-                            continue;
+                            throw new BusinessException("获取三分支付信息异常");
                         }
                     }
                 }

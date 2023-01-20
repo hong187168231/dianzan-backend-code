@@ -126,7 +126,7 @@
                       WHERE is_delete = 0
                         AND expire_time > NOW()
 
-                      GROUP BY accno) ml
+                      GROUP BY accno,level_config_id) ml
                 WHERE ml.level_config_id = mlc.id) AS memnum
         FROM mem_level_config mlc
         ORDER BY level_seq ASC

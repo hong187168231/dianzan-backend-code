@@ -411,7 +411,7 @@ public class CsPayServiceImpl implements CsPayService {
                 return csCallBackVoPrev;
             }
             if (rechargeOrder.getTradeStatus() != 0) {
-                csCallBackVoPrev.setCode("2000");
+                csCallBackVoPrev.setCode("success");
                 log.error("订单号已经处理===[{}]", order_no);
                 return csCallBackVoPrev;
             }

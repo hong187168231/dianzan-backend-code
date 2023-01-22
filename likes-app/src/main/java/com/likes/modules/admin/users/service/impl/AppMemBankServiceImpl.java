@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -99,6 +100,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankRelation.setBankName(payBank.getBankName());
         memBankRelation.setAccno(loginUser.getAccno());
         memBankRelation.setEmail(loginUser.getAcclogin());
+        memBankRelation.setCreateTime(new Date());
         return memBankMapper.insertSelective(memBankRelation) > 0;
     }
 
@@ -148,6 +150,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankRelation.setBankId(payBank.getBankId());
         memBankRelation.setBankCode(payBank.getBankCode());
         memBankRelation.setBankName(payBank.getBankName());
+        memBankRelation.setUpdateTime(new Date());
         return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
     }
 

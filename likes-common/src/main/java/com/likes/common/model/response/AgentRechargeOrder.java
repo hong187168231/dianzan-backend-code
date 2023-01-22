@@ -11,10 +11,10 @@ public class AgentRechargeOrder {
     private String orderid;
     private String orderno;
     private BigDecimal realamt;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date createTime;
     private String orderstatus;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
     private String email;
     private String accno;

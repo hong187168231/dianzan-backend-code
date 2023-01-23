@@ -76,14 +76,15 @@ public class MemBankController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memBankId", value = "会员银行卡id", required = true, paramType = "query", dataType = "Long"),
             @ApiImplicitParam(name = "bankName", value = "银行名称", required = true, paramType = "query", dataType = "string"),
+            @ApiImplicitParam(name = "userName", value = "银行姓名", required = true, paramType = "query", dataType = "string"),
             @ApiImplicitParam(name = "bankId", value = "可绑定银行id", required = true, paramType = "query", dataType = "Long")
     })
     public ResultInfo edit(@RequestParam("memBankId") Long memBankId,
-                           @RequestParam("bankCardNo") String bankCardNo,@RequestParam("bankId") Long bankId) {
+                           @RequestParam("bankCardNo") String bankCardNo,@RequestParam("userName") String userName,@RequestParam("bankId") Long bankId) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            response.setData(iMemBankService.edit(memBankId, bankCardNo,bankId));
+            response.setData(iMemBankService.edit(memBankId, bankCardNo,userName,bankId));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             log.info("/createUser失败:{}", e.getMessage());

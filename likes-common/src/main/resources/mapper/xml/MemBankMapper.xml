@@ -17,6 +17,9 @@
         mem_bank mbb
         INNER JOIN mem_baseinfo mb ON mb.accno = mbb.accno
         INNER JOIN pay_bank pb ON mbb.bank_id = pb.bank_id
+        <if test="req.userName != null and req.userName != '' ">
+            and pb.user_name = #{req.userName}
+        </if>
         <if test="req.email != null and req.email != '' ">
             and mb.email = #{req.email}
         </if>

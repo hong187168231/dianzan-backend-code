@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,11 +78,11 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
         MemBank memBank = findBankCardNo(req.getBankCardNo());
         if (memBank != null && memBaseinfo.getLevel() < 5) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "银行账号已存在");
         }
         int  userNameCount = countByUserName(req.getUserName());
         if (userNameCount >=1 && memBaseinfo.getLevel() < 5) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
+            throw new BusinessException(StatusCode.LIVE_ERROR_1141.getCode(), "银行姓名已存在");
         }
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){
 //            throw new BizException("请先完成实名认证！");
@@ -99,6 +100,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankRelation.setBankName(payBank.getBankName());
         memBankRelation.setAccno(loginUser.getAccno());
         memBankRelation.setEmail(loginUser.getAcclogin());
+        memBankRelation.setCreateTime(new Date());
         return memBankMapper.insertSelective(memBankRelation) > 0;
     }
 
@@ -148,6 +150,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankRelation.setBankId(payBank.getBankId());
         memBankRelation.setBankCode(payBank.getBankCode());
         memBankRelation.setBankName(payBank.getBankName());
+        memBankRelation.setUpdateTime(new Date());
         return memBankMapper.updateByPrimaryKeySelective(memBankRelation) > 0;
     }
 

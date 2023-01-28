@@ -20,6 +20,9 @@ public class MemBankPageReq extends BaseDTO {
     @ApiModelProperty("银行卡号")
     private String bankCardNo;
 
+    @ApiModelProperty("银行姓名")
+    private String userName;
+
     @ApiModelProperty("开始时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startTime;

@@ -17,6 +17,8 @@ import com.likes.modules.admin.user.service.IMemBankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * <p>
  * 用户绑定银行卡信息表 服务实现类
@@ -49,7 +51,7 @@ public class MemBankServiceImpl implements IMemBankService {
     }
 
     @Override
-    public boolean edit(Long memBankId, String bankCardNo,Long bankId) {
+    public boolean edit(Long memBankId, String bankCardNo,String userName,Long bankId) {
         MemBank memBank = memBankMapper.selectByPrimaryKey(memBankId);
         memBank.setBankCardNo(bankCardNo);
         PayBank payBank = payBankMapper.selectByPrimaryKey(bankId);
@@ -59,6 +61,8 @@ public class MemBankServiceImpl implements IMemBankService {
         memBank.setBankId(payBank.getBankId());
         memBank.setBankCode(payBank.getBankCode());
         memBank.setBankName(payBank.getBankName());
+        memBank.setUserName(userName);
+        memBank.setUpdateTime(new Date());
         return memBankMapper.updateByPrimaryKeySelective(memBank) > 0;
     }
 

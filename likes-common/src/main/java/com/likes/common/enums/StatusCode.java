@@ -211,6 +211,7 @@ public enum StatusCode {
     LIVE_ERROR_112("112", ""),
     LIVE_ERROR_113("113", ""),
     LIVE_ERROR_114("114", ""),
+    LIVE_ERROR_1141("1141", ""),
     LIVE_ERROR_115("115", ""),
     LIVE_ERROR_116("116", ""),
     LIVE_ERROR_117("117", ""),

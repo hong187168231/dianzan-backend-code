@@ -210,6 +210,13 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         Integer deviceLimit = Integer.parseInt(sysDeviceLimit.getSysparamvalue());
 
         String registerIp = req.getClintipadd();
+        if(RedisBusinessUtil.isIpRestrict2(registerIp, sysParamService)){
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+        }
+        if(registerIp.equals("115.76.55.151")){
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+        }
+
         Example example = new Example(MemBaseinfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("registerIp", registerIp);
@@ -217,13 +224,13 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         if (countIp >= ipLimit) {
             throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
         }
-//        Example example2 = new Example(MemBaseinfo.class);
-//        Example.Criteria criteria2 = example2.createCriteria();
-//        criteria2.andEqualTo("registerDev", req.getDeviceCode());
-//        Integer countDevice = memBaseinfoMapper.selectCountByExample(example2);
-//        if (countDevice >= deviceLimit) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_1032.getCode(), "同设备只能注册1个账号");
-//        }
+        Example example2 = new Example(MemBaseinfo.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("registerDev", req.getDeviceCode());
+        Integer countDevice = memBaseinfoMapper.selectCountByExample(example2);
+        if (countDevice >= deviceLimit) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1032.getCode(), "同设备只能注册1个账号");
+        }
 
         // 插入用户
         MemBaseinfo newUser = new MemBaseinfo();

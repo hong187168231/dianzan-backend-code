@@ -1690,6 +1690,29 @@ public class RedisBusinessUtil extends RedisBaseUtil {
         return false;
     }
 
+    public static boolean isIpRestrict2(String ip, SysParamService sysParamService) {
+        if (StringUtils.isEmpty(ip)) {
+            return false;
+        }
+        SysParameter sysParameter = get(SysParameterEnum.ASTRICT_IP_GROUP.name());
+        if (null == sysParameter) {
+            sysParameter = sysParamService.getByCode(SysParameterEnum.ASTRICT_IP_GROUP.name());
+        }
+        if (null == sysParameter) {
+            return false;
+        }
+        if (SysParamStatusEnum.isDisabled(sysParameter.getStatus())) {
+            return false;
+        }
+        String value = sysParameter.getSysparamvalue();
+        value = null == value ? "" : value.trim();
+        if (value.contains(ip)) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * return_water_set
      * 返水控制表缓存

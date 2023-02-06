@@ -76,8 +76,8 @@ public class AppMemBankServiceImpl implements AppMemBankService {
             throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "存在提现订单,不能更改钱包地址");
         }
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
-        MemBank memBank = findBankCardNo(req.getBankCardNo());
-        if (memBank != null && memBaseinfo.getLevel() < 1) {
+        List<MemBank> memBank = findBankCardNoList(req.getBankCardNo());
+        if (CollectionUtil.isNotEmpty(memBank) && memBaseinfo.getLevel() < 1) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "银行账号已存在");
         }
         int  userNameCount = countByUserName(req.getUserName());
@@ -192,6 +192,12 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         memBankParam.setBankCardNo(bankCardNo);
         return memBankMapper.selectOne(memBankParam);
     }
+    public  List<MemBank> findBankCardNoList(String bankCardNo) {
+        MemBank memBankParam = new MemBank();
+        memBankParam.setBankCardNo(bankCardNo);
+        return memBankMapper.select(memBankParam);
+    }
+
 
     public MemBank findByMemBankId(Long memBankId) {
         MemBank memBankParam = new MemBank();

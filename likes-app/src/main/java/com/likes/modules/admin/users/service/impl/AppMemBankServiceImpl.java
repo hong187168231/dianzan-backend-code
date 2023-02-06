@@ -77,11 +77,11 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         }
         MemBaseinfo memBaseinfo = memBaseinfoService.selectById(loginUser.getMemid());
         MemBank memBank = findBankCardNo(req.getBankCardNo());
-        if (memBank != null && memBaseinfo.getLevel() < 5) {
+        if (memBank != null && memBaseinfo.getLevel() < 1) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "银行账号已存在");
         }
         int  userNameCount = countByUserName(req.getUserName());
-        if (userNameCount >=1 && memBaseinfo.getLevel() < 5) {
+        if (userNameCount >=1 && memBaseinfo.getLevel() < 1) {
             throw new BusinessException(StatusCode.LIVE_ERROR_1141.getCode(), "银行姓名已存在");
         }
 //        if(StringUtils.isEmpty(memBaseinfo.getIdCard())){

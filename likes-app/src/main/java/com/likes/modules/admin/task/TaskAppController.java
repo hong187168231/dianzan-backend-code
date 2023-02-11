@@ -190,14 +190,29 @@ public class TaskAppController extends BaseController {
     @RequestMapping(name = "领取任务", value = "/receiveTask", method = RequestMethod.POST)
     public ResultInfo receiveTask(ReceiveTaskRequest request) {
         ResultInfo response = ResultInfo.ok();
+        RedisLock lock = new RedisLock(RedisLock.RECEIVE_APP_TASK_APPLY, 2, 15 * 2000);
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
+            // 控制频率
+            String keySuffix = RedisLock.RECEIVE_APP_TASK_APPLY + loginUserAPP.getMemid();
+            if (redisTemplate.hasKey(keySuffix)) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 2, TimeUnit.SECONDS);
+            if (!haveAuth) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            if (!lock.lock()) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
             response.setData(taskAppService.reviceTask(loginUserAPP, request));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
         } catch (Exception e) {
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
+        } finally {
+            lock.unlock();
         }
         return response;
     }

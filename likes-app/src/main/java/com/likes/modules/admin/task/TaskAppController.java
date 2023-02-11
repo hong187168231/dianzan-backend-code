@@ -15,6 +15,7 @@ import com.likes.common.service.common.CommonService;
 import com.likes.common.service.task.TaskCategoryService;
 import com.likes.common.service.task.TaskOrderService;
 import com.likes.common.service.task.TaskService;
+import com.likes.common.util.redis.RedisBaseUtil;
 import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.task.service.TaskAppService;
 import org.slf4j.Logger;
@@ -26,13 +27,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * @author 阿布
- * <p>
- * 代理设置
+ *     <p>
+ *     代理设置
  */
-
 
 @Controller
 @RequestMapping(value = "/taskApp")
@@ -70,7 +69,6 @@ public class TaskAppController extends BaseController {
         return response;
     }
 
-
     @AllowAccess
     @ResponseBody
     @RequestMapping(name = "查询任务", value = "/taskList", method = RequestMethod.GET)
@@ -82,10 +80,11 @@ public class TaskAppController extends BaseController {
                 req.setAccno(loginUser.getAccno());
             }
             if (commonService.checkUserMemberLevelExpire(req.getLevelSeq(), loginUser.getAccno())) {
-                throw new BusinessException(StatusCode.MEMBER_EXPIRE_ERROR_130014.getCode(), StatusCode.MEMBER_EXPIRE_ERROR_130014.getValue());
+                throw new BusinessException(StatusCode.MEMBER_EXPIRE_ERROR_130014.getCode(),
+                    StatusCode.MEMBER_EXPIRE_ERROR_130014.getValue());
             }
-            req.setLevelSeqStr(req.getLevelSeq()+"");
-            response.setData(taskAppService.taskAppList(req,  loginUser));
+            req.setLevelSeqStr(req.getLevelSeq() + "");
+            response.setData(taskAppService.taskAppList(req, loginUser));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
@@ -96,7 +95,6 @@ public class TaskAppController extends BaseController {
         }
         return response;
     }
-
 
     @RequestMapping(name = "app编辑任务", value = "/editTask", method = RequestMethod.POST)
     public ResultInfo updateAccount(TaskRequest request) {
@@ -135,7 +133,6 @@ public class TaskAppController extends BaseController {
         return response;
     }
 
-
     @ResponseBody
     @RequestMapping(name = "查询任务详情", value = "/taskDetail", method = RequestMethod.GET)
     public ResultInfo getAgentReport(Long taskId) {
@@ -171,7 +168,8 @@ public class TaskAppController extends BaseController {
 
     @ResponseBody
     @RequestMapping(name = "我的待审核任务", value = "/waitReceiveList", method = RequestMethod.GET)
-    public ResultInfo waitReceiveList(@RequestParam("status") Integer status, @RequestParam("pageNo") Integer pageNo, @RequestParam("pageSize") Integer pageSize) {
+    public ResultInfo waitReceiveList(@RequestParam("status") Integer status, @RequestParam("pageNo") Integer pageNo,
+        @RequestParam("pageSize") Integer pageSize) {
         ResultInfo response = ResultInfo.ok();
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
@@ -185,23 +183,38 @@ public class TaskAppController extends BaseController {
         return response;
     }
 
-
     @ResponseBody
     @RequestMapping(name = "领取任务", value = "/receiveTask", method = RequestMethod.POST)
     public ResultInfo receiveTask(ReceiveTaskRequest request) {
+        String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
+        RedisLock lock = new RedisLock(RedisLock.RECEIVE_APP_TASK_APPLY, 2, 120 * 1000);
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
+            // 控制频率
+             keySuffix = RedisLock.RECEIVE_APP_TASK_APPLY + loginUserAPP.getMemid();
+            if (redisTemplate.hasKey(keySuffix)) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 300, TimeUnit.SECONDS);
+            if (!haveAuth) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            if (!lock.lock()) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
             response.setData(taskAppService.reviceTask(loginUserAPP, request));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
         } catch (Exception e) {
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
+        } finally {
+            RedisBaseUtil.delete(keySuffix);
+            lock.unlock();
         }
         return response;
     }
-
 
     @ResponseBody
     @RequestMapping(name = "提交完成任务", value = "/submitTask", method = RequestMethod.POST)
@@ -234,6 +247,5 @@ public class TaskAppController extends BaseController {
         }
         return response;
     }
-
 
 }

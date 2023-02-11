@@ -1,7 +1,6 @@
 package com.likes.modules.admin.business.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.likes.common.BaseController;
 import com.likes.common.annotation.AllowAccess;
 import com.likes.common.enums.StatusCode;
@@ -126,22 +125,19 @@ public class RechargeController extends BaseController {
 
 
     @ApiOperation("线上支付")
-    @RequestMapping(name = "线上支付", value = "/onlinePay", method = RequestMethod.POST)
     @AllowAccess
+    @RequestMapping(name = "线上支付", value = "/onlinePay", method = RequestMethod.POST)
     public ResultInfo onlinePay(OnlinePayDTO onlinePayDTO) {
         logger.error("获取收款地址前端傳入參數,params:{},", JSONObject.toJSONString(onlinePayDTO));
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
         try {
-            LoginUser loginUserAPP =  new LoginUser();
-            loginUserAPP.setAcclogin("Vuanh1234");
-            loginUserAPP.setAccno("11a0be7e4e2b4eeb92d34141368fe0f4");
+            LoginUser loginUserAPP = getLoginUserAPP();
             response.setData(iOnlinePayService.doOnlinePay(onlinePayDTO, loginUserAPP));
         } catch (Exception e) {
             response = ResultInfo.error("获取收款地址失败");
             logger.error("获取收款地址,出错信息:{}", e);
         }
-        JsonGenerator
         logger.info("/getCollectUrl耗时{}毫秒：", (System.currentTimeMillis() - start));
         return response;
     }

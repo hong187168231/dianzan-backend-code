@@ -97,7 +97,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
     @Resource
     private MemBaseinfoMapper memBaseinfoMapper;
 
-
     @Override
     public Integer sendMailCode(UsersRequest req, HttpServletRequest request) {
         if (!StringUtils.isEmail(req.getEmail())) {
@@ -162,12 +161,10 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         }
     }
 
-
     private void asyncSendMail(UsersRequest req, SysShortmsgDO sysShortmsg, StringBuilder sms_message, String smsCode) {
         emailService.sendRegisterEmail(req.getEmail(), smsCode);
 
     }
-
 
     @Override
     public List<SysAreaDO> getFirstArea() {
@@ -183,7 +180,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         }
         return new ArrayList<SysAreaDO>();
     }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -210,11 +206,11 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         Integer deviceLimit = Integer.parseInt(sysDeviceLimit.getSysparamvalue());
 
         String registerIp = req.getClintipadd();
-        if(RedisBusinessUtil.isIpRestrict2(registerIp, sysParamService)){
-            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+        if (RedisBusinessUtil.isIpRestrict2(registerIp, sysParamService)) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册" + ipLimit + "个账号");
         }
-        if(registerIp.equals("115.76.55.151")){
-            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+        if (registerIp.equals("115.76.55.151")) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册" + ipLimit + "个账号");
         }
 
         Example example = new Example(MemBaseinfo.class);
@@ -222,7 +218,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         criteria.andEqualTo("registerIp", registerIp);
         Integer countIp = memBaseinfoMapper.selectCountByExample(example);
         if (countIp >= ipLimit) {
-            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册"+ipLimit+"个账号");
+            throw new BusinessException(StatusCode.LIVE_ERROR_1031.getCode(), "同ip只能注册" + ipLimit + "个账号");
         }
         Example example2 = new Example(MemBaseinfo.class);
         Example.Criteria criteria2 = example2.createCriteria();
@@ -359,7 +355,8 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
     private MemBaseinfo inviteUserProcess(UsersRequest req, MemBaseinfo newUser) {
         // 根据邀请码 获取 对应的人
         MemBaseinfo inviteUser = memBaseinfoService.getUserByInvitecode(req.getInvitecode().toLowerCase());
-        if (ObjectUtil.isNull(inviteUser) || ObjectUtil.isNull(inviteUser.getIsDelete()) || inviteUser.getIsDelete()) {
+        if (ObjectUtil.isNull(inviteUser) || inviteUser.getInvitStatus().equals(0) || ObjectUtil.isNull(
+            inviteUser.getIsDelete()) || inviteUser.getIsDelete()) {
             throw new BusinessException(StatusCode.LIVE_ERROR_151.getCode(), "无效邀请码");
         }
         memBaseinfoService.updateMemorigin(newUser.getAccno(), Constants.RECOMMEND);
@@ -372,7 +369,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         memRelationship.setAccno(newUser.getAccno());
         memRelationship.setCreateUser(newUser.getAccno());
         memRelationship.setUpdateUser(newUser.getAccno());
-        if (inviteUser.getRecomcode().length()>6 &&  inviteUser.getRecomcode().contains("px")) {
+        if (inviteUser.getRecomcode().length() > 6 && inviteUser.getRecomcode().contains("px")) {
             memRelationship.setHeadAccno(inviteUser.getAccno());
         }
         if (StringUtils.isNotBlank(superMem.getHeadAccno()) && !superMem.getHeadAccno().equals("root")) {
@@ -391,12 +388,12 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
     }
 
     private void registerGive(MemBaseinfo memBaseinfo) {
-//        String timeStr = "2022-06-24 00:00:00";
-//        Date date = DateUtils.str2date(timeStr);
-//        Date now = new Date();
-//        if (now.before(date)) {
-//            return;
-//        }
+        //        String timeStr = "2022-06-24 00:00:00";
+        //        Date date = DateUtils.str2date(timeStr);
+        //        Date now = new Date();
+        //        if (now.before(date)) {
+        //            return;
+        //        }
         BigDecimal amount = new BigDecimal(0);
         SysParameter giveAmount = this.sysParamService.getByCode("REGISTER_GIVE_AMOUNT");
         if (giveAmount == null || StringUtils.isEmpty(giveAmount.getSysparamvalue())) {
@@ -404,8 +401,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         }
         if (giveAmount.getIsDelete().equals(true)) {
             return;
-        }
-        else {
+        } else {
             amount = amount.add(new BigDecimal(giveAmount.getSysparamvalue()));
         }
         if (amount.equals(BigDecimal.ZERO)) {
@@ -419,7 +415,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         change.setOpnote("用户:【" + memBaseinfo.getAccno() + "】 注册赠送【" + amount + "】");
         memBaseinfoWriteService.updateUserBalance(change);
     }
-
 
     @Override
     public void getIpParse(LoginUser loginUser) {
@@ -521,7 +516,7 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         loginUserAPP.setRecomcode(memBaseinfo.getRecomcode());
         loginUserAPP.setHigherRecomcode(higherRecomcode);
         loginUserAPP.setAcclogin(memLogin.getAcclogin());
-        loginUserAPP.setHeadAccno(null!=relation?relation.getHeadAccno():"");
+        loginUserAPP.setHeadAccno(null != relation ? relation.getHeadAccno() : "");
         loginUserAPP.setSourceType(source);
         loginUserAPP.setHeadimgurl(memBaseinfo.getHeadimg());
         loginUserAPP.setHigher(higher);
@@ -589,7 +584,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         }
     }
 
-
     private MemLogin loginByPassword(UsersRequest req) {
         if (StringUtils.isBlank(req.getPassword())) {
             return null;
@@ -623,14 +617,13 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
                     RedisBusinessUtil.setExpire(LOGINNUMMD5, seconds);
                 }
             } else {
-//                throw new BusinessException(StatusCode.LIVE_ERROR_1032.getCode(), "您的登录失败次数已达到最大限制，请12小时后再尝试。您也可以使用短信登录或找回密码");
+                //                throw new BusinessException(StatusCode.LIVE_ERROR_1032.getCode(), "您的登录失败次数已达到最大限制，请12小时后再尝试。您也可以使用短信登录或找回密码");
             }
         } else {
             RedisBusinessUtil.set(LOGINNUMMD5, 1, 12 * 60 * 60l);
         }
         return LOGINNUMMD5;
     }
-
 
     @Override
     public String updatePassword(UsersRequest req) {
@@ -661,7 +654,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         return Constants.SUCCESS_MSG;
     }
 
-
     @Override
     public String getSwipeVerificationSwift() {
         String status;
@@ -676,7 +668,6 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
         return status;
     }
 
-
     private String checkRepLoginTimes(ActingUsersRequest req) {
         String LOGINNUMMD5 = MD5.md5(Constants.LOGINNUM + req.getAcclogin());
         Integer loginnum = RedisBusinessUtil.get(LOGINNUMMD5);
@@ -688,7 +679,8 @@ public class AppLoginServiceImpl extends BaseServiceImpl implements AppLoginServ
                     RedisBusinessUtil.setExpire(LOGINNUMMD5, seconds);
                 }
             } else {
-                throw new BusinessException(StatusCode.LIVE_ERROR_130.getCode(), "您的登录失败次数已达到最大限制，请12小时后再尝试。您也可以使用短信登录或找回密码");
+                throw new BusinessException(StatusCode.LIVE_ERROR_130.getCode(),
+                    "您的登录失败次数已达到最大限制，请12小时后再尝试。您也可以使用短信登录或找回密码");
             }
         } else {
             RedisBusinessUtil.set(LOGINNUMMD5, 1, 12 * 60 * 60l);

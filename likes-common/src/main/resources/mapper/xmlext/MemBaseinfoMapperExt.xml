@@ -84,7 +84,7 @@
 
     <!-- 根据邀请码 获取 对应的人 -->
     <select id="getUserByInvitecode" parameterType="java.lang.String" resultType="com.likes.common.mybatis.entity.MemBaseinfo">
-		select m.accno,m.memid,m.memid, recomcode, unique_id as uniqueId, is_delete as isDelete from mem_baseinfo m where m.recomcode = #{recomcode}
+		select m.accno,m.memid,m.memid, recomcode, unique_id as uniqueId,invit_status as invitStatus, is_delete as isDelete from mem_baseinfo m where m.recomcode = #{recomcode}
 		and m.is_delete = b'0'
 	</select>
 

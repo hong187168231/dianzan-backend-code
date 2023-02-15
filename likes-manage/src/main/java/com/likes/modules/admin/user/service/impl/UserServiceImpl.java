@@ -815,6 +815,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             return;
         }
         updateNickname(nickname, info.getAccno(),req.getInvitStatus());
+        updateInvitStatus(info.getAccno(),req.getInvitStatus());
         updateDescribes(req.getDescribes(), loginAdmin, info);
     }
 
@@ -873,6 +874,26 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             }
         }
     }
+
+    private void updateInvitStatus( String accno,Integer invitStatus) {
+        MemBaseinfo memBaseinfo = memBaseinfoService.getUserByAccno(accno);
+        MemBaseinfo newinfo = new MemBaseinfo();
+        newinfo.setMemid(memBaseinfo.getMemid());
+        newinfo.setInvitStatus(invitStatus);
+        memBaseinfoService.updateByPrimaryKeySelective(newinfo);
+        // 昵称修改成功后 刷新redis
+        String acctoken = RedisBusinessUtil.get(accno);
+        if (StringUtils.isNotBlank(acctoken)) {
+            Object jsonstr = RedisBusinessUtil.get(acctoken);
+            if (null != jsonstr) {
+                LoginUser loginUserAPP = JSONObject.parseObject((String) jsonstr, LoginUser.class);
+                if(newinfo.getInvitStatus() == 0){
+                    RedisBusinessUtil.refreshBlackInvite(loginUserAPP);
+                }
+            }
+        }
+    }
+
 
     /**
      * 修改用户等级

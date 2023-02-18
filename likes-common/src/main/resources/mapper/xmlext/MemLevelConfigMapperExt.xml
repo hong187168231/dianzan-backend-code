@@ -63,6 +63,9 @@
         ORDER BY mlc.level_seq DESC  LIMIT 1
     </select>
 
+    <select id="findMemLevelConfigBySeq" parameterType="java.lang.Integer" resultType="com.likes.common.mybatis.entity.MemLevelConfig">
+        select id,level,recharge_amount as rechargeAmount from mem_level_config where level_seq = #{leveseq}  LIMIT 1
+    </select>
 
     <select id="GetMemLevelCountByAccno" resultMap="BaseResultMapDto">
         select a.* from mem_level_config a

@@ -90,6 +90,8 @@ public interface MemLevelConfigService extends BaseService {
 
     List<MemLevelConfig> selectMemLevlConfigDownLevelSeq(Integer leveseq);
 
+    MemLevelConfig findMemLevelConfigBySeq(Integer leveseq);
+
     /**
      * 分页查询会员等级配置
      */

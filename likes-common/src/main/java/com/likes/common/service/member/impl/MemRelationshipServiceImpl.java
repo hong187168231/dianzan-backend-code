@@ -93,7 +93,6 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
         return relationship;
     }
 
-
     /**
      * 获取推荐人的所有下级关系信息
      */
@@ -141,7 +140,7 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
      * @param amount
      */
     @Override
-    public void returnBrokerage(MemLevelConfig memLevelConfig, MemBaseinfo memBaseinfo, BigDecimal amount) {
+    public void returnBrokerage(MemLevelConfig memLevelConfig, MemBaseinfo memBaseinfo, BigDecimal amount1) {
         SysParameter rebate1 = this.sysParamService.getByCode("vip1_rebate");
         if (rebate1 == null || StringUtils.isBlank(rebate1.getSysparamvalue())) {
             return;
@@ -154,7 +153,8 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
         if (rebate3 == null || StringUtils.isBlank(rebate3.getSysparamvalue())) {
             return;
         }
-        String startParam = String.format("%s,%s,%s", rebate1.getSysparamvalue(), rebate2.getSysparamvalue(), rebate3.getSysparamvalue());
+        String startParam = String.format("%s,%s,%s", rebate1.getSysparamvalue(), rebate2.getSysparamvalue(),
+            rebate3.getSysparamvalue());
         String accno = memBaseinfo.getAccno();
         String[] vals = startParam.split(",");
         for (int i = 0; i < vals.length; i++) {
@@ -174,13 +174,20 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
             if (accno.equals("ROOT")) {
                 return;
             }
-            BigDecimal rate = NumberUtils.createBigDecimal(str);
-            BigDecimal brokerageMoney = amount.multiply(rate).divide(BigDecimal.valueOf(100));
 
             MemberLevelResponse response = memLevelConfigService.getMemLevelConfig(accno);
             if (response.getLevelSeq() < 1) {
                 continue;
             }
+
+            Integer levelSeq = memLevelConfig.getLevelSeq();
+            if(response.getLevelSeq() < levelSeq){
+                levelSeq = response.getLevelSeq();
+            }
+            MemLevelConfig memLevelConfig1 = memLevelConfigService.findMemLevelConfigBySeq(levelSeq);
+
+            BigDecimal rate = NumberUtils.createBigDecimal(str);
+            BigDecimal brokerageMoney = memLevelConfig1.getRechargeAmount().multiply(rate).divide(BigDecimal.valueOf(100));
 
             MemGoldchangeDO change = new MemGoldchangeDO();
             change.setAccno(accno);
@@ -193,7 +200,8 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
             } else if (i == 2) {
                 change.setChangetype(GoldchangeEnum.BUVIP_LEVEL_3.getValue());
             }
-            change.setOpnote("用户:【" + b.getAccno() + "】 购买VIP【" + memLevelConfig.getLevel() + "】,支付" + change.getQuantity());
+            change.setOpnote(
+                "用户:【" + b.getAccno() + "】 购买VIP【" + memLevelConfig.getLevel() + "】,支付" + change.getQuantity());
             memBaseinfoWriteService.updateUserBalance(change);
 
         }
@@ -259,7 +267,8 @@ public class MemRelationshipServiceImpl implements MemRelationshipService {
         sysRecord.setOperationer(admin.getAccno());
         sysRecord.setOperationdate(new Date());
         sysRecord.setRecordevent(1);
-        sysRecord.setRecordremark("被迁移账号[" + source + "]->接收迁移账号[" + target + "],共迁移 " + idss.size() + " 条记录");
+        sysRecord.setRecordremark(
+            "被迁移账号[" + source + "]->接收迁移账号[" + target + "],共迁移 " + idss.size() + " 条记录");
         sysRecordMapper.insertSelective(sysRecord);
         return true;
     }

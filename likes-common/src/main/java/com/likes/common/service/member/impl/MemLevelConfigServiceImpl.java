@@ -207,6 +207,11 @@ public class MemLevelConfigServiceImpl implements MemLevelConfigService {
         return memLevelConfigMapperExt.selectMemLevlConfigDownLevelSeq(leveseq);
     }
 
+    @Override
+    public MemLevelConfig findMemLevelConfigBySeq(Integer leveseq) {
+        return memLevelConfigMapperExt.findMemLevelConfigBySeq(leveseq);
+    }
+
     // live-manage###############################################################
 
     /**

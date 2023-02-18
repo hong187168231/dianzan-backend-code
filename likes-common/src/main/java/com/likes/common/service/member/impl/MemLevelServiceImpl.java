@@ -38,12 +38,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * ClassName: MemLevelServiceImpl
- * Description: 描述
+ * ClassName: MemLevelServiceImpl Description: 描述
  *
  * @author dapan
- * @since JDK 1.8
- * date: 2020/6/19 14:42
+ * @since JDK 1.8 date: 2020/6/19 14:42
  */
 @Service
 public class MemLevelServiceImpl implements MemLevelService {
@@ -106,13 +104,13 @@ public class MemLevelServiceImpl implements MemLevelService {
         return memLevelMapper.deleteByExample(example);
     }
 
-//    /**
-//     * 根据主键 删除记录
-//     */
-//    @Override
-//    public int deleteByPrimaryKey(Long levelid) {
-//        return memLevelMapper.deleteByPrimaryKey(levelid);
-//    }
+    //    /**
+    //     * 根据主键 删除记录
+    //     */
+    //    @Override
+    //    public int deleteByPrimaryKey(Long levelid) {
+    //        return memLevelMapper.deleteByPrimaryKey(levelid);
+    //    }
 
     /**
      * 添加记录
@@ -150,13 +148,13 @@ public class MemLevelServiceImpl implements MemLevelService {
         return memLevelMapper.selectByExample(example);
     }
 
-//    /**
-//     * 根据主键 查询记录
-//     */
-//    @Override
-//    public MemLevel selectByPrimaryKey(Long levelid) {
-//        return memLevelMapper.selectByPrimaryKey(levelid);
-//    }
+    //    /**
+    //     * 根据主键 查询记录
+    //     */
+    //    @Override
+    //    public MemLevel selectByPrimaryKey(Long levelid) {
+    //        return memLevelMapper.selectByPrimaryKey(levelid);
+    //    }
 
     /**
      * 根据条件 更新记录（非空）
@@ -243,7 +241,8 @@ public class MemLevelServiceImpl implements MemLevelService {
 
     @Override
     @Transactional
-    public boolean buyVIPLevel(MemBaseinfo chongzhiBaseinfo, TraOrderinfom traOrderinfom, LoginUser loginUser, Long levelId) {
+    public boolean buyVIPLevel(MemBaseinfo chongzhiBaseinfo, TraOrderinfom traOrderinfom, LoginUser loginUser,
+        Long levelId) {
         if (null == traOrderinfom.getBuyVip()) {
             throw new BusinessException(StatusCode.LIVE_ERROR_10003.getCode(), "购买等级为空");
         }
@@ -264,7 +263,8 @@ public class MemLevelServiceImpl implements MemLevelService {
         sendMemLevel.setLevellog("用户购买VIP【" + memLevelConfig.getLevel() + "】");
         sendMemLevel.setCreateTime(new Date());
         sendMemLevel.setIsDelete(false);
-        sendMemLevel.setExpireTime(DateUtils.getEndOfDay(DateUtils.addDays(new Date(), memLevelConfig.getExpireTime())));
+        sendMemLevel.setExpireTime(
+            DateUtils.getEndOfDay(DateUtils.addDays(new Date(), memLevelConfig.getExpireTime())));
         if (loginUser != null) {
             sendMemLevel.setCreateUser(loginUser.getAccno());
             sendMemLevel.setUpdateUser(loginUser.getAccno());
@@ -305,7 +305,6 @@ public class MemLevelServiceImpl implements MemLevelService {
             }
         }
 
-
         // 订单生产成功后 ，在写入订单操作轨迹
         int i = traOrderinfomMapperService.insertOrder(traOrderinfom);
         if (i < 0) {
@@ -318,9 +317,9 @@ public class MemLevelServiceImpl implements MemLevelService {
         traOrdertracking.setTrackdate(new Date());
         traOrdertracking.setOrderstatus(Constants.ORDER_ORD04);
         traOrdertracking.setOperuse(loginUser.getAccno());
-        traOrdertracking.setTrackbody("用户[" + loginUser.getNickname() + "]充值金额" + traOrderinfom.getRealamt() + "元");
+        traOrdertracking.setTrackbody(
+            "用户[" + loginUser.getNickname() + "]充值金额" + traOrderinfom.getRealamt() + "元");
         traOrdertrackingMapperService.insertSelective(traOrdertracking);
-
 
         RedisBusinessUtil.delete(RedisKeys.APP_MEMBER_LEVEL + chongzhiBaseinfo.getAccno());
         buyVIP(chongzhiBaseinfo, memLevelConfig, traOrderinfom.getRealamt());
@@ -344,7 +343,8 @@ public class MemLevelServiceImpl implements MemLevelService {
             //当前用户 会员到期处理
             List<MemLevelConfig> leveList = memLevelConfigService.selectMemLevlConfigByLevelSeq();
             if (!leveList.get(0).getId().equals(levelId)) {
-                throw new BusinessException(StatusCode.ACROSS_THE_LEVEL_130013.getCode(), StatusCode.ACROSS_THE_LEVEL_130013.getValue());
+                throw new BusinessException(StatusCode.ACROSS_THE_LEVEL_130013.getCode(),
+                    StatusCode.ACROSS_THE_LEVEL_130013.getValue());
             }
             MemLevelConfigExample example = new MemLevelConfigExample();
             MemLevelConfigExample.Criteria criteria = example.createCriteria();
@@ -360,9 +360,11 @@ public class MemLevelServiceImpl implements MemLevelService {
         after = memLevelConfig.getRechargeAmount();
         BigDecimal suxuAmount = new BigDecimal(0); //after.subtract(befor);
         if (befroConfig.getLevelSeq() >= memLevelConfig.getLevelSeq()) {
-            List<MemLevelConfig> pro_memLevelConfigs = memLevelConfigService.selectMemLevlConfigDownLevelSeq(memLevelConfig.getLevelSeq());
+            List<MemLevelConfig> pro_memLevelConfigs =
+                memLevelConfigService.selectMemLevlConfigDownLevelSeq(memLevelConfig.getLevelSeq());
             if (pro_memLevelConfigs != null && pro_memLevelConfigs.size() > 0) {
-                suxuAmount = memLevelConfig.getRechargeAmount().subtract(pro_memLevelConfigs.get(0).getRechargeAmount());
+                suxuAmount =
+                    memLevelConfig.getRechargeAmount().subtract(pro_memLevelConfigs.get(0).getRechargeAmount());
             } else {
                 suxuAmount = memLevelConfig.getRechargeAmount();
             }
@@ -380,22 +382,25 @@ public class MemLevelServiceImpl implements MemLevelService {
      */
     private void buyVIP(MemBaseinfo chongzhiBaseinfo, MemLevelConfig memLevelConfig, BigDecimal amount) {
         // 扣减余额，帐变
-
         MemGoldchangeDO change = new MemGoldchangeDO();
         change.setAccno(chongzhiBaseinfo.getAccno());
         change.setShowChange(BigDecimal.ZERO.subtract(amount));
         change.setQuantity(BigDecimal.ZERO.subtract(amount));
         change.setChangetype(GoldchangeEnum.BUY_VIP.getValue());
-        change.setOpnote("用户:【" + chongzhiBaseinfo.getAccno() + "】 购买VIP【" + memLevelConfig.getLevel() + "】,支付" + change.getQuantity());
+        change.setOpnote(
+            "用户:【" + chongzhiBaseinfo.getAccno() + "】 购买VIP【" + memLevelConfig.getLevel() + "】,支付" + change.getQuantity());
         memBaseinfoWriteService.updateUserBalance(change);
         MemberLevelResponse response = memLevelConfigService.getMemLevelConfig(chongzhiBaseinfo.getAccno());
         if (response.getLevelSeq() < 1) {
             return;
         }
+        int count = memLevelRecordMapper.countFirstLevel(chongzhiBaseinfo.getAccno());
+        if (count > 1) {
+            return;
+        }
         //返佣
         memRelationshipService.returnBrokerage(memLevelConfig, chongzhiBaseinfo, amount);
     }
-
 
     /**
      * 用户注册初始化等级
@@ -408,21 +413,21 @@ public class MemLevelServiceImpl implements MemLevelService {
         MemLevel memLevel = new MemLevel();
         memLevel.setAccno(accno);
         //从配置文件读取最低等级进行初始化
-//        List<MemLevelConfig> leveList = memLevelConfigService.selectMemLevelConfigByAmount(new Double(0));
+        //        List<MemLevelConfig> leveList = memLevelConfigService.selectMemLevelConfigByAmount(new Double(0));
         List<MemLevelConfig> leveList = memLevelConfigService.selectMemLevlConfigByLevelSeq();
         MemLevelConfig lingMap = leveList.get(0);
-//        MemLevelConfig oneMap = null;
-//        if (leveList.size() == 2) {
-//            oneMap = leveList.get(1);
+        //        MemLevelConfig oneMap = null;
+        //        if (leveList.size() == 2) {
+        //            oneMap = leveList.get(1);
         memLevel.setMemlevel(lingMap.getLevel());
         memLevel.setLevelConfigId(lingMap.getId());
         memLevel.setMemscore(new BigDecimal(0));
-//            memLevel.setNextlevscore(oneMap.getRechargeAmount());
-//        } else {//如果没有配置0级
-//            memLevel.setMemlevel("0");
-//            memLevel.setMemscore(new BigDecimal(0));
-//            memLevel.setNextlevscore(new BigDecimal(100));
-//        }
+        //            memLevel.setNextlevscore(oneMap.getRechargeAmount());
+        //        } else {//如果没有配置0级
+        //            memLevel.setMemlevel("0");
+        //            memLevel.setMemscore(new BigDecimal(0));
+        //            memLevel.setNextlevscore(new BigDecimal(100));
+        //        }
         memLevel.setIsDelete(false);
         memLevel.setUpdateTime(new Date());
         memLevel.setCreateTime(new Date());
@@ -460,7 +465,6 @@ public class MemLevelServiceImpl implements MemLevelService {
     public int checkUserMemberLevelExpire(Integer levelSeq, String accno) {
         return memLevelMapperExt.checkUserMemberLevelExpire(levelSeq, accno);
     }
-
 
     public static void main(String[] args) {
         System.out.println(DateUtils.formatDate(DateUtils.addMonths(new Date(), 12)));

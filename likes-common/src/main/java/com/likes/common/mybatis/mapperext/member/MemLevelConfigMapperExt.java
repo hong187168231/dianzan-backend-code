@@ -24,6 +24,8 @@ public interface MemLevelConfigMapperExt {
 
     List<MemLevelConfig> selectMemLevlConfigDownLevelSeq(Integer leveseq);
 
+    MemLevelConfig findMemLevelConfigBySeq(Integer leveseq);
+
     List<Map<String, Object>> getMemLevelList();
 
     /**

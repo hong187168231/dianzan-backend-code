@@ -126,6 +126,7 @@ public class AppMemBankServiceImpl implements AppMemBankService {
         if (bankAddress != null && memBaseinfo.getLevel() < 5) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");
         }
+        req.setUserName(req.getUserName().replaceAll("\\s{2,}", " ").trim());
         int  userNameCount = countByUserName(req.getUserName());
         if (userNameCount >=1 && memBaseinfo.getLevel() < 5) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该银行卡已被绑定");

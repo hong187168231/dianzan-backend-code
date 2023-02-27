@@ -17,9 +17,9 @@ spring:
       datasource:
         master:
           type: com.alibaba.druid.pool.DruidDataSource
-          url: jdbc:mysql://45.207.49.136:3306/likes?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
-          password: HrRWxWjYBiDH63T3
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          username: likes-test
+          password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           druid:
             initial-size: 3
@@ -35,9 +35,9 @@ spring:
             filters: stat,wall,log4j2
         slave:
           type: com.alibaba.druid.pool.DruidDataSource
-          url: jdbc:mysql://45.207.49.136:3306/likes?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
-          password: HrRWxWjYBiDH63T3
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          username: likes-test
+          password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           druid:
             initial-size: 3
@@ -79,7 +79,7 @@ spring:
   redis:
     # 连接超时时间（毫秒）
     timeout: 8000
-    database: 0
+    database: 2
     # Redis服务器地址
     host: 45.207.49.136
     #host: 127.0.0.1
@@ -125,7 +125,7 @@ minio:
   access-key: minioadmin
   secret-key: minioadmin
   # 自定义域名(非必须)，Nginx配置反向代理转发文件路径
-  custom-domain: https://img.kxwwd.com
+  custom-domain:
   # 默认的桶名称，每个微服务有单独的默认存储桶，可查看youlai-admin.yaml配置
   default-bucket: picture
 

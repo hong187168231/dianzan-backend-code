@@ -16,9 +16,9 @@ spring:
       strict: false #严格匹配数据源,默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
       datasource:
         master:
-          url: jdbc:mysql://45.207.49.136:3306/likes?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
-          password: HrRWxWjYBiDH63T3
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          username: likes-test
+          password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.zaxxer.hikari.HikariDataSource
           #连接池
@@ -33,9 +33,9 @@ spring:
             connectionTimeout: 30000
             connectionTestQuery: SELECT 1 #连接测试
         slave:
-          url: jdbc:mysql://45.207.49.136:3306/likes?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
-          password: HrRWxWjYBiDH63T3
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          username: likes-test
+          password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.zaxxer.hikari.HikariDataSource
           #连接池
@@ -65,7 +65,7 @@ spring:
   redis:
     # 连接超时时间（毫秒）
     timeout: 8000
-    database: 0
+    database: 2
     # Redis服务器地址
     host: 45.207.49.136
     #host: 127.0.0.1
@@ -167,5 +167,5 @@ udun:
 
 logging:
   level:
-    com.likes: debug
+    com.likes: WARN
   config: classpath:log4j2.xml

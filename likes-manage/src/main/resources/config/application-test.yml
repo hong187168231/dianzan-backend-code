@@ -17,7 +17,7 @@ spring:
       datasource:
         master:
           type: com.alibaba.druid.pool.DruidDataSource
-          url: jdbc:mysql://127.0.0.1:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
           username: likes-test
           password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,7 +35,7 @@ spring:
             filters: stat,wall,log4j2
         slave:
           type: com.alibaba.druid.pool.DruidDataSource
-          url: jdbc:mysql://127.0.0.1:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
+          url: jdbc:mysql://45.207.58.48:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
           username: likes-test
           password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver

@@ -17,7 +17,7 @@ spring:
       datasource:
         master:
           url: jdbc:mysql://127.0.0.1:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
+          username: likes-test
           password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.zaxxer.hikari.HikariDataSource
@@ -34,7 +34,7 @@ spring:
             connectionTestQuery: SELECT 1 #连接测试
         slave:
           url: jdbc:mysql://127.0.0.1:3306/likes-test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&autoReconnect=true&allowMultiQueries=true
-          username: likes
+          username: likes-test
           password: SZ23NiHT4WJZFpDm
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.zaxxer.hikari.HikariDataSource

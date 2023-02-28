@@ -2,6 +2,7 @@ package com.likes.common.service.finances.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.enums.GoldchangeEnum;
+import com.likes.common.enums.StatusCode;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
@@ -75,7 +76,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error("限制用户购买次数" + setting.getBuyNumber());
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" + setting.getBuyNumber());
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
@@ -84,7 +85,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
-                        response = ResultInfo.error("限制用户购买次数" + setting.getBuyNumber());
+                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" + setting.getBuyNumber());
                         return response;
                     }
                 }
@@ -134,11 +135,11 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
         ResultInfo response = ResultInfo.ok();
         FinancesManagerProductOrder financesManagerProductOrder = this.getById(id);
         if (null == financesManagerProductOrder) {
-            response = ResultInfo.error("购买理财订单为空");
+            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"购买理财订单为空");
             return response;
         } else {
             if (1 == financesManagerProductOrder.getFinancesProductStatus()) {
-                response = ResultInfo.error("购买理财订单已经提现，请勿重复操作");
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),"购买理财订单已经提现，请勿重复操作");
                 return response;
             }
             financesManagerProductOrder.setUpdateBy(loginUser.getAccno());

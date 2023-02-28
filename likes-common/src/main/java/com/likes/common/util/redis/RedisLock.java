@@ -59,6 +59,8 @@ public class RedisLock {
     public static final String FINANCE_APP_ASSET_APPLY = "FINANCE_APP_ASSET_APPLY";
     public static final String FINANCE_APP_WITHDRAWAL_UDUN = "FINANCE_APP_WITHDRAWAL_UDUN_";
     public static final String FINANCE_APP_SUBMITTASK_APPLY_LOCK = "FINANCE_APP_SUBMITTASK_APPLY_LOCK";
+    public static final String FINANCE_APP_GET_LOCK = "FINANCE_APP_GET_LOCK";
+    public static final String FINANCE_APP_BUY_LOCK = "FINANCE_APP_BUY_LOCK";
     public static final String RECEIVE_APP_TASK_APPLY = "RECEIVE_APP_TASK_APPLY";
 
     // 财务 MANAGE 充值 确认

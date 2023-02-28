@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductOrderMapper">
+    <select id="findList" resultType="com.likes.common.model.vo.finance.FinancesManagerProductOrderVo">
+        select t.id,t.create_time,t.update_time,t.start_time,t.end_time,t.buy_amount,t.everyday_amount,t.sum_amount,t.create_by,t.update_by,t.finances_product_id,
+               t.user_acct,t.user_id,t.finances_product_status,t.level_config_level,MUL(datediff(Now(),t.start_time), t.everyday_amount) as t.theday_amount,
+               d.income_rate,d.valid_date,d.product_name_cn,d.product_name_en,d.product_name_vn,d.remark
+        from finances_manager_product_order t
+        LEFT JOIN finances_manager_product d ON t.finances_product_id=d.id
+        <where>
+            1=1
+            <if test="p.userAcct != null and  p.userAcct != ''">
+                and t.user_acct LIKE concat('%',#{p.userAcct},'%')
+            </if>
+            <if test="p.userId != null and  p.userId != ''  and p.userId != 0">
+                and t.user_id = #{p.userId}
+            </if>
+            <if test="p.financesProductId != null and  p.financesProductId != ''  and p.financesProductId != 0">
+                and t.finances_product_id = #{p.financesProductId}
+            </if>
+            <if test="p.financesProductStatus != null and  p.financesProductStatus != ''">
+                and t.finances_product_status = #{p.financesProductStatus}
+            </if>
+            <if test="p.startStartTime!=null and  p.startStartTime != ''">
+                and DATE_FORMAT(t.start_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ >= ]]>DATE_FORMAT(#{p.startStartTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="p.startEndTime!=null and  p.startEndTime != ''">
+                and DATE_FORMAT(t.start_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>DATE_FORMAT(#{p.startEndTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="p.endStartTime!=null and  p.endStartTime != ''">
+                and DATE_FORMAT(t.end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ >= ]]>DATE_FORMAT(#{p.endStartTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="p.endEndTime!=null and  p.endEndTime != ''">
+                and DATE_FORMAT(t.end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>DATE_FORMAT(#{p.endEndTime},'%Y-%m-%d %H:%i:%s')
+            </if>
+            ORDER BY t.create_time DESC
+        </where>
+    </select>
+    <select id="countOrder" resultType="Integer">
+        select COUNT(1) from finances_manager_product_order t
+        <where>
+            1=1
+            <if test="p.userId != null and  p.userId != ''  and p.userId != 0">
+                and t.user_id = #{p.userId}
+            </if>
+            <if test="p.financesProductId != null and  p.financesProductId != ''  and p.financesProductId != 0">
+                and t.finances_product_id = #{p.financesProductId}
+            </if>
+            <if test="p.levelConfigLevel != null and  p.levelConfigLevel != ''">
+                and t.level_config_level = #{p.levelConfigLevel}
+            </if>
+        </where>
+    </select>
+</mapper>

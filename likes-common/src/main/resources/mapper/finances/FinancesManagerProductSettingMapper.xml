@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductSettingMapper">
+    <select id="findList" resultType="com.likes.common.mybatis.entity.FinancesManagerProductSetting">
+        select * from finances_manager_product_setting t
+        <where>
+            1=1
+            <if test="p.financesProductId != null and  p.financesProductId != '' and p.financesProductId != 0">
+                and t.finances_product_id = #{p.financesProductId}
+            </if>
+            <if test="p.levelConfigId != null and  p.levelConfigId != '' and p.levelConfigId != 0">
+                and t.level_config_id = #{p.levelConfigId}
+            </if>
+            <if test="p.levelConfigLevel != null and  p.levelConfigLevel != ''">
+                and t.level_config_level = #{p.levelConfigLevel}
+            </if>
+            ORDER BY t.create_time ASC
+        </where>
+    </select>
+</mapper>

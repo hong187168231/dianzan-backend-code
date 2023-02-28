@@ -153,12 +153,14 @@ public class MoneyServiceImpl implements MoneyService {
             changetypeList.add(GoldchangeEnum.JACKPOT.getValue());
             changetypeList.add(GoldchangeEnum.REGISTER_JACKPOT.getValue());
             changetypeList.add(GoldchangeEnum.YUEBAO_OUT.getValue());
+            changetypeList.add(GoldchangeEnum.FINANCES_OUT.getValue());
         } else if (req.getType() == 2) {
             //支出
             changetypeList.add(GoldchangeEnum.WITHDRAWAL_APPLY.getValue());
             changetypeList.add(GoldchangeEnum.WITHDRAWN.getValue());
             changetypeList.add(GoldchangeEnum.BUY_VIP.getValue());
             changetypeList.add(GoldchangeEnum.YUEBAO_INTO.getValue());
+            changetypeList.add(GoldchangeEnum.FINANCES_INTO.getValue());
         }
 
         if (CollectionUtils.isNotEmpty(changetypeList)) {
@@ -177,7 +179,7 @@ public class MoneyServiceImpl implements MoneyService {
                 o.setQuantity(o.getQuantity().setScale(3, BigDecimal.ROUND_DOWN));
                 //1(1为收入，2为支出)
                 if (GoldchangeEnum.WITHDRAWAL_APPLY.getValue().equals(changetype) || GoldchangeEnum.WITHDRAWN.getValue().equals(changetype) || GoldchangeEnum.BUY_VIP.getValue().equals(changetype)
-                        || GoldchangeEnum.YUEBAO_INTO.getValue().equals(changetype)
+                        || GoldchangeEnum.YUEBAO_INTO.getValue().equals(changetype) || GoldchangeEnum.FINANCES_INTO.getValue().equals(changetype)
                 ) {
                     o.setType(2);
                 } else {
@@ -207,6 +209,10 @@ public class MoneyServiceImpl implements MoneyService {
                     o.setPrename("余额转出到余额宝");
                 } else if (GoldchangeEnum.YUEBAO_INTO.getValue().equals(changetype)) {
                     o.setPrename("余额宝转出到余额");
+                } else if (GoldchangeEnum.FINANCES_OUT.getValue().equals(changetype)) {
+                    o.setPrename("余额购买理财");
+                } else if (GoldchangeEnum.FINANCES_INTO.getValue().equals(changetype)) {
+                    o.setPrename("理财结算到余额");
                 }
 
             });

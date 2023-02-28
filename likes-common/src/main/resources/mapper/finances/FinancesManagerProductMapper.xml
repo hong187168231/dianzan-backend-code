@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductMapper">
+    <select id="findList" resultType="com.likes.common.mybatis.entity.FinancesManagerProduct">
+        select * from finances_manager_product t
+        <where>
+            1=1
+            <if test="p.productNameCn != null and  p.productNameCn != ''">
+                and t.product_name_cn LIKE concat('%',#{p.productNameCn},'%')
+            </if>
+            <if test="p.productNameVn != null and  p.productNameVn != ''">
+                and t.product_name_vn LIKE concat('%',#{p.productNameVn},'%')
+            </if>
+            <if test="p.productNameEn != null and  p.productNameEn != ''">
+                and t.product_name_en LIKE concat('%',#{p.productNameEn},'%')
+            </if>
+            ORDER BY t.create_time ASC
+        </where>
+    </select>
+</mapper>

@@ -178,7 +178,9 @@ public enum GoldchangeEnum {
     BUVIP_LEVEL_3(303, "第三级级返佣"),
 
     YUEBAO_INTO(401, "余额转入到余额宝"),
-    YUEBAO_OUT(402, "余额宝转出到余额");
+    YUEBAO_OUT(402, "余额宝转出到余额"),
+    FINANCES_INTO(501, "余额购买理财"),
+    FINANCES_OUT(502, "理财结算到余额");
 
     private final Integer value;
     private final String name;

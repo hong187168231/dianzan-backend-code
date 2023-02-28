@@ -1,0 +1,132 @@
+package com.likes.modules.admin.finances.controller;
+
+import com.likes.common.BaseController;
+import com.likes.common.model.LoginUser;
+import com.likes.common.model.common.ResultInfo;
+import com.likes.common.mybatis.entity.FinancesManagerProductOrder;
+import com.likes.common.service.finances.IFinancesManagerProductOrderService;
+import com.likes.common.service.finances.IFinancesManagerProductService;
+import com.likes.common.model.dto.finances.FinancesManagerProductOrderDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.likes.common.model.PageResult;
+import java.util.Map;
+
+/**
+ * 理财前台
+ *
+ * @author yixiu
+ */
+@RestController
+@RequestMapping(value = "/finances")
+@Api(tags = "前台理财产品")
+public class FinancesController extends BaseController {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private IFinancesManagerProductService financesManagerProductService;
+    @Autowired
+    private IFinancesManagerProductOrderService financesManagerProductOrderService;
+    /**
+     * 列表
+     */
+    @ApiOperation(value = "分页理财产品查询列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productNameCn", value = "产品中文名称", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "productNameEn", value = "产品英文名称", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "productNameVn", value = "产品越南文名称", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")
+    })
+    @GetMapping("/product/page")
+    public PageResult listProductPage(@RequestParam Map<String, Object> params) {
+        return financesManagerProductService.findListPage(params);
+    }
+    @ApiOperation(value = "理财产品查询列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productNameCn", value = "产品中文名称", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "productNameEn", value = "产品英文名称", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "productNameVn", value = "产品越南文名称", required = false, dataType = "String")
+    })
+    @GetMapping("/product/list")
+    public ResultInfo listProduct(@RequestParam Map<String, Object> params) {
+        ResultInfo response = ResultInfo.ok();
+        return response.setData(financesManagerProductService.findList(params));
+    }
+    /**
+     * 列表
+     */
+    @ApiOperation(value = "分页查询当前用户理财订单")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "startStartTime", value = "理财购买日期开始时间", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "startEndTime", value = "理财购买日期结束时间", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "endStartTime", value = "理财结算日期开始时间", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "endEndTime", value = "理财结算日期结束时间", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "financesProductStatus", value = "提款状态0：未提款，1：已提款", required = false, dataType = "Integer"),
+            @ApiImplicitParam(name = "financesProductId", value = "理财产品ID", required = false, dataType = "Long"),
+            @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")
+    })
+    @GetMapping("/order/page")
+    public PageResult listOrder(@RequestParam Map<String, Object> params) {
+        LoginUser loginUserAPP = getLoginUserAPP();
+        params.put("userId",loginUserAPP.getMemid());
+        return financesManagerProductOrderService.findList(params);
+    }
+
+    /**
+     * 查询
+     */
+    @ApiOperation(value = "查询理财订单")
+    @GetMapping("/order/{id}")
+    public ResultInfo findUserById(@PathVariable Long id) {
+        ResultInfo response = ResultInfo.ok();
+        FinancesManagerProductOrder model = financesManagerProductOrderService.getById(id);
+        return response.setData(model);
+    }
+
+    /**
+     * 新增or更新
+     */
+    @ApiOperation(value = "购买理财")
+    @PostMapping("/buyfinances")
+    public ResultInfo buyFinances(@RequestBody FinancesManagerProductOrderDto financesManagerProductOrderDto) {
+        LoginUser loginUserAPP = getLoginUserAPP();
+        return financesManagerProductOrderService.buyFinances(financesManagerProductOrderDto,loginUserAPP);
+    }
+
+    /**
+     * 新增or更新
+     */
+    @ApiOperation(value = "购买理财")
+    @PostMapping("/getfinances")
+    public ResultInfo getFinances(@RequestBody Integer orderId) {
+        LoginUser loginUserAPP = getLoginUserAPP();
+        return financesManagerProductOrderService.getFinances(orderId,loginUserAPP);
+    }
+
+//    @RequestMapping(name = "提交充值", value = "/submitRecharge", method = RequestMethod.POST)
+//    public ResultInfo submitRecharge(String coinName, BigDecimal amount, String moneyAddress) {
+//        long start = System.currentTimeMillis();
+//        ResultInfo response = ResultInfo.ok();
+//        try {
+//            LoginUser loginUserAPP = getLoginUserAPP();
+//            response.setData(memWalletService.submitRecharge(coinName, amount, moneyAddress, loginUserAPP));
+//        } catch (BusinessException e) {
+//            response.setResultInfo(e.getCode(), e.getMessage());
+//            logger.error("{}.moneyAddress 失败:{}", getClass().getName(), e.getMessage(), e);
+//        } catch (Exception e) {
+//            response = ResultInfo.error("获取钱包地址出错");
+//            logger.error("{}.moneyAddress 出错:{}", getClass().getName(), e.getMessage(), e);
+//        }
+//        logger.info("/moneyAddress耗时{}毫秒", (System.currentTimeMillis() - start));
+//        return response;
+//    }
+
+}

@@ -1,6 +1,7 @@
 package com.likes.common.util;
 
 import com.likes.common.constant.Constants;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2871,8 +2872,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
         return null;
     }
-
-
+    /**
+     *  格式化北京时间
+     * @param date
+     * @param pattern
+     * @return
+     */
+    public static Date getTimeZone(Date date, String pattern){
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        String snow = sdf.format(date);
+        return parseDate(snow,pattern);
+    }
+    /**
+     * 对日期的【天】进行加/减
+     *
+     * @param date 日期
+     * @param days 天数，负数为减
+     * @return 加/减几天后的日期
+     */
+    public static Date addDateDays(Date date, int days) {
+        DateTime dateTime = new DateTime(date);
+        return dateTime.plusDays(days).toDate();
+    }
     public static Date fiveZero() {
         Date date = str2date("2020-05-01 00:00:00");
         return date;

@@ -2,10 +2,12 @@ package com.likes.modules.admin.finance.controller;
 
 import java.util.Map;
 
-import com.likes.common.model.PageResult;
+import com.likes.common.model.common.PageBounds;
+import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.mybatis.entity.FinancesManagerProductSetting;
 import com.likes.common.service.finances.IFinancesManagerProductSettingService;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -42,7 +44,9 @@ public class FinancesManagerProductSettingController {
     })
     @GetMapping("/page")
     public PageResult listPage(@RequestParam Map<String, Object> params) {
-        return financesManagerProductSettingService.findListPage(params);
+        PageBounds
+            pageBounds = new PageBounds( MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
+        return financesManagerProductSettingService.findListPage(params,pageBounds);
     }
 
     @ApiOperation(value = "查询列表")

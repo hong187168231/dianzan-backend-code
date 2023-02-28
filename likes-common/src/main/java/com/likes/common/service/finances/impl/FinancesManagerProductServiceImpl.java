@@ -1,18 +1,17 @@
 package com.likes.common.service.finances.impl;
 
-import com.likes.common.model.PageResult;
+import cn.hutool.core.util.ObjectUtil;
+import com.likes.common.model.common.PageBounds;
+import com.likes.common.model.common.PageResult;
 import com.likes.common.mybatis.entity.FinancesManagerProduct;
 import com.likes.common.mybatis.mapper.FinancesManagerProductMapper;
-import com.likes.common.service.SuperServiceImpl;
 import com.likes.common.service.finances.IFinancesManagerProductService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections4.MapUtils;
-import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * 理财产品设置
@@ -22,20 +21,47 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class FinancesManagerProductServiceImpl extends SuperServiceImpl<FinancesManagerProductMapper, FinancesManagerProduct> implements IFinancesManagerProductService {
+public class FinancesManagerProductServiceImpl implements IFinancesManagerProductService {
+
+    @Autowired
+    private FinancesManagerProductMapper financesManagerProductMapper;
+
+    @Override
+    public PageResult findListPage(Map<String, Object> params, PageBounds pageBounds) {
+        List<FinancesManagerProduct> list = financesManagerProductMapper.findList(params, pageBounds.toRowBounds());
+        return PageResult.getPageResult(pageBounds, list);
+    }
+
     /**
      * 列表
+     *
      * @param params
      * @return
      */
+
     @Override
-    public PageResult<FinancesManagerProduct> findListPage(Map<String, Object> params){
-        Page<FinancesManagerProduct> page = new Page<>(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
-        List<FinancesManagerProduct> list  =  baseMapper.findList(page, params);
-        return PageResult.<FinancesManagerProduct>builder().data(list).code(0).count(page.getTotal()).build();
+    public List<FinancesManagerProduct> findList(Map<String, Object> params) {
+        return financesManagerProductMapper.findList(params);
     }
+
     @Override
-    public List<FinancesManagerProduct> findList(Map<String, Object> params){
-        return baseMapper.findList(params);
+    public void saveOrUpdate(FinancesManagerProduct financesManagerProduct) {
+        if (ObjectUtil.isNotNull(financesManagerProduct.getId())) {
+            financesManagerProductMapper.updateByPrimaryKeySelective(financesManagerProduct);
+        } else {
+            financesManagerProductMapper.insertSelective(financesManagerProduct);
+        }
+    }
+
+    @Override
+    public FinancesManagerProduct getById(Long id) {
+        FinancesManagerProduct product = new FinancesManagerProduct();
+        product.setId(id.intValue());
+        return financesManagerProductMapper.selectOne(product);
+    }
+
+    @Override
+    public boolean removeById(Long id) {
+        return financesManagerProductMapper.deleteByPrimaryKey(id.intValue()) > 0;
     }
 }

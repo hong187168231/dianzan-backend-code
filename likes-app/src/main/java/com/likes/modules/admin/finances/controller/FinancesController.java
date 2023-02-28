@@ -104,7 +104,7 @@ public class FinancesController extends BaseController {
     /**
      * 新增or更新
      */
-    @ApiOperation(value = "购买理财")
+    @ApiOperation(value = "购买理财提现")
     @PostMapping("/getfinances")
     public ResultInfo getFinances(@RequestBody Integer orderId) {
         LoginUser loginUserAPP = getLoginUserAPP();

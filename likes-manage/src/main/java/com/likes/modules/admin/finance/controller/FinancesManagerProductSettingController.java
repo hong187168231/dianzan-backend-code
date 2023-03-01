@@ -86,7 +86,7 @@ public class FinancesManagerProductSettingController {
      * 删除
      */
     @ApiOperation(value = "删除")
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")
     public ResultInfo delete(@PathVariable Long id) {
         financesManagerProductSettingService.removeById(id);
         return ResultInfo.ok();

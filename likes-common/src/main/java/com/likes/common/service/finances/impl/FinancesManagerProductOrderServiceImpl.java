@@ -148,11 +148,11 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
 
             //用户余额账变
             MemGoldchangeDO balance = new MemGoldchangeDO();
-            balance.setOpnote("余额购买理财");
-            balance.setQuantity(financesManagerProductOrder.getBuyAmount());
+            balance.setOpnote("余额购买理财提现");
+            balance.setQuantity(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount()));
             balance.setUpdateTime(new Date());
             balance.setAccno(financesManagerProductOrder.getUserAcct());
-            balance.setChangetype(GoldchangeEnum.FINANCES_INTO.getValue());
+            balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());
             memBaseinfoWriteService.updateUserBalance(balance);
         }
         return response;

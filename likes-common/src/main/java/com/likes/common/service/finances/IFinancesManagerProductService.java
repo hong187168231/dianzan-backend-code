@@ -2,6 +2,7 @@ package com.likes.common.service.finances;
 
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
+import com.likes.common.model.common.ResultInfo;
 import com.likes.common.mybatis.entity.FinancesManagerProduct;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public interface IFinancesManagerProductService {
 
     FinancesManagerProduct getById(Long id);
 
-    boolean removeById(Long id);
+    ResultInfo removeById(Long id);
 
 }
 

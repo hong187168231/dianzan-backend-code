@@ -3,13 +3,17 @@ package com.likes.common.service.finances.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
+import com.likes.common.model.common.ResultInfo;
 import com.likes.common.mybatis.entity.FinancesManagerProduct;
+import com.likes.common.mybatis.entity.FinancesManagerProductSetting;
 import com.likes.common.mybatis.mapper.FinancesManagerProductMapper;
 import com.likes.common.service.finances.IFinancesManagerProductService;
+import com.likes.common.service.finances.IFinancesManagerProductSettingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,9 @@ public class FinancesManagerProductServiceImpl implements IFinancesManagerProduc
 
     @Autowired
     private FinancesManagerProductMapper financesManagerProductMapper;
+
+    @Autowired
+    private IFinancesManagerProductSettingService iFinancesManagerProductSettingService;
 
     @Override
     public PageResult findListPage(Map<String, Object> params, PageBounds pageBounds) {
@@ -61,7 +68,13 @@ public class FinancesManagerProductServiceImpl implements IFinancesManagerProduc
     }
 
     @Override
-    public boolean removeById(Long id) {
-        return financesManagerProductMapper.deleteByPrimaryKey(id.intValue()) > 0;
+    public ResultInfo removeById(Long id) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("financesProductId",id);
+        List<FinancesManagerProductSetting> list = iFinancesManagerProductSettingService.findList(params);
+        if(null!=list && list.size()>0){
+            return ResultInfo.fail("该产品用户购买理财设置，禁止删除");
+        }
+        return ResultInfo.ok(financesManagerProductMapper.deleteByPrimaryKey(id.intValue()) > 0);
     }
 }

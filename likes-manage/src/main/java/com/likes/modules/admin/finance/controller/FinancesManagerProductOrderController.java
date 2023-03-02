@@ -48,12 +48,12 @@ public class FinancesManagerProductOrderController {
             @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")
     })
     @GetMapping
-    public ResultInfo list(@RequestParam Map<String, Object> params) {
+    public PageResult list(@RequestParam Map<String, Object> params) {
         PageBounds
             pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         params.remove("pageNo");
         params.remove("pageSize");
-        return ResultInfo.ok(financesManagerProductOrderService.findList(params,pageBounds));
+        return financesManagerProductOrderService.findList(params,pageBounds);
     }
 
     /**

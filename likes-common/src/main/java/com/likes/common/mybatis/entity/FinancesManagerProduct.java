@@ -44,10 +44,10 @@ public class FinancesManagerProduct {
     @ApiModelProperty(value = "收益利率%")
     @NotNull(message = "收益利率%不能为空！")
     private Double incomeRate;
-    @Min(value = 1, message = "活动商品单价必须大于等于1！")
+    @Min(value = 1, message = "有效天数必须大于等于1！")
     @NotNull(message = "有效天数不能为空！")
     @ApiModelProperty(value = "有效天数")
-    private int validDate;
+    private Integer validDate;
     @ApiModelProperty(value = "产品中文名称")
     @NotEmpty(message = "产品中文名称不能为空！")
     private String productNameCn;

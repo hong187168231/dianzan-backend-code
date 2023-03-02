@@ -39,13 +39,15 @@ public class FinancesManagerProductSettingController {
             @ApiImplicitParam(name = "financesProductId", value = "理财产品ID", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "levelConfigId", value = "vip等级ID", required = false, dataType = "Long"),
             @ApiImplicitParam(name = "levelConfigLevel", value = "vip等级", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "pageNo", value = "分页起始位置", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")
     })
     @GetMapping("/page")
     public PageResult listPage(@RequestParam Map<String, Object> params) {
         PageBounds
-            pageBounds = new PageBounds( MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
+            pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
+        params.remove("pageNo");
+        params.remove("pageSize");
         return financesManagerProductSettingService.findListPage(params,pageBounds);
     }
 

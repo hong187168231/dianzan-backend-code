@@ -44,13 +44,15 @@ public class FinancesManagerProductOrderController {
             @ApiImplicitParam(name = "userId", value = "会员ID", required = false, dataType = "Long"),
             @ApiImplicitParam(name = "financesProductStatus", value = "提款状态0：未提款，1：已提款", required = false, dataType = "Integer"),
             @ApiImplicitParam(name = "financesProductId", value = "理财产品ID", required = false, dataType = "Long"),
-            @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")
+            @ApiImplicitParam(name = "pageNo", value = "分页起始位置", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")
     })
     @GetMapping
     public PageResult list(@RequestParam Map<String, Object> params) {
         PageBounds
-            pageBounds = new PageBounds( MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
+            pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
+        params.remove("pageNo");
+        params.remove("pageSize");
         return financesManagerProductOrderService.findList(params,pageBounds);
     }
 

@@ -43,11 +43,11 @@ public class FinancesManagerProductController {
             @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")
     })
     @GetMapping("/page")
-    public PageResult listPage(@RequestParam Map<String, Object> params) {
+    public ResultInfo listPage(@RequestParam Map<String, Object> params) {
         PageBounds pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         params.remove("pageNo");
         params.remove("pageSize");
-        return financesManagerProductService.findListPage(params,pageBounds);
+        return ResultInfo.ok(financesManagerProductService.findListPage(params,pageBounds));
     }
     @ApiOperation(value = "查询列表")
     @ApiImplicitParams({

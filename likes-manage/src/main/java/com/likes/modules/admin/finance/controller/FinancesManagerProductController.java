@@ -89,8 +89,8 @@ public class FinancesManagerProductController  extends BaseController {
      * 删除
      */
     @ApiOperation(value = "删除")
-    @PostMapping("/{id}")
-    public ResultInfo delete(@PathVariable Long id) {
-        return financesManagerProductService.removeById(id);
+    @PostMapping("/delete")
+    public ResultInfo delete(@RequestBody FinancesManagerProduct financesManagerProduct) {
+        return financesManagerProductService.removeById(Long.valueOf(financesManagerProduct.getId()));
     }
 }

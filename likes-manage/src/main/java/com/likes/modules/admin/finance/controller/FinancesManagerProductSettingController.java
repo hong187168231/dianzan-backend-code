@@ -91,9 +91,9 @@ public class FinancesManagerProductSettingController  extends BaseController {
      * 删除
      */
     @ApiOperation(value = "删除")
-    @PostMapping("/{id}")
-    public ResultInfo delete(@PathVariable Long id) {
-        financesManagerProductSettingService.removeById(id);
+    @PostMapping("/delete")
+    public ResultInfo delete(@RequestBody FinancesManagerProductSetting financesManagerProductSetting) {
+        financesManagerProductSettingService.removeById(Long.valueOf(financesManagerProductSetting.getId()));
         return ResultInfo.ok();
     }
 }

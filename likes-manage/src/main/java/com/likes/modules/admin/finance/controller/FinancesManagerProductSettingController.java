@@ -2,6 +2,8 @@ package com.likes.modules.admin.finance.controller;
 
 import java.util.Map;
 
+import com.likes.common.BaseController;
+import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
@@ -27,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/financesmanagerproductsetting")
 @Api(tags = "后端用户购买理财设置")
-public class FinancesManagerProductSettingController {
+public class FinancesManagerProductSettingController  extends BaseController {
     @Autowired
     private IFinancesManagerProductSettingService financesManagerProductSettingService;
 
@@ -80,7 +82,8 @@ public class FinancesManagerProductSettingController {
     @ApiOperation(value = "保存")
     @PostMapping
     public ResultInfo save(@RequestBody FinancesManagerProductSetting financesManagerProductSetting) {
-        financesManagerProductSettingService.saveOrUpdate(financesManagerProductSetting);
+        LoginUser loginUser = getLoginAdmin();
+        financesManagerProductSettingService.saveOrUpdate(financesManagerProductSetting,loginUser);
         return ResultInfo.ok();
     }
 

@@ -1,5 +1,6 @@
 package com.likes.common.service.finances;
 
+import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
@@ -25,7 +26,7 @@ public interface IFinancesManagerProductService {
 
     List<FinancesManagerProduct> findList(Map<String, Object> params);
 
-    void saveOrUpdate(FinancesManagerProduct financesManagerProduct);
+    void saveOrUpdate(FinancesManagerProduct financesManagerProduct, LoginUser loginUser);
 
     FinancesManagerProduct getById(Long id);
 

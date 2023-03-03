@@ -92,7 +92,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             }
             FinancesManagerProductOrder financesManagerProductOrder = new FinancesManagerProductOrder();
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
-            financesManagerProductOrder.setCreateBy(loginUser.getAccno());
+            financesManagerProductOrder.setCreateBy(loginUser.getBdusername());
             Date date = DateUtils.getTimeZone(new Date(), DateUtils.FORMAT_YYYY_MM_DD);
             //理财购买日期
             financesManagerProductOrder.setStartTime(date);
@@ -142,7 +142,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),"购买理财订单已经提现，请勿重复操作");
                 return response;
             }
-            financesManagerProductOrder.setUpdateBy(loginUser.getAccno());
+            financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
             financesManagerProductOrder.setFinancesProductStatus(1);
             this.saveOrUpdate(financesManagerProductOrder);
 

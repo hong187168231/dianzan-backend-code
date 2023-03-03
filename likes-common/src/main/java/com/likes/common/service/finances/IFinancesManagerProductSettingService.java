@@ -1,5 +1,6 @@
 package com.likes.common.service.finances;
 
+import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.mybatis.entity.FinancesManagerProductSetting;
@@ -24,7 +25,7 @@ public interface IFinancesManagerProductSettingService {
 
     List<FinancesManagerProductSetting> findList(Map<String, Object> params);
 
-    void saveOrUpdate(FinancesManagerProductSetting financesManagerProductSetting);
+    void saveOrUpdate(FinancesManagerProductSetting financesManagerProductSetting, LoginUser loginUser);
 
     FinancesManagerProductSetting getById(Long id);
 

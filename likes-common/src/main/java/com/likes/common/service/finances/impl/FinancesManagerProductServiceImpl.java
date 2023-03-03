@@ -1,6 +1,7 @@
 package com.likes.common.service.finances.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
@@ -52,10 +53,12 @@ public class FinancesManagerProductServiceImpl implements IFinancesManagerProduc
     }
 
     @Override
-    public void saveOrUpdate(FinancesManagerProduct financesManagerProduct) {
+    public void saveOrUpdate(FinancesManagerProduct financesManagerProduct, LoginUser loginUser) {
         if (ObjectUtil.isNotNull(financesManagerProduct.getId())) {
+            financesManagerProduct.setUpdateBy(loginUser.getBdusername());
             financesManagerProductMapper.updateByPrimaryKeySelective(financesManagerProduct);
         } else {
+            financesManagerProduct.setCreateBy(loginUser.getBdusername());
             financesManagerProductMapper.insertSelective(financesManagerProduct);
         }
     }

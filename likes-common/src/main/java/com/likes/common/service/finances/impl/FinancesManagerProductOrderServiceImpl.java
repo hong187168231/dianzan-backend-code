@@ -72,11 +72,15 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
         params.put("financesProductId", financesManagerProductOrderDto.getFinancesProductId());
         params.put("levelConfigLevel", loginUser.getMemlevel());
         List<FinancesManagerProductSetting> settingList = iFinancesManagerProductSettingService.findList(params);
+        if(null==settingList || settingList.size()<=0){
+            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),StatusCode.SERVER_ERROR.getValue() );
+            return response;
+        }
         for (FinancesManagerProductSetting setting : settingList) {
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" + setting.getBuyNumber());
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" );
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
@@ -85,7 +89,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
-                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" + setting.getBuyNumber());
+                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" );
                         return response;
                     }
                 }

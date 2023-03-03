@@ -1,5 +1,6 @@
 package com.likes.modules.admin.finances.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.BaseController;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
@@ -55,13 +56,22 @@ public class FinancesController extends BaseController {
         {@ApiImplicitParam(name = "productNameCn", value = "产品中文名称", required = false, dataType = "String"),
             @ApiImplicitParam(name = "productNameEn", value = "产品英文名称", required = false, dataType = "String"),
             @ApiImplicitParam(name = "productNameVn", value = "产品越南文名称", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
-            @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")})
+            @ApiImplicitParam(name = "pageNo", value = "分页起始位置", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")})
     @GetMapping("/product/page")
-    public PageResult listProductPage(@RequestParam Map<String, Object> params) {
+    public ResultInfo listProductPage(@RequestParam Map<String, Object> params) {
+        if (ObjectUtil.isEmpty(params)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageNo"))) {
+            return ResultInfo.fail("分页起始位置不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageSize"))) {
+            return ResultInfo.fail("分页结束位置不能为空");
+        }
         PageBounds pageBounds =
-            new PageBounds(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
-        return financesManagerProductService.findListPage(params, pageBounds);
+            new PageBounds(MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
+        return ResultInfo.ok(financesManagerProductService.findListPage(params, pageBounds));
     }
 
     @ApiOperation(value = "理财产品查询列表")
@@ -87,15 +97,24 @@ public class FinancesController extends BaseController {
         @ApiImplicitParam(name = "financesProductStatus", value = "提款状态0：未提款，1：已提款", required = false,
             dataType = "Integer"),
         @ApiImplicitParam(name = "financesProductId", value = "理财产品ID", required = false, dataType = "Long"),
-        @ApiImplicitParam(name = "page", value = "分页起始位置", required = true, dataType = "Integer"),
-        @ApiImplicitParam(name = "limit", value = "分页结束位置", required = true, dataType = "Integer")})
+        @ApiImplicitParam(name = "pageNo", value = "分页起始位置", required = true, dataType = "Integer"),
+        @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")})
     @GetMapping("/order/page")
-    public PageResult listOrder(@RequestParam Map<String, Object> params) {
+    public ResultInfo listOrder(@RequestParam Map<String, Object> params) {
+        if (ObjectUtil.isEmpty(params)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageNo"))) {
+            return ResultInfo.fail("分页起始位置不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageSize"))) {
+            return ResultInfo.fail("分页结束位置不能为空");
+        }
         LoginUser loginUserAPP = getLoginUserAPP();
         params.put("userId", loginUserAPP.getMemid());
         PageBounds pageBounds =
-            new PageBounds(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"));
-        return financesManagerProductOrderService.findList(params, pageBounds);
+            new PageBounds(MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
+        return ResultInfo.ok(financesManagerProductOrderService.findList(params, pageBounds));
     }
 
     /**
@@ -104,6 +123,9 @@ public class FinancesController extends BaseController {
     @ApiOperation(value = "查询理财订单")
     @GetMapping("/order/{id}")
     public ResultInfo findUserById(@PathVariable Long id) {
+        if (ObjectUtil.isEmpty(id)) {
+            return ResultInfo.fail("ID不能为空");
+        }
         ResultInfo response = ResultInfo.ok();
         FinancesManagerProductOrder model = financesManagerProductOrderService.getById(id);
         return response.setData(model);
@@ -115,6 +137,15 @@ public class FinancesController extends BaseController {
     @ApiOperation(value = "购买理财")
     @PostMapping("/buyfinances")
     public ResultInfo buyFinances(@RequestBody FinancesManagerProductOrderDto financesManagerProductOrderDto) {
+        if (ObjectUtil.isEmpty(financesManagerProductOrderDto)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductOrderDto.getBuyAmount())) {
+            return ResultInfo.fail("购买理财本金不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductOrderDto.getFinancesProductId())) {
+            return ResultInfo.fail("理财产品ID不能为空");
+        }
         String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
         RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_BUY_LOCK, 2, 120 * 1000);
@@ -152,7 +183,9 @@ public class FinancesController extends BaseController {
     @ApiOperation(value = "购买理财提现")
     @PostMapping("/getfinances")
     public ResultInfo getFinances(@RequestParam Long orderId) {
-
+        if (ObjectUtil.isEmpty(orderId)) {
+            return ResultInfo.fail("ID不能为空");
+        }
         String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
         RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_GET_LOCK, 2, 120 * 1000);

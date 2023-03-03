@@ -2,6 +2,7 @@ package com.likes.modules.admin.finance.controller;
 
 import java.util.Map;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.BaseController;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
@@ -46,6 +47,15 @@ public class FinancesManagerProductSettingController  extends BaseController {
     })
     @GetMapping("/page")
     public ResultInfo listPage(@RequestParam Map<String, Object> params) {
+        if (ObjectUtil.isEmpty(params)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageNo"))) {
+            return ResultInfo.fail("分页起始位置不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageSize"))) {
+            return ResultInfo.fail("分页结束位置不能为空");
+        }
         PageBounds
             pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         params.remove("pageNo");
@@ -71,6 +81,9 @@ public class FinancesManagerProductSettingController  extends BaseController {
     @ApiOperation(value = "查询")
     @GetMapping("/{id}")
     public ResultInfo findUserById(@PathVariable Long id) {
+        if (ObjectUtil.isEmpty(id)) {
+            return ResultInfo.fail("ID不能为空");
+        }
         ResultInfo response = ResultInfo.ok();
         FinancesManagerProductSetting model = financesManagerProductSettingService.getById(id);
         return response.setData(model);
@@ -82,6 +95,27 @@ public class FinancesManagerProductSettingController  extends BaseController {
     @ApiOperation(value = "保存")
     @PostMapping
     public ResultInfo save(@RequestBody FinancesManagerProductSetting financesManagerProductSetting) {
+        if (ObjectUtil.isEmpty(financesManagerProductSetting)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getMinAmout())) {
+            return ResultInfo.fail("最低存款金额不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getLevelConfigId())) {
+            return ResultInfo.fail("vip等级ID不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getLevelConfigLevel())) {
+            return ResultInfo.fail("vip等级不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getLevelConfigReq())) {
+            return ResultInfo.fail("vip等级序号不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getBuyNumber())) {
+            return ResultInfo.fail("限制用户购买次数不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getFinancesProductId())) {
+            return ResultInfo.fail("理财产品ID不能为空");
+        }
         LoginUser loginUser = getLoginAdmin();
         financesManagerProductSettingService.saveOrUpdate(financesManagerProductSetting,loginUser);
         return ResultInfo.ok();
@@ -93,6 +127,12 @@ public class FinancesManagerProductSettingController  extends BaseController {
     @ApiOperation(value = "删除")
     @PostMapping("/delete")
     public ResultInfo delete(@RequestBody FinancesManagerProductSetting financesManagerProductSetting) {
+        if (ObjectUtil.isEmpty(financesManagerProductSetting)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(financesManagerProductSetting.getId())) {
+            return ResultInfo.fail("ID不能为空");
+        }
         financesManagerProductSettingService.removeById(Long.valueOf(financesManagerProductSetting.getId()));
         return ResultInfo.ok();
     }

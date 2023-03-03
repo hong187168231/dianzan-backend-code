@@ -2,6 +2,7 @@ package com.likes.modules.admin.finance.controller;
 
 import java.util.Map;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
@@ -48,12 +49,21 @@ public class FinancesManagerProductOrderController {
             @ApiImplicitParam(name = "pageSize", value = "分页结束位置", required = true, dataType = "Integer")
     })
     @GetMapping
-    public PageResult list(@RequestParam Map<String, Object> params) {
+    public ResultInfo list(@RequestParam Map<String, Object> params) {
+        if (ObjectUtil.isEmpty(params)) {
+            return ResultInfo.fail("请求参数不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageNo"))) {
+            return ResultInfo.fail("分页起始位置不能为空");
+        }
+        if (ObjectUtil.isEmpty(params.get("pageSize"))) {
+            return ResultInfo.fail("分页结束位置不能为空");
+        }
         PageBounds
             pageBounds = new PageBounds( MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         params.remove("pageNo");
         params.remove("pageSize");
-        return financesManagerProductOrderService.findList(params,pageBounds);
+        return ResultInfo.ok(financesManagerProductOrderService.findList(params,pageBounds));
     }
 
     /**
@@ -62,6 +72,9 @@ public class FinancesManagerProductOrderController {
     @ApiOperation(value = "查询")
     @GetMapping("/{id}")
     public ResultInfo findUserById(@PathVariable Long id) {
+        if (ObjectUtil.isEmpty(id)) {
+            return ResultInfo.fail("ID不能为空");
+        }
         ResultInfo response = ResultInfo.ok();
         FinancesManagerProductOrder model = financesManagerProductOrderService.getById(id);
         return response.setData(model);

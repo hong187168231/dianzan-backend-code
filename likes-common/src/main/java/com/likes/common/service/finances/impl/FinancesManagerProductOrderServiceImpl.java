@@ -146,7 +146,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),StatusCode.FINANCE_FAILED_1063.getValue());
                 return response;
             }
-            Date date = DateUtils.parseDate(DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD);
+            Date date = DateUtils.getDayBegin(new Date());
             if(date.after(financesManagerProductOrder.getEndTime())) {//当前时间大于有效截止时间
                 financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
                 financesManagerProductOrder.setFinancesProductStatus(1);

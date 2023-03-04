@@ -4,7 +4,7 @@
 <mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductOrderMapper">
     <select id="findList" resultType="com.likes.common.model.vo.finance.FinancesManagerProductOrderVo">
         select t.id,t.create_time,t.update_time,t.start_time,t.end_time,t.buy_amount,t.everyday_amount,t.sum_amount,t.create_by,t.update_by,t.finances_product_id,
-               t.user_acct,t.user_id,t.finances_product_status,t.level_config_level,MUL(datediff(Now(),t.start_time), t.everyday_amount) as t.theday_amount,
+               t.user_acct,t.user_id,t.finances_product_status,t.level_config_level,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0) as theday_amount,
                d.income_rate,d.valid_date,d.product_name_cn,d.product_name_en,d.product_name_vn,d.remark
         from finances_manager_product_order t
         LEFT JOIN finances_manager_product d ON t.finances_product_id=d.id
@@ -23,16 +23,16 @@
                 and t.finances_product_status = #{p.financesProductStatus}
             </if>
             <if test="p.startStartTime!=null and  p.startStartTime != ''">
-                and DATE_FORMAT(t.start_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ >= ]]>DATE_FORMAT(#{p.startStartTime},'%Y-%m-%d %H:%i:%s')
+                and DATE_FORMAT(t.start_time,'%Y-%m-%d') <![CDATA[ >= ]]>DATE_FORMAT(#{p.startStartTime},'%Y-%m-%d')
             </if>
             <if test="p.startEndTime!=null and  p.startEndTime != ''">
-                and DATE_FORMAT(t.start_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>DATE_FORMAT(#{p.startEndTime},'%Y-%m-%d %H:%i:%s')
+                and DATE_FORMAT(t.start_time,'%Y-%m-%d') <![CDATA[ <= ]]>DATE_FORMAT(#{p.startEndTime},'%Y-%m-%d')
             </if>
             <if test="p.endStartTime!=null and  p.endStartTime != ''">
-                and DATE_FORMAT(t.end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ >= ]]>DATE_FORMAT(#{p.endStartTime},'%Y-%m-%d %H:%i:%s')
+                and DATE_FORMAT(t.end_time,'%Y-%m-%d') <![CDATA[ >= ]]>DATE_FORMAT(#{p.endStartTime},'%Y-%m-%d')
             </if>
             <if test="p.endEndTime!=null and  p.endEndTime != ''">
-                and DATE_FORMAT(t.end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]>DATE_FORMAT(#{p.endEndTime},'%Y-%m-%d %H:%i:%s')
+                and DATE_FORMAT(t.end_time,'%Y-%m-%d') <![CDATA[ <= ]]>DATE_FORMAT(#{p.endEndTime},'%Y-%m-%d')
             </if>
             ORDER BY t.create_time DESC
         </where>

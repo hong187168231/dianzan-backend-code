@@ -97,13 +97,13 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             FinancesManagerProductOrder financesManagerProductOrder = new FinancesManagerProductOrder();
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
             financesManagerProductOrder.setCreateBy(loginUser.getBdusername());
-            Date date = DateUtils.parseDate(DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD);
             //理财购买日期
-            financesManagerProductOrder.setStartTime(date);
+            Date beginDate = DateUtils.getDayBegin(new Date());
+            financesManagerProductOrder.setStartTime(beginDate);
             FinancesManagerProduct financesManagerProduct =
                 iFinancesManagerProductService.getById(financesManagerProductOrderDto.getFinancesProductId());
             //理财结算日期
-            financesManagerProductOrder.setEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.addDateDays(date, financesManagerProduct.getValidDate()),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD));
+            financesManagerProductOrder.setEndTime(DateUtils.addDateDays(beginDate, financesManagerProduct.getValidDate()));
             BigDecimal incomeAmount = financesManagerProductOrderDto.getBuyAmount()
                 .multiply(BigDecimal.valueOf(financesManagerProduct.getIncomeRate()).divide(BigDecimal.valueOf(100)));
             //每日收益金额
@@ -181,4 +181,6 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
     public FinancesManagerProductOrder getById(Long id) {
         return financesManagerProductOrderMapper.selectByPrimaryKey(id);
     }
+
+
 }

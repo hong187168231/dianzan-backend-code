@@ -3,7 +3,8 @@
 
 <mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductMapper">
     <select id="findList" resultType="com.likes.common.mybatis.entity.FinancesManagerProduct">
-        select * from finances_manager_product t
+        select t.id,t.create_time as createTime,t.update_time as updateTime,t.income_rate as incomeRate,t.valid_date as validDate,
+        t.create_by as createBy,t.update_by as updateBy,t.product_name_cn as productNameCn,t.product_name_en as productNameEn,t.product_name_vn as productNameVn,t.remark from finances_manager_product t
         <where>
             1=1
             <if test="p.productNameCn != null and  p.productNameCn != ''">

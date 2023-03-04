@@ -3,9 +3,14 @@
 
 <mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductOrderMapper">
     <select id="findList" resultType="com.likes.common.model.vo.finance.FinancesManagerProductOrderVo">
-        select t.id,t.create_time,t.update_time,t.start_time,t.end_time,t.buy_amount,t.everyday_amount,t.sum_amount,t.create_by,t.update_by,t.finances_product_id,
-               t.user_acct,t.user_id,t.finances_product_status,t.level_config_level,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0) as theday_amount,
-               d.income_rate,d.valid_date,d.product_name_cn,d.product_name_en,d.product_name_vn,d.remark
+        select t.id,t.create_time as createTime,t.update_time as updateTime,
+               t.start_time as startTime,t.end_time as endTime,t.buy_amount as buyAmount,
+               t.everyday_amount as everydayAmount,t.sum_amount as sumAmount,
+               t.create_by as createBy,t.update_by as updateBy,t.finances_product_id as financesProductId,
+               t.user_acct as userId,t.user_id as userAcct,t.finances_product_status as financesProductStatus,
+               t.level_config_level as levelConfigLevel,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0) as thedayAmount,
+               d.income_rate as incomeRate,d.valid_date as validDate,
+               d.product_name_cn as productNameCn,d.product_name_en as productNameEn,d.product_name_vn as productNameVn,d.remark
         from finances_manager_product_order t
         LEFT JOIN finances_manager_product d ON t.finances_product_id=d.id
         <where>

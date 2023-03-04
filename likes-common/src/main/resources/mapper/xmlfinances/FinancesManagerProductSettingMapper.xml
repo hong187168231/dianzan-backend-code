@@ -3,7 +3,11 @@
 
 <mapper namespace="com.likes.common.mybatis.mapper.FinancesManagerProductSettingMapper">
     <select id="findList" resultType="com.likes.common.mybatis.entity.FinancesManagerProductSetting">
-        select * from finances_manager_product_setting t
+        select t.id,t.create_time as createTime,t.update_time as updateTime,
+        t.create_by as createBy,t.update_by as updateBy,t.min_amout as minAmout,
+        t.level_config_id as levelConfigId,t.level_config_level as levelConfigLevel,t.level_config_req as levelConfigReq,
+        t.buy_number as buyNumber,t.finances_product_id as financesProductId
+        from finances_manager_product_setting t
         <where>
             1=1
             <if test="p.financesProductId != null and  p.financesProductId != '' and p.financesProductId != 0">

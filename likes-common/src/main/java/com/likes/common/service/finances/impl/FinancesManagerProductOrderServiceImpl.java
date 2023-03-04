@@ -80,7 +80,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" );
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),StatusCode.FINANCE_FAILED_1062.getValue());
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
@@ -89,7 +89,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
-                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),"用户已经达到最大购买次数" );
+                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),StatusCode.FINANCE_FAILED_1062.getValue() );
                         return response;
                     }
                 }
@@ -97,13 +97,13 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             FinancesManagerProductOrder financesManagerProductOrder = new FinancesManagerProductOrder();
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
             financesManagerProductOrder.setCreateBy(loginUser.getBdusername());
-            Date date = DateUtils.getTimeZone(new Date(), DateUtils.FORMAT_YYYY_MM_DD);
+            Date date = DateUtils.parseDate(DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD);
             //理财购买日期
             financesManagerProductOrder.setStartTime(date);
             FinancesManagerProduct financesManagerProduct =
                 iFinancesManagerProductService.getById(financesManagerProductOrderDto.getFinancesProductId());
             //理财结算日期
-            financesManagerProductOrder.setEndTime(DateUtils.addDateDays(date, financesManagerProduct.getValidDate()));
+            financesManagerProductOrder.setEndTime(DateUtils.parseDate(DateUtils.formatDate(DateUtils.addDateDays(date, financesManagerProduct.getValidDate()),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD));
             BigDecimal incomeAmount = financesManagerProductOrderDto.getBuyAmount()
                 .multiply(BigDecimal.valueOf(financesManagerProduct.getIncomeRate()).divide(BigDecimal.valueOf(100)));
             //每日收益金额
@@ -143,21 +143,27 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             return response;
         } else {
             if (1 == financesManagerProductOrder.getFinancesProductStatus()) {
-                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),"购买理财订单已经提现，请勿重复操作");
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),StatusCode.FINANCE_FAILED_1063.getValue());
                 return response;
             }
-            financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
-            financesManagerProductOrder.setFinancesProductStatus(1);
-            this.saveOrUpdate(financesManagerProductOrder);
+            Date date = DateUtils.parseDate(DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD),DateUtils.FORMAT_YYYY_MM_DD);
+            if(date.after(financesManagerProductOrder.getEndTime())) {//当前时间大于有效截止时间
+                financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
+                financesManagerProductOrder.setFinancesProductStatus(1);
+                this.saveOrUpdate(financesManagerProductOrder);
 
-            //用户余额账变
-            MemGoldchangeDO balance = new MemGoldchangeDO();
-            balance.setOpnote("余额购买理财提现");
-            balance.setQuantity(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount()));
-            balance.setUpdateTime(new Date());
-            balance.setAccno(financesManagerProductOrder.getUserAcct());
-            balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());
-            memBaseinfoWriteService.updateUserBalance(balance);
+                //用户余额账变
+                MemGoldchangeDO balance = new MemGoldchangeDO();
+                balance.setOpnote("余额购买理财提现");
+                balance.setQuantity(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount()));
+                balance.setUpdateTime(new Date());
+                balance.setAccno(financesManagerProductOrder.getUserAcct());
+                balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());
+                memBaseinfoWriteService.updateUserBalance(balance);
+            }else {
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1064.getCode(),StatusCode.FINANCE_FAILED_1064.getValue());
+                return response;
+            }
         }
         return response;
     }

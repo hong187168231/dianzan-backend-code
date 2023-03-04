@@ -7,7 +7,7 @@
                t.start_time as startTime,t.end_time as endTime,t.buy_amount as buyAmount,
                t.everyday_amount as everydayAmount,t.sum_amount as sumAmount,
                t.create_by as createBy,t.update_by as updateBy,t.finances_product_id as financesProductId,
-               t.user_acct as userId,t.user_id as userAcct,t.finances_product_status as financesProductStatus,
+               t.user_acct as userAcct,t.user_id as userId,t.finances_product_status as financesProductStatus,
                t.level_config_level as levelConfigLevel,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0) as thedayAmount,
                d.income_rate as incomeRate,d.valid_date as validDate,
                d.product_name_cn as productNameCn,d.product_name_en as productNameEn,d.product_name_vn as productNameVn,d.remark

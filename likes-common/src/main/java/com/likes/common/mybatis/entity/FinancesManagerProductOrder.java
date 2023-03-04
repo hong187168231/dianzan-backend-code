@@ -38,9 +38,11 @@ public class FinancesManagerProductOrder {
     private String updateBy;
     @ApiModelProperty(value = "理财购买日期")
     @NotNull(message = "理财开始时间不能为空！")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date startTime;
     @ApiModelProperty(value = "理财结算日期")
     @NotNull(message = "理财结束时间不能为空！")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date endTime;
     @ApiModelProperty(value = "购买理财本金")
     @NotNull(message = "购买理财本金不能为空！")

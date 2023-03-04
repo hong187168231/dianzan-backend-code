@@ -191,6 +191,7 @@ public enum StatusCode {
     FINANCE_FAILED_1061("1061", "操作频繁，请稍后再试！"),
     FINANCE_FAILED_1062("1062", "用户已经达到最大购买次数"),
     FINANCE_FAILED_1063("1063", "购买理财订单已经提现，请勿重复操作"),
+    FINANCE_FAILED_1064("1064", "您购买的理财还未到期，不能做提现操作"),
     NEED_TO_UPGRADE_VERSION("2000", "当前版本过低，请升级到最新版本"),
 
     /** 聊天室禁用状态 */

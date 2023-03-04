@@ -2873,18 +2873,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return null;
     }
     /**
-     *  格式化北京时间
-     * @param date
-     * @param pattern
-     * @return
-     */
-    public static Date getTimeZone(Date date, String pattern){
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        String snow = sdf.format(date);
-        return parseDate(snow,pattern);
-    }
-    /**
      * 对日期的【天】进行加/减
      *
      * @param date 日期

@@ -98,12 +98,13 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
             financesManagerProductOrder.setCreateBy(loginUser.getBdusername());
             //理财购买日期
-            Date beginDate = DateUtils.getDayBegin(new Date());
+            String beginDate = DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD);
             financesManagerProductOrder.setStartTime(beginDate);
             FinancesManagerProduct financesManagerProduct =
                 iFinancesManagerProductService.getById(financesManagerProductOrderDto.getFinancesProductId());
             //理财结算日期
-            financesManagerProductOrder.setEndTime(DateUtils.addDateDays(beginDate, financesManagerProduct.getValidDate()));
+            String endDate = DateUtils.formatDate(DateUtils.addDateDays(DateUtils.getDayBegin(new Date()), financesManagerProduct.getValidDate()),DateUtils.FORMAT_YYYY_MM_DD);
+            financesManagerProductOrder.setEndTime(endDate);
             BigDecimal incomeAmount = financesManagerProductOrderDto.getBuyAmount()
                 .multiply(BigDecimal.valueOf(financesManagerProduct.getIncomeRate()).divide(BigDecimal.valueOf(100)));
             //每日收益金额
@@ -147,7 +148,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 return response;
             }
             Date date = DateUtils.getDayBegin(new Date());
-            if(date.after(financesManagerProductOrder.getEndTime())) {//当前时间大于有效截止时间
+            if(date.after(DateUtils.parseDate(financesManagerProductOrder.getEndTime(),DateUtils.FORMAT_YYYY_MM_DD))) {//当前时间大于有效截止时间
                 financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
                 financesManagerProductOrder.setFinancesProductStatus(1);
                 this.saveOrUpdate(financesManagerProductOrder);

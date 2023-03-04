@@ -37,11 +37,11 @@ public class FinancesManagerProductOrder {
     @ApiModelProperty(value = "更新人")
     private String updateBy;
     @ApiModelProperty(value = "理财购买日期")
-    @NotNull(message = "理财开始时间不能为空！")
-    private Date startTime;
+    @NotEmpty(message = "理财开始时间不能为空！")
+    private String startTime;
     @ApiModelProperty(value = "理财结算日期")
-    @NotNull(message = "理财结束时间不能为空！")
-    private Date endTime;
+    @NotEmpty(message = "理财结束时间不能为空！")
+    private String endTime;
     @ApiModelProperty(value = "购买理财本金")
     @NotNull(message = "购买理财本金不能为空！")
     private BigDecimal buyAmount;

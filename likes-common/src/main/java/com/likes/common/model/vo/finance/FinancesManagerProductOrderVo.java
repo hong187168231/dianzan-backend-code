@@ -30,9 +30,9 @@ public class FinancesManagerProductOrderVo {
     @ApiModelProperty(value = "更新人")
     private String updateBy;
     @ApiModelProperty(value = "理财购买日期")
-    private Date startTime;
+    private String startTime;
     @ApiModelProperty(value = "理财结算日期")
-    private Date endTime;
+    private String endTime;
     @ApiModelProperty(value = "购买理财本金")
     private BigDecimal buyAmount;
     @ApiModelProperty(value = "每日收益金额")

@@ -77,10 +77,15 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             return response;
         }
         for (FinancesManagerProductSetting setting : settingList) {
+            if(financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.valueOf(setting.getMinAmout())) == -1){
+                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),StatusCode.SERVER_ERROR.getValue() );
+                return response;
+            }
+
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),StatusCode.FINANCE_FAILED_1062.getValue());
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(),StatusCode.FINANCE_FAILED_1065.getValue());
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();

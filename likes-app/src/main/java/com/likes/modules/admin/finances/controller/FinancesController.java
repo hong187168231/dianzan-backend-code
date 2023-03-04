@@ -148,7 +148,7 @@ public class FinancesController extends BaseController {
         }
         String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
-        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_BUY_LOCK, 2, 120 * 1000);
+        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_BUY_LOCK, 2, 60 * 1000);
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
             // 控制频率
@@ -188,7 +188,7 @@ public class FinancesController extends BaseController {
         }
         String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
-        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_GET_LOCK, 2, 120 * 1000);
+        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_GET_LOCK, 2, 60 * 1000);
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
             // 控制频率

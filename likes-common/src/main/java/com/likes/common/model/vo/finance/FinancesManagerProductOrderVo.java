@@ -44,7 +44,7 @@ public class FinancesManagerProductOrderVo {
     @ApiModelProperty(value = "理财产品ID")
     private Long financesProductId;
     @ApiModelProperty(value = "会员ID")
-    private Long userId;
+    private String userId;
     @ApiModelProperty(value = "会员账号")
     private String userAcct;
     @ApiModelProperty(value = "提款状态0：未提款，1：已提款")

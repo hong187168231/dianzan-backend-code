@@ -56,7 +56,7 @@ public class FinancesManagerProductOrder {
     private Long financesProductId;
     @ApiModelProperty(value = "会员ID")
     @NotNull(message = "会员ID不能为空！")
-    private Long userId;
+    private String userId;
     @ApiModelProperty(value = "会员账号")
     @NotEmpty(message = "会员账号不能为空！")
     private String userAcct;

@@ -84,7 +84,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
-                    params1.put("userId", loginUser.getMemid());
+                    params1.put("userId", loginUser.getAccno());
                     params1.put("financesProductId", financesManagerProductOrderDto.getFinancesProductId());
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
@@ -96,7 +96,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             }
             FinancesManagerProductOrder financesManagerProductOrder = new FinancesManagerProductOrder();
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
-            financesManagerProductOrder.setCreateBy(loginUser.getBdusername());
+            financesManagerProductOrder.setCreateBy(loginUser.getAcclogin());
             //理财购买日期
             String beginDate = DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD);
             financesManagerProductOrder.setStartTime(beginDate);
@@ -113,9 +113,9 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             //总收益金额
             financesManagerProductOrder.setSumAmount(incomeAmount);
             //会员ID
-            financesManagerProductOrder.setUserId(loginUser.getMemid());
+            financesManagerProductOrder.setUserId(loginUser.getAccno());
             //会员账号
-            financesManagerProductOrder.setUserAcct(loginUser.getAccno());
+            financesManagerProductOrder.setUserAcct(loginUser.getAcclogin());
             //会员等级
             financesManagerProductOrder.setLevelConfigLevel(loginUser.getMemlevel());
             financesManagerProductOrder.setFinancesProductStatus(0);
@@ -149,7 +149,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             }
             Date date = DateUtils.getDayBegin(new Date());
             if(date.after(DateUtils.parseDate(financesManagerProductOrder.getEndTime(),DateUtils.FORMAT_YYYY_MM_DD))) {//当前时间大于有效截止时间
-                financesManagerProductOrder.setUpdateBy(loginUser.getBdusername());
+                financesManagerProductOrder.setUpdateBy(loginUser.getAcclogin());
                 financesManagerProductOrder.setFinancesProductStatus(1);
                 this.saveOrUpdate(financesManagerProductOrder);
 

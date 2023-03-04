@@ -46,7 +46,7 @@
         select COUNT(1) from finances_manager_product_order t
         <where>
             1=1
-            <if test="p.userId != null and  p.userId != ''  and p.userId != 0">
+            <if test="p.userId != null and  p.userId != ''">
                 and t.user_id = #{p.userId}
             </if>
             <if test="p.financesProductId != null and  p.financesProductId != ''  and p.financesProductId != 0">

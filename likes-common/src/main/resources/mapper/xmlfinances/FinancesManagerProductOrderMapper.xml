@@ -18,7 +18,7 @@
             <if test="p.userAcct != null and  p.userAcct != ''">
                 and t.user_acct LIKE concat('%',#{p.userAcct},'%')
             </if>
-            <if test="p.userId != null and  p.userId != ''  and p.userId != 0">
+            <if test="p.userId != null and  p.userId != ''">
                 and t.user_id = #{p.userId}
             </if>
             <if test="p.financesProductId != null and  p.financesProductId != ''  and p.financesProductId != 0">

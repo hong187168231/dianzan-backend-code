@@ -3,6 +3,7 @@ package com.likes.common.service.finances.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.likes.common.enums.GoldchangeEnum;
 import com.likes.common.enums.StatusCode;
+import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
@@ -18,12 +19,15 @@ import com.likes.common.service.finances.IFinancesManagerProductOrderService;
 import com.likes.common.service.finances.IFinancesManagerProductService;
 import com.likes.common.service.finances.IFinancesManagerProductSettingService;
 import com.likes.common.service.member.MemBaseinfoWriteService;
+import com.likes.common.util.CollectionUtil;
 import com.likes.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.likes.common.util.ViewUtil.getTradeOffAmount;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -60,7 +64,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
     @Override
     public PageResult findList(Map<String, Object> params, PageBounds pageBounds) {
         List<FinancesManagerProductOrderVo> list =
-            financesManagerProductOrderMapper.findList(params, pageBounds.toRowBounds());
+                financesManagerProductOrderMapper.findList(params, pageBounds.toRowBounds());
         return PageResult.getPageResult(pageBounds, list);
     }
 
@@ -72,21 +76,17 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
         params.put("financesProductId", financesManagerProductOrderDto.getFinancesProductId());
         params.put("levelConfigLevel", loginUser.getMemlevel());
         List<FinancesManagerProductSetting> settingList = iFinancesManagerProductSettingService.findList(params);
-        if(null==settingList || settingList.size()<=0){
-            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),StatusCode.SERVER_ERROR.getValue() );
-            return response;
+        if (CollectionUtil.isEmpty(settingList)) {
+            throw new BusinessException("理财产品为空");
         }
         for (FinancesManagerProductSetting setting : settingList) {
-            if(financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.valueOf(setting.getMinAmout())) == -1){
-                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),StatusCode.SERVER_ERROR.getValue() );
-                return response;
+            if (financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.valueOf(setting.getMinAmout())) == -1) {
+                throw new BusinessException(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
             }
-
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(),StatusCode.FINANCE_FAILED_1065.getValue());
-                    return response;
+                    throw new BusinessException(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
                     params1.put("userId", loginUser.getAccno());
@@ -94,8 +94,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
-                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(),StatusCode.FINANCE_FAILED_1062.getValue() );
-                        return response;
+                        throw new BusinessException(StatusCode.FINANCE_FAILED_1062.getCode(), "用户已经达到最大购买次数");
                     }
                 }
             }
@@ -103,18 +102,18 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             BeanUtils.copyProperties(financesManagerProductOrderDto, financesManagerProductOrder);
             financesManagerProductOrder.setCreateBy(loginUser.getAcclogin());
             //理财购买日期
-            String beginDate = DateUtils.formatDate(new Date(),DateUtils.FORMAT_YYYY_MM_DD);
+            String beginDate = DateUtils.formatDate(new Date(), DateUtils.FORMAT_YYYY_MM_DD);
             financesManagerProductOrder.setStartTime(beginDate);
             FinancesManagerProduct financesManagerProduct =
-                iFinancesManagerProductService.getById(financesManagerProductOrderDto.getFinancesProductId());
+                    iFinancesManagerProductService.getById(financesManagerProductOrderDto.getFinancesProductId());
+            BigDecimal rate = BigDecimal.valueOf(financesManagerProduct.getIncomeRate()).divide(BigDecimal.valueOf(100));
             //理财结算日期
-            String endDate = DateUtils.formatDate(DateUtils.addDateDays(DateUtils.getDayBegin(new Date()), financesManagerProduct.getValidDate()),DateUtils.FORMAT_YYYY_MM_DD);
+            String endDate = DateUtils.formatDate(DateUtils.addDateDays(DateUtils.getDayBegin(new Date()), financesManagerProduct.getValidDate()), DateUtils.FORMAT_YYYY_MM_DD);
             financesManagerProductOrder.setEndTime(endDate);
-            BigDecimal incomeAmount = financesManagerProductOrderDto.getBuyAmount()
-                .multiply(BigDecimal.valueOf(financesManagerProduct.getIncomeRate()).divide(BigDecimal.valueOf(100)));
+            BigDecimal incomeAmount = getTradeOffAmount(financesManagerProductOrderDto.getBuyAmount().multiply(rate));
             //每日收益金额
-            financesManagerProductOrder.setEverydayAmount(
-                incomeAmount.divide(BigDecimal.valueOf(financesManagerProduct.getValidDate())));
+            BigDecimal todayIncomeAmount = getTradeOffAmount(incomeAmount.divide(BigDecimal.valueOf(financesManagerProduct.getValidDate()),BigDecimal.ROUND_DOWN));
+            financesManagerProductOrder.setEverydayAmount(todayIncomeAmount);
             //总收益金额
             financesManagerProductOrder.setSumAmount(incomeAmount);
             //会员ID
@@ -145,15 +144,15 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
         ResultInfo response = ResultInfo.ok();
         FinancesManagerProductOrder financesManagerProductOrder = this.getById(id);
         if (null == financesManagerProductOrder) {
-            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"购买理财订单为空");
+            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(), "购买理财订单为空");
             return response;
         } else {
             if (1 == financesManagerProductOrder.getFinancesProductStatus()) {
-                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(),StatusCode.FINANCE_FAILED_1063.getValue());
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1063.getCode(), StatusCode.FINANCE_FAILED_1063.getValue());
                 return response;
             }
             Date date = DateUtils.getDayBegin(new Date());
-            if(date.after(DateUtils.parseDate(financesManagerProductOrder.getEndTime(),DateUtils.FORMAT_YYYY_MM_DD))) {//当前时间大于有效截止时间
+            if (date.after(DateUtils.parseDate(financesManagerProductOrder.getEndTime(), DateUtils.FORMAT_YYYY_MM_DD))) {//当前时间大于有效截止时间
                 financesManagerProductOrder.setUpdateBy(loginUser.getAcclogin());
                 financesManagerProductOrder.setFinancesProductStatus(1);
                 this.saveOrUpdate(financesManagerProductOrder);
@@ -166,8 +165,8 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 balance.setAccno(financesManagerProductOrder.getUserAcct());
                 balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());
                 memBaseinfoWriteService.updateUserBalance(balance);
-            }else {
-                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1064.getCode(),StatusCode.FINANCE_FAILED_1064.getValue());
+            } else {
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1064.getCode(), StatusCode.FINANCE_FAILED_1064.getValue());
                 return response;
             }
         }

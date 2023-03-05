@@ -111,7 +111,7 @@ public class FinancesController extends BaseController {
             return ResultInfo.fail("分页结束位置不能为空");
         }
         LoginUser loginUserAPP = getLoginUserAPP();
-        params.put("userId", loginUserAPP.getMemid());
+        params.put("userId", loginUserAPP.getAccno());
         PageBounds pageBounds =
             new PageBounds(MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         return ResultInfo.ok(financesManagerProductOrderService.findList(params, pageBounds));

@@ -175,7 +175,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(), "购买理财订单为空");
             return response;
         } else {
-            if(financesManagerProductOrder.getUserAcct().equals(loginUser.getAcclogin())){
+            if(!financesManagerProductOrder.getUserAcct().equals(loginUser.getAcclogin())){
                 throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "该订单不属于您，无操作权限");
             }
             if (1 == financesManagerProductOrder.getFinancesProductStatus()) {

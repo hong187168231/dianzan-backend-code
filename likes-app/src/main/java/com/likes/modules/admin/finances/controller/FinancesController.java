@@ -111,7 +111,7 @@ public class FinancesController extends BaseController {
             return ResultInfo.fail("分页结束位置不能为空");
         }
         LoginUser loginUserAPP = getLoginUserAPP();
-        params.put("userId", loginUserAPP.getMemid());
+        params.put("userId", loginUserAPP.getAccno());
         PageBounds pageBounds =
             new PageBounds(MapUtils.getInteger(params, "pageNo"), MapUtils.getInteger(params, "pageSize"));
         return ResultInfo.ok(financesManagerProductOrderService.findList(params, pageBounds));
@@ -168,6 +168,7 @@ public class FinancesController extends BaseController {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
         } catch (Exception e) {
+            logger.info("失败:{}", e.getMessage());
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
         } finally {
             RedisBaseUtil.delete(keySuffix);
@@ -208,6 +209,7 @@ public class FinancesController extends BaseController {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());
         } catch (Exception e) {
+            logger.info("失败:{}", e.getMessage());
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
         } finally {
             RedisBaseUtil.delete(keySuffix);

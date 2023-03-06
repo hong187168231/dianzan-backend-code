@@ -128,7 +128,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             //用户余额账变
             MemGoldchangeDO balance = new MemGoldchangeDO();
             balance.setOpnote("余额购买理财");
-            balance.setQuantity(financesManagerProductOrderDto.getBuyAmount());
+            balance.setQuantity(getTradeOffAmount(financesManagerProductOrderDto.getBuyAmount()).negate());
             balance.setCreatTime(new Date());
             balance.setAccno(loginUser.getAccno());
             balance.setChangetype(GoldchangeEnum.FINANCES_INTO.getValue());
@@ -160,7 +160,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 //用户余额账变
                 MemGoldchangeDO balance = new MemGoldchangeDO();
                 balance.setOpnote("余额购买理财提现");
-                balance.setQuantity(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount()));
+                balance.setQuantity(getTradeOffAmount(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount())));
                 balance.setUpdateTime(new Date());
                 balance.setAccno(financesManagerProductOrder.getUserAcct());
                 balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());

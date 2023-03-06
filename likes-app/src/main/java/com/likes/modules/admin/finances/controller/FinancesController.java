@@ -6,7 +6,6 @@ import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
-import com.likes.common.model.common.PageResult;
 import com.likes.common.model.common.ResultInfo;
 import com.likes.common.mybatis.entity.FinancesManagerProductOrder;
 import com.likes.common.service.finances.IFinancesManagerProductOrderService;
@@ -19,10 +18,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.MapUtils;
+import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -46,7 +46,7 @@ public class FinancesController extends BaseController {
     private IFinancesManagerProductOrderService financesManagerProductOrderService;
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
     /**
      * 列表
@@ -146,22 +146,14 @@ public class FinancesController extends BaseController {
         if (ObjectUtil.isEmpty(financesManagerProductOrderDto.getFinancesProductId())) {
             return ResultInfo.fail("理财产品ID不能为空");
         }
-        String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
-        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_BUY_LOCK, 2, 60 * 1000);
+        LoginUser loginUserAPP = getLoginUserAPP();
+        RReadWriteLock lock = redissonClient.getReadWriteLock(RedisLock.FINANCE_APP_BUY_LOCK+ loginUserAPP.getMemid());
         try {
-            LoginUser loginUserAPP = getLoginUserAPP();
-            // 控制频率
-            keySuffix = RedisLock.FINANCE_APP_BUY_LOCK + loginUserAPP.getMemid();
-            if (redisTemplate.hasKey(keySuffix)) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
-            }
-            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 300, TimeUnit.SECONDS);
-            if (!haveAuth) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
-            }
-            if (!lock.lock()) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
+            boolean bool = lock.writeLock().tryLock(100, 20, TimeUnit.SECONDS);
+            if (!bool) {
+                logger.error("{}.buyFinances 未获得锁:{}", getClass().getName(), RedisLock.UPDATE_USER_BALANCE_ + loginUserAPP.getMemid());
+                ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
             }
             return financesManagerProductOrderService.buyFinances(financesManagerProductOrderDto, loginUserAPP);
         } catch (BusinessException e) {
@@ -171,8 +163,7 @@ public class FinancesController extends BaseController {
             logger.info("失败:{}", e.getMessage());
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
         } finally {
-            RedisBaseUtil.delete(keySuffix);
-            lock.unlock();
+            lock.writeLock().unlock();
         }
         return response;
         
@@ -187,22 +178,14 @@ public class FinancesController extends BaseController {
         if (ObjectUtil.isEmpty(orderId)) {
             return ResultInfo.fail("ID不能为空");
         }
-        String keySuffix = "";
         ResultInfo response = ResultInfo.ok();
-        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_GET_LOCK, 2, 60 * 1000);
+        LoginUser loginUserAPP = getLoginUserAPP();
+        RReadWriteLock lock = redissonClient.getReadWriteLock(RedisLock.FINANCE_APP_BUY_LOCK+ loginUserAPP.getMemid());
         try {
-            LoginUser loginUserAPP = getLoginUserAPP();
-            // 控制频率
-            keySuffix = RedisLock.FINANCE_APP_GET_LOCK + loginUserAPP.getMemid();
-            if (redisTemplate.hasKey(keySuffix)) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
-            }
-            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 300, TimeUnit.SECONDS);
-            if (!haveAuth) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
-            }
-            if (!lock.lock()) {
-                return ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
+            boolean bool = lock.writeLock().tryLock(100, 20, TimeUnit.SECONDS);
+            if (!bool) {
+                logger.error("{}.buyFinances 未获得锁:{}", getClass().getName(), RedisLock.UPDATE_USER_BALANCE_ + loginUserAPP.getMemid());
+                ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
             }
             return financesManagerProductOrderService.getFinances(orderId, loginUserAPP);
         } catch (BusinessException e) {
@@ -212,8 +195,7 @@ public class FinancesController extends BaseController {
             logger.info("失败:{}", e.getMessage());
             response.setResultInfo(StatusCode.OPERATION_FAILED.getCode(), e.getMessage());
         } finally {
-            RedisBaseUtil.delete(keySuffix);
-            lock.unlock();
+            lock.writeLock().unlock();
         }
         return response;
     }

@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.PageResult;
+import com.likes.common.model.common.ResultInfo;
 import com.likes.common.mybatis.entity.FinancesManagerProductSetting;
 import com.likes.common.mybatis.mapper.FinancesManagerProductSettingMapper;
 import com.likes.common.service.finances.IFinancesManagerProductSettingService;
@@ -13,6 +14,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,14 +50,23 @@ public class FinancesManagerProductSettingServiceImpl implements IFinancesManage
     }
 
     @Override
-    public void saveOrUpdate(FinancesManagerProductSetting financesManagerProductSetting, LoginUser loginUser) {
+    public ResultInfo saveOrUpdate(FinancesManagerProductSetting financesManagerProductSetting, LoginUser loginUser) {
         if (ObjectUtil.isNotNull(financesManagerProductSetting.getId())) {
             financesManagerProductSetting.setUpdateBy(loginUser.getBdusername());
             financesManagerProductSettingMapper.updateByPrimaryKeySelective(financesManagerProductSetting);
         } else {
             financesManagerProductSetting.setCreateBy(loginUser.getBdusername());
+            Map<String, Object> params = new HashMap<>();
+            params.put("levelConfigLevel",financesManagerProductSetting.getLevelConfigLevel());
+            params.put("financesProductId",financesManagerProductSetting.getFinancesProductId());
+
+            List<FinancesManagerProductSetting> list = financesManagerProductSettingMapper.findList(params);
+            if(null!=list&&list.size()>0){
+                return ResultInfo.fail("已设置改VIP等级购买的产品，请勿重复设置");
+            }
             financesManagerProductSettingMapper.insertSelective(financesManagerProductSetting);
         }
+        return ResultInfo.ok();
     }
 
     @Override

@@ -117,8 +117,7 @@ public class FinancesManagerProductSettingController  extends BaseController {
             return ResultInfo.fail("理财产品ID不能为空");
         }
         LoginUser loginUser = getLoginAdmin();
-        financesManagerProductSettingService.saveOrUpdate(financesManagerProductSetting,loginUser);
-        return ResultInfo.ok();
+        return financesManagerProductSettingService.saveOrUpdate(financesManagerProductSetting,loginUser);
     }
 
     /**

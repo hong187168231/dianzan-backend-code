@@ -109,7 +109,7 @@ public class MemberOther extends BaseController {
     @RequestMapping(name = "会员资金变动类型", value = "/memgoldchangtype", method = RequestMethod.GET)
     public ResultInfo getMemberGoldCahngeType() {
         ResultInfo response;
-        MemGoldChangeTypeDO[] result = new MemGoldChangeTypeDO[21];
+        MemGoldChangeTypeDO[] result = new MemGoldChangeTypeDO[23];
         result[0] = new MemGoldChangeTypeDO("1", "充值");
         result[1] = new MemGoldChangeTypeDO("7", "邀请用户");
         result[2] = new MemGoldChangeTypeDO("8", "充值附赠");
@@ -131,6 +131,8 @@ public class MemberOther extends BaseController {
         result[18] = new MemGoldChangeTypeDO("301", "购买VIP第一级返佣");
         result[19] = new MemGoldChangeTypeDO("302", "购买VIP第二级返佣");
         result[20] = new MemGoldChangeTypeDO("303", "购买VIP第三级级返佣");
+        result[21] = new MemGoldChangeTypeDO("501", "余额购买理财");
+        result[22] = new MemGoldChangeTypeDO("502", "理财结算到余额");
 
         response = ResultInfo.ok(result);
         return response;

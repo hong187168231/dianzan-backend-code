@@ -14,10 +14,12 @@ import com.likes.common.model.vo.finance.FinancesManagerProductOrderVo;
 import com.likes.common.mybatis.entity.FinancesManagerProduct;
 import com.likes.common.mybatis.entity.FinancesManagerProductOrder;
 import com.likes.common.mybatis.entity.FinancesManagerProductSetting;
+import com.likes.common.mybatis.entity.MemBaseinfo;
 import com.likes.common.mybatis.mapper.FinancesManagerProductOrderMapper;
 import com.likes.common.service.finances.IFinancesManagerProductOrderService;
 import com.likes.common.service.finances.IFinancesManagerProductService;
 import com.likes.common.service.finances.IFinancesManagerProductSettingService;
+import com.likes.common.service.member.MemBaseinfoService;
 import com.likes.common.service.member.MemBaseinfoWriteService;
 import com.likes.common.util.CollectionUtil;
 import com.likes.common.util.DateUtils;
@@ -26,6 +28,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 import static com.likes.common.util.ViewUtil.getTradeOffAmount;
 
@@ -54,6 +58,8 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
 
     @Autowired
     private FinancesManagerProductOrderMapper financesManagerProductOrderMapper;
+    @Resource
+    private MemBaseinfoService memBaseinfoService;
 
     /**
      * 列表
@@ -77,16 +83,37 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
         params.put("levelConfigLevel", loginUser.getMemlevel());
         List<FinancesManagerProductSetting> settingList = iFinancesManagerProductSettingService.findList(params);
         if (CollectionUtil.isEmpty(settingList)) {
-            throw new BusinessException("理财产品为空");
+            response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(), "理财产品为空");
+            return response;
         }
         for (FinancesManagerProductSetting setting : settingList) {
             if (financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.valueOf(setting.getMinAmout())) == -1) {
-                throw new BusinessException(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
+                response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
+                return response;
+            }
+            if (null == setting.getBuyNumber()) {
+                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"金额为空");
+                return response;
+            }
+            if (setting.getBuyNumber() <= 0) {
+                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"金额不能为负数");
+                return response;
+            }
+            if (new BigDecimal(setting.getBuyNumber().intValue()).compareTo(BigDecimal.valueOf(setting.getBuyNumber())) != 0) {
+                response = ResultInfo.error(StatusCode.LIVE_ERROR_11071.getCode(), "存入金额不能为小数");
+                return response;
+            }
+            MemBaseinfo chongzhiBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
+
+            if (chongzhiBaseinfo.getGoldnum().intValue() < setting.getBuyNumber()) {
+                response = ResultInfo.error(StatusCode.LIVE_ERROR_11006.getCode(), "余额不足");
+                return response;
             }
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    throw new BusinessException(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
+                    return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();
                     params1.put("userId", loginUser.getAccno());
@@ -94,7 +121,8 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
-                        throw new BusinessException(StatusCode.FINANCE_FAILED_1062.getCode(), "用户已经达到最大购买次数");
+                        response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(), "用户已经达到最大购买次数");
+                        return response;
                     }
                 }
             }

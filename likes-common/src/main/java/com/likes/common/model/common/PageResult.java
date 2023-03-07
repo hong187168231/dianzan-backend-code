@@ -81,6 +81,7 @@ public class PageResult<T extends Collection> extends PageBaseInfo {
         PageResult pageResult = new PageResult();
         pageResult.setPageNo(pageBounds.getPageNo());
         pageResult.setPageSize(pageBounds.getPageSize());
+        pageResult.setTotalCount(null!=data?data.size():0);
         pageResult.setData(data);
         return pageResult;
     }

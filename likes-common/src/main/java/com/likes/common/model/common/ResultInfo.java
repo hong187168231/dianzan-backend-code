@@ -138,7 +138,7 @@ public class ResultInfo<T> implements Serializable {
 
 
     public static <T> ResultInfo<T> error(String code,String msg) {
-        ResultInfo<T> resultInfo = getInstance(null, code);
+        ResultInfo<T> resultInfo = getInstance(code, msg);
         resultInfo.setInfo(msg);
         return resultInfo;
     }

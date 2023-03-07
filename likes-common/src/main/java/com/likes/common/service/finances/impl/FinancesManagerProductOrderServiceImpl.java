@@ -112,7 +112,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             //限制用户购买次数（小于0为无限制）
             if (0 <= setting.getBuyNumber()) {
                 if (0 == setting.getBuyNumber()) {
-                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
+                    response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(), "用户已经达到最大购买次数");
                     return response;
                 } else {
                     Map<String, Object> params1 = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.likes.common.service.finances.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.github.pagehelper.Page;
 import com.likes.common.enums.GoldchangeEnum;
 import com.likes.common.enums.StatusCode;
 import com.likes.common.exception.BusinessException;
@@ -69,7 +70,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
      */
     @Override
     public PageResult findList(Map<String, Object> params, PageBounds pageBounds) {
-        List<FinancesManagerProductOrderVo> list =
+        Page<FinancesManagerProductOrderVo> list =
                 financesManagerProductOrderMapper.findList(params, pageBounds.toRowBounds());
         return PageResult.getPageResult(pageBounds, list);
     }

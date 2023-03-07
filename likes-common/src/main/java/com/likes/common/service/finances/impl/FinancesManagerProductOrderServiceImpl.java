@@ -87,25 +87,25 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
             return response;
         }
         for (FinancesManagerProductSetting setting : settingList) {
+            if (null == financesManagerProductOrderDto.getBuyAmount()) {
+                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"金额为空");
+                return response;
+            }
             if (financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.valueOf(setting.getMinAmout())) == -1) {
                 response = ResultInfo.error(StatusCode.FINANCE_FAILED_1065.getCode(), "您购买的理财金额不能小于最低购买金额");
                 return response;
             }
-            if (null == setting.getBuyNumber()) {
-                response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"金额为空");
-                return response;
-            }
-            if (setting.getBuyNumber() <= 0) {
+            if (financesManagerProductOrderDto.getBuyAmount().compareTo(BigDecimal.ZERO) != 1) {
                 response = ResultInfo.error(StatusCode.SERVER_ERROR.getCode(),"金额不能为负数");
                 return response;
             }
-            if (new BigDecimal(setting.getBuyNumber().intValue()).compareTo(BigDecimal.valueOf(setting.getBuyNumber())) != 0) {
+            if (new BigDecimal(financesManagerProductOrderDto.getBuyAmount().intValue()).compareTo(financesManagerProductOrderDto.getBuyAmount()) != 0) {
                 response = ResultInfo.error(StatusCode.LIVE_ERROR_11071.getCode(), "存入金额不能为小数");
                 return response;
             }
             MemBaseinfo chongzhiBaseinfo = memBaseinfoService.getUserByAccno(loginUser.getAccno());
 
-            if (chongzhiBaseinfo.getGoldnum().intValue() < setting.getBuyNumber()) {
+            if (chongzhiBaseinfo.getGoldnum().compareTo(financesManagerProductOrderDto.getBuyAmount()) != 1) {
                 response = ResultInfo.error(StatusCode.LIVE_ERROR_11006.getCode(), "余额不足");
                 return response;
             }

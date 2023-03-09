@@ -21,15 +21,15 @@ public class AgentTakeCashOrder {
 
     private String orderstatus;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date createTime;
 
     private BigDecimal realamt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date updateTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     private Date payDate;
 
     private Integer subNum;

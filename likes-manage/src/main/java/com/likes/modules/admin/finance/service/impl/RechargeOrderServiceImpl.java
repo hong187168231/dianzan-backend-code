@@ -316,24 +316,6 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
         memGoldchange.setPayAmount(getTradeOffAmount(realamt));
         memGoldchange.setSource(clientType);
         memBaseinfoWriteService.updateUserBalance(memGoldchange);
-        if (null != givegold || givegold > 0) {
-            MemGoldchangeDO giveGoldchange = new MemGoldchangeDO();
-            giveGoldchange.setRefid(orderid);
-            giveGoldchange.setAccno(accno);
-            giveGoldchange.setChangetype(GoldchangeEnum.RECHARGE_BONUS.getValue());
-            giveGoldchange.setAmount(getTradeOffAmount(BigDecimal.valueOf(givegold)));
-            giveGoldchange.setCreateUser(opearteAccno);
-            giveGoldchange.setUpdateUser(opearteAccno);
-            giveGoldchange.setOpnote(GoldchangeEnum.RECHARGE_BONUS.getName());
-            giveGoldchange.setSource(clientType);
-            // 变动金额
-            giveGoldchange.setShowChange(getTradeOffAmount(BigDecimal.valueOf(givegold)));
-            giveGoldchange.setNoWithdrawalAmount(getTradeOffAmount(BigDecimal.valueOf(givegold)));
-            giveGoldchange.setQuantity(getTradeOffAmount(BigDecimal.valueOf(givegold).multiply(new BigDecimal(Constants.CHONGZHIBILIE))));
-            giveGoldchange.setUserId(chongzhiBaseinfo.getMemid().intValue());
-            giveGoldchange.setPayAmount(getTradeOffAmount(BigDecimal.ZERO));
-            memBaseinfoWriteService.updateUserBalance(giveGoldchange);
-        }
     }
 
     @Override
@@ -572,7 +554,7 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
         traOrderinfom.setSumamt(getTradeOffAmount(sumamt));
         traOrderinfom.setRealamt(traOrderinfom.getSumamt());
 
-        int t = traOrderinfomMapperService.doUpdateRechargeOrder(traOrderinfom);
+        int t = traOrderinfomMapperService.doUpdateRechargeOrder2(traOrderinfom);
         if (t > 0) {
             // 订单轨迹信息
             TraOrdertracking traOrdertracking = new TraOrdertracking();
@@ -587,21 +569,9 @@ public class RechargeOrderServiceImpl extends BaseServiceImpl implements Recharg
                 throw new BusinessException(StatusCode.LIVE_ERROR_202.getCode(), "已处理过该订单");
             }
 
-//            sysPayAccountMapperService.updateTotalAmount(loginUser.getAccno(), traOrderinfom.getBankid(), traOrderinfom.getRealamt());
-//            SysPayaccount syspayaccount = sysPayAccountMapperService.selectByPrimaryKey(traOrderinfom.getBankid());
-//            if (syspayaccount.getTotalAmount().compareTo(syspayaccount.getStopamt()) >= 0) {
-//                syspayaccount.setSysStatus(false);
-//                syspayaccount.setUpdateUser(loginUser.getAccno());
-//                syspayaccount.setUpdateTime(new Date());
-//                sysPayAccountMapperService.updateByPrimaryKeySelective(syspayaccount);
-//            }
-            // 充值用户
-
             if (chongzhiBaseinfo != null) {
                 // 处理充值用户得乐币
                 this.updateMemGoldchangeRechargeOrder(traOrderinfom.getOrderid(), traOrderinfom.getAccno(), traOrderinfom.getSumamt().setScale(3, BigDecimal.ROUND_DOWN).doubleValue() - traOrderinfom.getRealamt().setScale(3, BigDecimal.ROUND_DOWN).doubleValue(), traOrderinfom.getSumamt().setScale(3, BigDecimal.ROUND_DOWN).doubleValue(), traOrderinfom.getRealamt(), loginUser.getAccno(), chongzhiBaseinfo, traOrderinfom.getSource());
-                // 处理充值用户得充值等级
-//                memLevelService.buyVIPLevel(chongzhiBaseinfo, traOrderinfom, loginUser);
             } else {
                 throw new BusinessException(StatusCode.LIVE_ERROR_1106.getCode(), "充值用户不存在");
             }

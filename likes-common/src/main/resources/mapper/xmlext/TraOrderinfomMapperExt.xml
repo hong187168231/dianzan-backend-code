@@ -761,6 +761,29 @@
         AND is_delete = b'0'
     </update>
 
+
+    <update id="doUpdateRechargeOrder2"
+            parameterType="com.likes.common.mybatis.entity.TraOrderinfom">
+        update tra_orderinfom
+        set
+        update_user = #{updateUser,jdbcType=VARCHAR},
+        payimg = #{payimg,jdbcType=VARCHAR},
+        <if test="accountstatus != null">
+            accountstatus = #{accountstatus,jdbcType=VARCHAR},
+        </if>
+        <if test="sumamt != null">
+            sumamt = #{sumamt,jdbcType=DECIMAL},
+        </if>
+        <if test="realamt != null">
+            realamt = #{realamt,jdbcType=DECIMAL},
+        </if>
+        paydate = #{paydate,jdbcType=TIMESTAMP},
+        orderstatus = #{orderstatus,jdbcType=VARCHAR}
+        where orderid = #{orderid} and orderstatus in ('ord04')
+        AND is_delete = b'0'
+    </update>
+
+
     <update id="doUpdateFamilyRechargeOrder"
             parameterType="com.likes.common.mybatis.entity.TraOrderinfom">
         update tra_orderinfom

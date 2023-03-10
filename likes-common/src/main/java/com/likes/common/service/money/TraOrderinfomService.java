@@ -95,6 +95,8 @@ public interface TraOrderinfomService {
 
     int doUpdateRechargeOrder(TraOrderinfom traOrderinfom);
 
+    int doUpdateRechargeOrder2(TraOrderinfom traOrderinfom);
+
     Page<EntryOrderResponse> appOrderList(EntryOrderReq req, RowBounds rowBounds);
     Page<EntryOrderResponse> orderList(EntryOrderReq req, RowBounds rowBounds);
 

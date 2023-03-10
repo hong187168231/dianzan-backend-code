@@ -268,6 +268,16 @@ public class TraOrderinfomServiceImpl implements TraOrderinfomService {
     }
 
     @Override
+    public int doUpdateRechargeOrder2(TraOrderinfom traOrderinfom) {
+        int n = traOrderinfomMapperExt.doUpdateRechargeOrder2(traOrderinfom);
+        if (n > 0) {
+            RedisBusinessUtil.deleteFuzzyMatchCache(RedisKeys.LIVE_MANAGE_ONLINE_ORDER_LIST_PAGE);
+        }
+        return n;
+    }
+
+
+    @Override
     public Page<EntryOrderResponse> orderList(EntryOrderReq req, RowBounds rowBounds) {
         if(req.getStartDate() != null && req.getStartDate() != ""){
             req.setStartDate(req.getStartDate()+" 00:00:00");

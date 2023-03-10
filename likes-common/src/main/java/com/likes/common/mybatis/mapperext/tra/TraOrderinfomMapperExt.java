@@ -93,6 +93,9 @@ public interface TraOrderinfomMapperExt {
 
     int doUpdateRechargeOrder(TraOrderinfom traOrderinfom);
 
+
+    int doUpdateRechargeOrder2(TraOrderinfom traOrderinfom);
+
     Page<EntryOrderResponse> orderList(EntryOrderReq req, RowBounds rowBounds);
 
     Page<EntryOrderResponse> appOrderList(EntryOrderReq req, RowBounds rowBounds);

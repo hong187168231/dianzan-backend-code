@@ -7,6 +7,7 @@ import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.common.PageBounds;
 import com.likes.common.model.common.ResultInfo;
+import com.likes.common.model.dto.finances.FinancesManagerGetProductOrderDto;
 import com.likes.common.mybatis.entity.FinancesManagerProductOrder;
 import com.likes.common.service.finances.IFinancesManagerProductOrderService;
 import com.likes.common.service.finances.IFinancesManagerProductService;
@@ -132,7 +133,7 @@ public class FinancesController extends BaseController {
     }
 
     /**
-     * 新增or更新
+     * 购买理财
      */
     @ApiOperation(value = "购买理财")
     @PostMapping("/buyfinances")
@@ -170,12 +171,12 @@ public class FinancesController extends BaseController {
     }
 
     /**
-     * 新增or更新
+     * 购买理财提现
      */
     @ApiOperation(value = "购买理财提现")
     @PostMapping("/getfinances")
-    public ResultInfo getFinances(@RequestParam Long orderId) {
-        if (ObjectUtil.isEmpty(orderId)) {
+    public ResultInfo getFinances(@RequestBody FinancesManagerGetProductOrderDto orderDto) {
+        if (ObjectUtil.isEmpty(orderDto)) {
             return ResultInfo.fail("ID不能为空");
         }
         ResultInfo response = ResultInfo.ok();
@@ -187,7 +188,7 @@ public class FinancesController extends BaseController {
                 logger.error("{}.buyFinances 未获得锁:{}", getClass().getName(), RedisLock.UPDATE_USER_BALANCE_ + loginUserAPP.getMemid());
                 ResultInfo.error(StatusCode.FINANCE_FAILED_1061.getCode(),"操作频繁，请稍后再试！");
             }
-            return financesManagerProductOrderService.getFinances(orderId, loginUserAPP);
+            return financesManagerProductOrderService.getFinances(orderDto.getOrderId(), loginUserAPP);
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
             logger.info("失败:{}", e.getMessage());

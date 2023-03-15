@@ -194,7 +194,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                 balance.setOpnote("余额购买理财提现");
                 balance.setQuantity(getTradeOffAmount(financesManagerProductOrder.getBuyAmount().add(financesManagerProductOrder.getSumAmount())));
                 balance.setUpdateTime(new Date());
-                balance.setAccno(financesManagerProductOrder.getUserAcct());
+                balance.setAccno(financesManagerProductOrder.getUserId());
                 balance.setChangetype(GoldchangeEnum.FINANCES_OUT.getValue());
                 memBaseinfoWriteService.updateUserBalance(balance);
             } else {

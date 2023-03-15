@@ -8,7 +8,7 @@
                t.everyday_amount as everydayAmount,t.sum_amount as sumAmount,
                t.create_by as createBy,t.update_by as updateBy,t.finances_product_id as financesProductId,
                t.user_acct as userAcct,t.user_id as userId,t.finances_product_status as financesProductStatus,
-               t.level_config_level as levelConfigLevel,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0) as thedayAmount,
+               t.level_config_level as levelConfigLevel,if(DATE_FORMAT(t.end_time,'%Y-%m-%d')  <![CDATA[ <= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d'),t.sum_amount,IFNULL(datediff(Now(),t.start_time),0)*IFNULL(t.everyday_amount,0)) as thedayAmount,
                d.income_rate as incomeRate,d.valid_date as validDate,
                d.product_name_cn as productNameCn,d.product_name_en as productNameEn,d.product_name_vn as productNameVn,d.remark
         from finances_manager_product_order t

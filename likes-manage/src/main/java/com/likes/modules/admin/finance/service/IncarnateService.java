@@ -71,6 +71,8 @@ public interface IncarnateService {
      */
     Map<String, Object> incarnateOrderListV2(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin);
 
+    Map<String, Object> incarnateOrderListV2Usdt(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin);
+
     /**
      * 用户提现列表数据导出
      *
@@ -88,6 +90,8 @@ public interface IncarnateService {
      * @return
      */
     String incarnateConfirmV2(IncarnateOrderReq req, LoginUser loginAdmin);
+
+    String incarnateConfirmV2Usdt(IncarnateOrderReq req, LoginUser loginAdmin);
 
 
     boolean subUdun(IncarnateOrderReq req, LoginUser loginAdmin);

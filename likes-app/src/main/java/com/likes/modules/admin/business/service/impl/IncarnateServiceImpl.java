@@ -38,6 +38,7 @@ import com.likes.modules.admin.business.service.IncarnateService;
 import com.github.pagehelper.Page;
 import com.likes.modules.admin.pay.service.MemWalletService;
 import com.likes.modules.admin.users.service.AppMemBankService;
+import com.likes.modules.admin.users.service.AppMemWalletService;
 import com.uduncloud.sdk.client.UdunClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -86,6 +87,8 @@ public class IncarnateServiceImpl implements IncarnateService {
     @Resource
     private AppMemBankService appMemBankService;
     @Resource
+    private AppMemWalletService appMemWalletService ;
+    @Resource
     private SysPaysetService sysPaysetService;
     @Resource
     private TraApplyauditService traApplyauditMapperService;
@@ -97,8 +100,6 @@ public class IncarnateServiceImpl implements IncarnateService {
     private TraOrderinfomMapperExt traOrderinfomMapperExt;
     @Resource
     UdunClient udunClient;
-    @Resource
-    private MemWalletService memWalletService;
     @Resource
     private MemLevelConfigService memLevelConfigService;
     @Resource
@@ -216,21 +217,16 @@ public class IncarnateServiceImpl implements IncarnateService {
         }
 
         Long bankaccid;
-        MemBankaccount bankaccount = memBankaccountService.findBankByAccno(loginUserAPP.getAccno());
-        if (bankaccount != null) {
+        MemWallet memWallet = appMemWalletService.findMemWalletByAccno(loginUserAPP.getAccno());
+        if (memWallet != null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "已经存在提现账号");
         }
-//        MemBankaccount bankAddress = memBankaccountService.findBankByAddress(memBankaccount.getBankaddress());
-//        if (bankAddress != null) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该地址已被绑定");
-//        }
-        // 不存在就新增
-        memBankaccount.setAccno(loginUserAPP.getAccno());
-        memBankaccount.setCheckstatus(Constants.CHECKSTATUS_8);
-        memBankaccount.setCreateUser(loginUserAPP.getAccno());
-        memBankaccount.setUpdateUser(loginUserAPP.getAccno());
-
-        int i = memBankaccountService.insertBank(memBankaccount);
+        // memWallet
+        memWallet.setAccno(loginUserAPP.getAccno());
+        memWallet.setCreateUser(loginUserAPP.getAccno());
+        memWallet.setUpdateUser(loginUserAPP.getAccno());
+        memWallet.setMoneyAddress(memBankaccount.getBankaddress());
+        int i = appMemWalletService.saveWallet(memWallet);
         if (i > 0) {
             bankaccid = memBankaccount.getBankaccid();
         } else {
@@ -257,23 +253,16 @@ public class IncarnateServiceImpl implements IncarnateService {
             throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "存在提现订单,不能更改钱包地址");
         }
         Long bankaccid;
-        MemBankaccount bankaccount = memBankaccountService.findBankByAccno(loginUserAPP.getAccno());
-        if (bankaccount == null) {
+        MemWallet memWallet = appMemWalletService.findMemWalletByAccno(loginUserAPP.getAccno());
+        if (memWallet == null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "不存在提现账号，请先绑定");
         }
-//        MemBankaccount bankAddress = memBankaccountService.findBankByAddress(memBankaccount.getBankaddress());
-//        if (bankAddress != null) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "该地址已被绑定");
-//        }
         // 不存在就新增
-        bankaccount.setUpdateUser(loginUserAPP.getAccno());
-        bankaccount.setAccountno(memBankaccount.getAccountno());
-        bankaccount.setAccounttype(memBankaccount.getAccounttype());
-        bankaccount.setBankname(memBankaccount.getBankname());
-        bankaccount.setBankaddress(memBankaccount.getBankaddress());
-        int i = memBankaccountService.reset(bankaccount);
+        memWallet.setUpdateUser(loginUserAPP.getAccno());
+        memWallet.setMoneyAddress(memBankaccount.getBankaddress());
+        int i = appMemWalletService.editWallet(memWallet);
         if (i > 0) {
-            bankaccid = bankaccount.getBankaccid();
+            bankaccid = memWallet.getWalletId();
         } else {
             throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "修改提现账号失败");
         }
@@ -540,15 +529,104 @@ public class IncarnateServiceImpl implements IncarnateService {
         req.setUserId(membaseinfo.getMemid().intValue());
         this.updateMemGoldchangeApplycashIncarnateV2(req, loginUserAPP, orderid, xiangti, sxf, 0);
         RedisBusinessUtil.delIncarnateOrderListCahce();
+        return Constants.SUCCESS_MSG;
+    }
 
-        SysBusparameter w_audit_amout = this.sysBusParamService.selectByBusparamcode("w_audit_amout");
-        boolean udunFLag = new BigDecimal(sumamt).intValue() < Integer.parseInt(w_audit_amout.getBusparamname());
-        if (StringUtils.isNotBlank(req.getCoinName()) && udunFLag) {
-            boolean flag = memWalletService.submitWithdraw(req.getCoinName(), businessId, new BigDecimal(sumamt), req.getMoneyAddress(), loginUserAPP);
-            if (!flag) {
-                throw new RuntimeException("发起提现失败");
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String doIncarnateUsdt(LoginUser loginUserAPP, IncarnateRequest req) {
+        try {
+            logger.info("{}doIncarnateV2 entry user:{}, req:{}, local ip:{}", loginUserAPP.getMemid(), JSONObject.toJSONString(loginUserAPP), JSONObject.toJSONString(req), InetAddress.getLocalHost().getHostAddress());
+        } catch (Exception e) {
+            logger.error("{}doIncarnateV2 ocuur error. user:{}, req:{}", loginUserAPP.getMemid(), JSONObject.toJSONString(loginUserAPP), JSONObject.toJSONString(req), e);
+        }
+
+        if (null == req.getApycamt()) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1104.getCode(), "提现金额为空");
+        }
+        if (req.getApycamt().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1105.getCode(), "提现金额不能为负数");
+        }
+        if (StringUtils.isEmpty(req.getPaypassword())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_11002.getCode(), "提现密码为空");
+        }
+        if (new BigDecimal(req.getApycamt().intValue()).compareTo(req.getApycamt()) != 0) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "提现金额不能为小数");
+        }
+        Integer xyf = memCreditService.selectCreditByMemNo(loginUserAPP.getAccno());
+        if (xyf < 60) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_160.getCode(), "信誉分太低,不能进行该操作！");
+        }
+        MemberLevelResponse response = memLevelConfigService.getMemLevelConfig(loginUserAPP.getAccno());
+        MemLevelConfig config = memLevelConfigService.getMemLevelConfigForLevel(response.getLevel());
+        if (ObjectUtil.isNotNull(config.getTakeAmount()) && config.getTakeAmount().intValue() > 0) {
+            if (req.getApycamt().intValue() > config.getTakeAmount().intValue()) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_110041.getCode(), "大于当前等级可提现金额！");
             }
         }
+        MemWallet memWallet = appMemWalletService.findMemWalletByAccno(loginUserAPP.getAccno());
+        if (ObjectUtil.isNull(memWallet) || StringUtils.isBlank(memWallet.getMoneyAddress())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_1199.getCode(), "请先绑定钱包地址");
+        }
+        // 1.检查由于只能提1元的倍数，零头部分这里不显示
+        this.checkMoney(req.getApycamt());
+        // 随时都可以提现 ，只要你有钱
+        // 2.检查支付密码
+        MemLogin memLogin = memLoginService.findByAccno(loginUserAPP.getAccno());
+        if (!req.getPaypassword().equals(memLogin.getPasswordmd5())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_11001.getCode(), "提现密码不正确");
+        }
+        // 3.是否存在体现申请
+        TraApplycash traApplycash = applycashMapperService.findNotInCashByCashByAccno(loginUserAPP.getAccno());
+        if (traApplycash != null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "存在提现订单");
+        }
+        MemBaseinfo membaseinfo = memBaseinfoService.getUserByAccno(loginUserAPP.getAccno());
+        // 体现金额
+        double xiangti = req.getApycamt().doubleValue();
+        int sxfInt = 0;
+
+        // 能体现金额等于 账户余额，在打码量为0的情况下 手续费为0,行政费均为0
+        double incarnatemoney = membaseinfo.getGoldnum().doubleValue();
+        Double haixudamaliang = membaseinfo.getNoWithdrawalAmount().doubleValue();
+        // 比较想提现的金额 与 能提现的金额
+        int a = (int) incarnatemoney;
+        int b = (int) xiangti + sxfInt;
+        if (a < b) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_11006.getCode(), "余额不足");
+        }
+        //首次最小提现金额
+        SysBusparameter f_min_w = this.sysBusParamService.selectByBusparamcode("f_min_w");
+        int todayWnum = traOrderinfomMapperExt.countTodayWithdrawal(loginUserAPP.getAccno());
+        int allWnum = traOrderinfomMapperExt.countAllWithdrawal(loginUserAPP.getAccno());
+        if (ObjectUtil.isNotNull(response) && response.getLevelSeq() < 1) {
+            if (allWnum > 0) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "超过今日限提笔数!");
+            }
+        }
+        if (xiangti < Double.valueOf(f_min_w.getBusparamname())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_11004.getCode(), "提现金额小于最低提现金额!");
+        }
+        //每日限提笔数
+        SysBusparameter day_w_num = this.sysBusParamService.selectByBusparamcode("day_w_num");
+        if (todayWnum >= Integer.parseInt(day_w_num.getBusparamname())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_11007.getCode(), "超过今日限提笔数!");
+        }
+        Double sxf = Double.valueOf(sxfInt);
+
+
+        // 创建 订单 / 订单轨迹 / 提现申请/ 提现稽核对账/播币变化 / 更新用户播币
+        double sumamt = xiangti;
+        String businessId = SnowflakeIdWorker.generateShortId();
+        // 创建订单
+        Long orderid = doCreateTixianOrder(req, businessId, loginUserAPP, xiangti, sxf, 0);
+        // 创建提现申请
+        this.doCreateTraApplycashV2(req, loginUserAPP, orderid, sumamt, null, 0D, haixudamaliang);
+        // 金币变化
+        req.setApycamt(BigDecimal.ZERO.subtract(req.getApycamt()));
+        req.setUserId(membaseinfo.getMemid().intValue());
+        this.updateMemGoldchangeApplycashIncarnateV2(req, loginUserAPP, orderid, xiangti, sxf, 0);
+        RedisBusinessUtil.delIncarnateOrderListCahce();
         return Constants.SUCCESS_MSG;
     }
 
@@ -655,6 +733,9 @@ public class IncarnateServiceImpl implements IncarnateService {
         traOrderinfom.setCancelreason(null);
         traOrderinfom.setMemBankId(req.getMemBankId());
         traOrderinfom.setPaywechat(null);
+        if(req.getTakeType() == 1  && StringUtils.isNotBlank(req.getMoneyAddress())){
+            traOrderinfom.setPayimg(req.getMoneyAddress());
+        }
         traOrderinfom.setPaydate(null);
         traOrderinfom.setOrdernote("用户[" + loginUserAPP.getNickname() + "]提现");
         traOrderinfom.setCreateUser(loginUserAPP.getAccno());

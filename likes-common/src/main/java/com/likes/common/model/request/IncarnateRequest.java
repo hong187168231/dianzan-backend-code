@@ -15,5 +15,6 @@ public class IncarnateRequest {
     private Integer userId;
     private Long memBankId;
 
+    private Integer takeType = 0;
 
 }

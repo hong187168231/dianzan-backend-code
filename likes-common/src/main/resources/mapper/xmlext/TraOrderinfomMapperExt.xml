@@ -1650,6 +1650,77 @@
     </select>
 
     <select id="incarnateOrderListBySuper"
+                      parameterType="com.likes.common.model.request.IncarnateOrderReq"
+                      resultType="com.likes.common.model.response.IncarnateOrderResponse">
+    SELECT * FROM (
+    SELECT A.orderid,A.orderno,A.accno,A.orderstatus,A.realamt,A.create_time as
+    create_time,A.sumamt,A.update_time as updateTime,
+    (SELECT nickname FROM mem_baseinfo m WHERE m.accno = A.accno LIMIT 1) AS nickname,
+    (SELECT unique_id FROM mem_baseinfo m WHERE m.accno = A.accno LIMIT 1) AS uniqueId,
+    (SELECT remark FROM mem_baseinfo m WHERE m.accno = A.accno LIMIT 1) AS remark,
+    (select ml.acclogin from bd_user ml where ml.accno = A.update_user LIMIT 1) AS updateUser,
+    tr.apycid,
+    tr.damaliang,
+    A.payimg as moneyAddress,
+    A.mem_bank_id as memBankId,
+    tr.xingzhengfei,
+    mbase.email AS email,
+    mbase.level as memLevel
+    from
+    (
+    SELECT * FROM tra_orderinfom t
+    WHERE t.is_delete = b'0'
+    <if test="orderstatus == null or  orderstatus =='' ">
+        AND
+        (
+        t.orderstatus in ("ord05","ord12","ord14") or (t.orderstatus = 'ord07' )
+        )
+    </if>
+    <if test="orderstatus != null and  orderstatus !='' ">
+        AND t.orderstatus = #{orderstatus}
+    </if>
+    AND t.ordertype = 4
+    ) AS A
+    INNER JOIN tra_applycash tr ON A.orderid = tr.orderid AND tr.is_delete = b'0'
+    INNER JOIN mem_baseinfo mbase ON A.accno = mbase.accno
+    ) AS B
+    WHERE 1 = 1
+    <if test="accno != null and  accno !='' ">
+        and B.accno=#{accno}
+    </if>
+    <if test="orderno != null and  orderno !='' ">
+        and B.orderno = #{orderno}
+    </if>
+    <if test="moneyAddress != null and  moneyAddress !='' ">
+        and B.moneyAddress = #{moneyAddress}
+    </if>
+    <if test="email != null and email != '' ">
+        and B.email = #{email}
+    </if>
+    <if test="levelSeq != null ">
+        and B.memLevel = #{levelSeq}
+    </if>
+    <if test="uniqueId != null and  uniqueId !='' ">
+        and B.uniqueId LIKE CONCAT(#{uniqueId,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="startDate != null and  startDate !='' ">
+        <![CDATA[  and B.create_time >= #{startDate} ]]>
+    </if>
+    <if test="endDate != null and  endDate !='' ">
+        <![CDATA[  and B.create_time <= #{endDate} ]]>
+    </if>
+    order by B.orderstatus asc
+    <choose>
+        <when test="orderstatus =='ord12'.toString()">
+            ,B.updateTime desc
+        </when>
+        <otherwise>
+            ,B.create_time desc
+        </otherwise>
+    </choose>
+</select>
+
+    <select id="incarnateOrderListBySuperUsdt"
             parameterType="com.likes.common.model.request.IncarnateOrderReq"
             resultType="com.likes.common.model.response.IncarnateOrderResponse">
         SELECT * FROM (
@@ -1683,8 +1754,9 @@
         ) AS A
         INNER JOIN tra_applycash tr ON A.orderid = tr.orderid AND tr.is_delete = b'0'
         INNER JOIN mem_baseinfo mbase ON A.accno = mbase.accno
-            ) AS B
+        ) AS B
         WHERE 1 = 1
+        and take_type = 1
         <if test="accno != null and  accno !='' ">
             and B.accno=#{accno}
         </if>
@@ -1719,6 +1791,7 @@
             </otherwise>
         </choose>
     </select>
+
 
     <select id="appIncarnateOrderListBySuper"
             parameterType="com.likes.common.model.request.IncarnateOrderReq"

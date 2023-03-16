@@ -22,6 +22,9 @@ public interface IncarnateService {
 
     String doIncarnateV2(LoginUser loginUserAPP, IncarnateRequest req);
 
+
+    String doIncarnateUsdt(LoginUser loginUserAPP, IncarnateRequest req);
+
     Long reSetAnchorBank(LoginUser loginUserAPP, MemBankaccount memBankaccount);
 
     String surep(LoginUser loginUserAPP, IncarnateRequest req);

@@ -107,6 +107,9 @@ public interface TraOrderinfomMapperExt {
     Page<IncarnateOrderResponse> incarnateOrderList(IncarnateOrderReq req, RowBounds rowBounds);
 
     Page<IncarnateOrderResponse> incarnateOrderListBySuper(IncarnateOrderReq req, RowBounds rowBounds);
+
+    Page<IncarnateOrderResponse> incarnateOrderListBySuperUsdt(IncarnateOrderReq req, RowBounds rowBounds);
+
     Page<IncarnateOrderResponse> appIncarnateOrderListBySuper(IncarnateOrderReq req, RowBounds rowBounds);
     Page<AgentTakeCashOrder> agentTakeCashOrderList(AgentOrderReq req, RowBounds rowBounds);
 

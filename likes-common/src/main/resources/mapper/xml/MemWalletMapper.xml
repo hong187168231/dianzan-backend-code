@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.likes.common.mybatis.mapper.MemWalletMapper">
+
+    <select id="queryList" resultType="com.likes.common.model.bank.MemWalletVO">
+        SELECT
+        mb.email,
+        mw.accno AS accno,
+        mbb.waller_id as wallerId,
+        mbb.money_address AS moneyAddress,
+        mbb.`status` AS `status`,
+        mbb.create_time AS createTime
+        FROM
+        mem_waller mw
+        INNER JOIN mem_baseinfo mb ON mb.accno = mbb.accno
+        <if test="req.email != null and req.email != '' ">
+            and mb.email = #{req.email}
+        </if>
+        <if test="req.moneyAddress != null and req.moneyAddress != '' ">
+            and mw.money_address = #{req.moneyAddress}
+        </if>
+        <if test="req.startTime != null  ">
+            and mw.create_time &gt;= #{req.startTime}
+        </if>
+        <if test="req.endTime != null ">
+            and mw.create_time &lt;= #{req.endTime}
+        </if>
+        ORDER BY mw.create_time desc
+    </select>
+
+    <select id="existCashOrder"
+            parameterType="com.likes.common.model.bank.OrderDTO"
+            resultType="com.likes.common.mybatis.entity.TraApplycash">
+        SELECT * FROM tra_applycash t WHERE 1=1
+        and t.accno = #{accno}
+        <if test="orderStatusList != null and orderStatusList.size != 0">
+            AND t.apycstatus in
+            <foreach close=")" collection="orderStatusList" index="index" item="s" open="("
+                     separator=",">
+                #{s}
+            </foreach>
+        </if>
+        limit 1
+    </select>
+
+</mapper>

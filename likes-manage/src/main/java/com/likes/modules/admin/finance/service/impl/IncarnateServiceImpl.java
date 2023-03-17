@@ -484,6 +484,51 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
         return incarnateOrderPageToMap(page, list, realamt);
     }
 
+
+    @Override
+    @DS("slave")
+    public Map<String, Object> incarnateOrderListV2Usdt(IncarnateOrderReq req, PageBounds page, LoginUser loginAdmin) {
+        if (req.getStartDate() != null && req.getStartDate() != "") {
+            req.setStartDate(req.getStartDate() + " 00:00:00");
+        }
+        if (req.getEndDate() != null && req.getEndDate() != "") {
+            req.setEndDate(req.getEndDate() + " 23:59:59");
+        }
+        BigDecimal realamt = traOrderinfomMapperService.incarnateOrderActualTotal(req);
+        if (ObjectUtil.isNotNull(req.getLevelSeq())) {
+            MemLevelConfig levelConfig = memLevelConfigService.getMemLevelConfigForConfigId(req.getLevelSeq());
+            req.setLevelSeq(levelConfig.getLevelSeq().longValue());
+        }
+        Page<IncarnateOrderResponse> list = traOrderinfomMapperService.incarnateOrderListBySuper(req, page.toRowBounds());
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(o -> {
+                MemBank memBank = iMemBankService.selectByMemBankId(o.getMemBankId());
+                if (ObjectUtil.isNotNull(memBank)) {
+                    o.setBankCardNo(memBank.getBankCardNo());
+                    o.setBankName(memBank.getBankName());
+                    o.setUserName(memBank.getUserName());
+                    o.setBankCode(memBank.getBankCode());
+                }
+                if (Constants.ORDER_ORD05.equals(o.getOrderstatus())) {
+                    o.setUpdateUser(null);
+                }
+                if (Constants.ORDER_ORD12.equals(o.getOrderstatus()) || Constants.ORDER_ORD14.equals(o.getOrderstatus())) {
+                    o.setFinishTime(o.getUpdateTime());
+                }
+                if (o.getAccounttype() != null) {
+                    o.setAccounttypename(MemBankAccountTypeEnum.valueOf(o.getAccounttype()).getName());
+                    String name = o.getAccountno().substring(0, 3) + "***" + o.getAccountno().substring(o.getAccountno().length() - 4);
+                    o.setAccountno(name);
+                }
+            });
+        }
+        for (IncarnateOrderResponse incarnateOrderResponse : list) {
+            incarnateOrderResponse.setShowThirdButton(true);
+        }
+        RedisBusinessUtil.addIncarnateOrderListCahce(list, req, page.toRowBounds());
+        return incarnateOrderPageToMap(page, list, realamt);
+    }
+
     private Map<String, Object> incarnateOrderPageToMap(PageBounds page, Page<IncarnateOrderResponse> list, BigDecimal realamt) {
         Map<String, Object> resutMap = new HashMap();
         PageResult pageResult = PageResult.getPageResult(page, list);
@@ -727,6 +772,144 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
             paramMemGoldchange.setUpdateUser(loginAdmin.getAccno());
             paramMemGoldchange.setOpnote("提现完成");
+            paramMemGoldchange.setSource(traOrderinfom.getSource());
+
+            int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);
+            if (!(mg > 0)) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_115.getCode(), "处理用户提现失败");
+            }
+
+            // 修改 对应 充值订单的 结算状态
+            Long apyid = traApplycash.getApycid();
+            List<TraApplyaudit> traApplyaudits = traApplyauditMapperService.getListById(apyid);
+            if (CollectionUtils.isNotEmpty(traApplyaudits)) {
+                List<Long> orderids = traApplyaudits.stream().map(ob -> ob.getOrderid()).collect(Collectors.toList());
+                traOrderinfomMapperService.doJiesuanOrder(orderids);
+            }
+            MemBaseinfoExample membaseinfoExample = new MemBaseinfoExample();
+            membaseinfoExample.createCriteria().andAccnoEqualTo(traOrderinfom.getAccno());
+            MemBaseinfo membaseinfo = memBaseinfoService.selectOneByExample(membaseinfoExample);
+            // 设置提现金额
+            membaseinfo.setWithdrawalAmount(getTradeOffAmount(traOrderinfom.getSumamt()));
+            // 设置首次提现金额
+            if (membaseinfo.getWithdrawalFirst() == null || membaseinfo.getWithdrawalFirst().compareTo(BigDecimal.ZERO) == 0) {
+                membaseinfo.setWithdrawalFirst(getTradeOffAmount(traOrderinfom.getSumamt()));
+            }
+            // 设置最大提现金额
+            if (membaseinfo.getWithdrawalMax() == null || membaseinfo.getWithdrawalMax().compareTo(getTradeOffAmount(traOrderinfom.getSumamt())) == -1) {
+                membaseinfo.setWithdrawalMax(getTradeOffAmount(traOrderinfom.getSumamt()));
+            }
+            // 修改已提现金额
+            memBaseinfoService.updateWithdrawalAmount(membaseinfo);
+            // 发送系统消息
+            this.doInfSysremindinfo(traOrderinfom, loginAdmin);
+
+            // 会员提现成功日志
+            SysInfolog sysInfolog = new SysInfolog();
+            sysInfolog.setAccno(loginAdmin.getAccno());
+            sysInfolog.setOptcontent("会员提现[" + membaseinfo.getUniqueId() + "]金额[" + traOrderinfom.getRealamt() + "]订单号[" + req.getOrderno() + "]提现成功");
+            sysInfolog.setSystemname(ModuleConstant.LIVE_MANAGE);
+            sysInfolog.setModelname("会员提现");
+            sysInfolog.setOrginfo("doIncarnateConfirm");
+            commonService.insertSelective(sysInfolog);
+            RedisBusinessUtil.delIncarnateOrderListCahce();
+            logger.info("{}{}处理订单{}用户{}提现完成", loginAdmin.getBdusername(), loginAdmin.getAccno(), traOrderinfom.getAccno(), zhubo.getNickname());
+            return Constants.SUCCESS_MSG;
+
+        } else {
+            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "提现失败(订单已提现)");
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public String incarnateConfirmV2Usdt(IncarnateOrderReq req, LoginUser loginAdmin) {
+        if (StringUtils.isEmpty(req.getOrderno())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_101.getCode(), "订单号为空");
+        }
+
+        // 订单
+        TraOrderinfom traOrderinfom = traOrderinfomMapperService.findByOrderno(req.getOrderno());
+        if (traOrderinfom == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_102.getCode(), "订单不存在");
+        }
+        if (!Constants.ORDER_ORD07.equals(traOrderinfom.getOrderstatus())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_103.getCode(), "订单状态不为提现处理中");
+        }
+        if (Constants.ORDER_ORD12.equals(traOrderinfom.getOrderstatus())) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_203.getCode(), "订单状态已提现");
+        }
+
+        // 用户
+        MemBaseinfo zhubo = memBaseinfoService.getUserByAccno(traOrderinfom.getAccno());
+        if (zhubo == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_105.getCode(), "用户不存在");
+        }
+
+        // 提现申请
+        TraApplycash traApplycash = traApplycashMapperService.findByOrderid(traOrderinfom.getOrderid());
+        if (traApplycash == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_104.getCode(), "不存在提现申请");
+        }
+        if (Constants.APYCSTATUS2 != traApplycash.getApycstatus()) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_106.getCode(), "状态不为提现处理中");
+        }
+        if (!(loginAdmin.getSysroleid().equals(Constants.SUPERADMINSYSROLEID))) {
+            // 不是超级管理员 就验证是否属于你
+            if (!traApplycash.getPaymemname().equals(loginAdmin.getAccno())) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_107.getCode(), "该订单不属于您，无操作权限");
+            }
+        }
+
+        if (req.getBeSucceed() == null) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_108.getCode(), "处理状态不能为空");
+        }
+
+        if (!req.getBeSucceed()) {
+            failedOrder(req, loginAdmin);
+            RedisBusinessUtil.delIncarnateOrderListCahce();
+            return Constants.SUCCESS_MSG;
+        }
+
+        // 修改为已提现
+        // 订单
+        traOrderinfom.setOrderstatus(Constants.ORDER_ORD12);
+        traOrderinfom.setPaydate(new Date());
+        traOrderinfom.setUpdateUser(loginAdmin.getAccno());
+        traOrderinfom.setOrdernote(req.getReason());
+        int i = traOrderinfomMapperService.updateIncarnateConfirmOrder(traOrderinfom);
+        if (i > 0) {
+            // 订单轨迹信息
+            TraOrdertracking traOrdertracking = new TraOrdertracking();
+            traOrdertracking.setOrderid(traOrderinfom.getOrderid());
+            traOrdertracking.setTrackdate(new Date());
+            traOrdertracking.setOrderstatus(Constants.ORDER_ORD12);
+            traOrdertracking.setOperuse(loginAdmin.getAccno());
+            traOrdertracking.setTrackbody("管理员[" + loginAdmin.getBdusername() + "]确认转账");
+            // 最后状态
+            int tc = traOrdertrackingMapperService.insertTraOrdertracking(traOrdertracking);
+            if (!(tc > 0)) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_202.getCode(), "已处理过该订单");
+            }
+            // 提现数据修改
+            traApplycash.setPaydate(new Date());
+            traApplycash.setApycstatus(Constants.APYCSTATUS4);
+            traApplycash.setUpdateUser(loginAdmin.getAccno());
+
+            // 提现申请
+            int k = traApplycashMapperService.updateIncarnateConfirmApplycash(traApplycash);
+            if (!(k > 0)) {
+                throw new BusinessException(StatusCode.LIVE_ERROR_109.getCode(), "提现状态不为提现处理中");
+            }
+
+            // 修改 金币变化记录表 将用户申请提现的记录 改为 状态已提现
+            MemGoldchange paramMemGoldchange = new MemGoldchange();
+            paramMemGoldchange.setAccno(traOrderinfom.getAccno());
+            paramMemGoldchange.setChangetype(GoldchangeEnum.WITHDRAWAL_APPLY.getValue());
+            paramMemGoldchange.setRefid(traOrderinfom.getOrderid());
+            paramMemGoldchange.setUpdateUser(loginAdmin.getAccno());
+            paramMemGoldchange.setOpnote("usdt提现完成");
             paramMemGoldchange.setSource(traOrderinfom.getSource());
 
             int mg = memGoldchangeService.updateZhuboTixian(paramMemGoldchange);

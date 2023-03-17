@@ -7,13 +7,18 @@ import com.likes.common.exception.BusinessException;
 import com.likes.common.model.LoginUser;
 import com.likes.common.model.bank.AddBankCardReq;
 import com.likes.common.model.common.ResultInfo;
+import com.likes.common.util.redis.RedisLock;
 import com.likes.modules.admin.users.service.AppMemBankService;
 import com.likes.common.service.pay.PayBankService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -35,13 +40,29 @@ public class MemBankController extends BaseController {
     @Autowired
     private PayBankService payBankService;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     @ApiOperation(value = "添加银行卡", httpMethod = "POST")
     @PostMapping(value = "/add")
     public ResultInfo addBankCard(AddBankCardReq req) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();
+        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_SUBMITBANK_APPLY_LOCK, 2, 10 * 2000);
         try {
             LoginUser loginUserAPP = getLoginUserAPP();
+            // 控制频率
+            String keySuffix = RedisLock.FINANCE_APP_SUBMITBANK_APPLY_LOCK + loginUserAPP.getMemid();
+            if (redisTemplate.hasKey(keySuffix)) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 2, TimeUnit.SECONDS);
+            if (!haveAuth) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
+            if (!lock.lock()) {
+                return ResultInfo.error("提现操作频繁，请稍后再试！");
+            }
             response.setData(appMemBankService.addBankCard(req, loginUserAPP));
         } catch (BusinessException e) {
             response.setResultInfo(e.getCode(), e.getMessage());
@@ -49,6 +70,8 @@ public class MemBankController extends BaseController {
         } catch (Exception e) {
             response = ResultInfo.error("获取我的等级出错");
             log.error("{}.myLevel 出错:{}", getClass().getName(), e.getMessage(), e);
+        }finally {
+            lock.unlock();
         }
         log.info("/myLevel耗时{}毫秒", (System.currentTimeMillis() - start));
         return response;

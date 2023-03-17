@@ -221,6 +221,7 @@ public class IncarnateServiceImpl implements IncarnateService {
         if (memWallet != null) {
             throw new BusinessException(StatusCode.LIVE_ERROR_114.getCode(), "已经存在提现账号");
         }
+        memWallet = new MemWallet();
         // memWallet
         memWallet.setAccno(loginUserAPP.getAccno());
         memWallet.setCreateUser(loginUserAPP.getAccno());

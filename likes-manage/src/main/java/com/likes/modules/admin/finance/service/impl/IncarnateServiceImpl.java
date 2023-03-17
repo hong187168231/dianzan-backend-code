@@ -499,7 +499,7 @@ public class IncarnateServiceImpl extends BaseServiceImpl implements IncarnateSe
             MemLevelConfig levelConfig = memLevelConfigService.getMemLevelConfigForConfigId(req.getLevelSeq());
             req.setLevelSeq(levelConfig.getLevelSeq().longValue());
         }
-        Page<IncarnateOrderResponse> list = traOrderinfomMapperService.incarnateOrderListBySuper(req, page.toRowBounds());
+        Page<IncarnateOrderResponse> list = traOrderinfomMapperService.incarnateOrderListBySuperUsdt(req, page.toRowBounds());
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(o -> {
                 MemBank memBank = iMemBankService.selectByMemBankId(o.getMemBankId());

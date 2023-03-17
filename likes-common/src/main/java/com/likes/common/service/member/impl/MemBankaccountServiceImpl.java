@@ -4,7 +4,9 @@ import com.likes.common.model.LoginUser;
 import com.likes.common.mybatis.entity.MemBankaccount;
 import com.likes.common.mybatis.entity.MemBankaccountExample;
 import com.likes.common.mybatis.entity.MemLogin;
+import com.likes.common.mybatis.entity.MemWallet;
 import com.likes.common.mybatis.mapper.MemBankaccountMapper;
+import com.likes.common.mybatis.mapper.MemWalletMapper;
 import com.likes.common.mybatis.mapperext.member.MemBankaccountMapperExt;
 import com.likes.common.service.member.MemBankaccountService;
 import com.likes.common.service.member.MemLoginService;
@@ -23,6 +25,9 @@ public class MemBankaccountServiceImpl implements MemBankaccountService {
 
     @Resource
     private MemBankaccountMapper memBankaccountMapper;
+
+    @Resource
+    private MemWalletMapper memWalletMapper;
 
     @Resource
     private MemLoginService memLoginService;
@@ -76,10 +81,10 @@ public class MemBankaccountServiceImpl implements MemBankaccountService {
     @Override
     public Map<String, Object> findPayPassAndAccount(LoginUser loginUser) {
         Map<String, Object> resultMap = new HashMap<>(2);
-        MemBankaccountExample example = new MemBankaccountExample();
-        example.createCriteria().andAccnoEqualTo(loginUser.getAccno());
-        MemBankaccount memBankaccount = memBankaccountMapper.selectOneByExample(example);
-        if (memBankaccount != null && memBankaccount.getCheckstatus().equals(8)) {
+        MemWallet memWalletParam = new MemWallet();
+        memWalletParam.setAccno(loginUser.getAccno());
+        MemWallet memBankaccount = memWalletMapper.selectOne(memWalletParam);
+        if (memBankaccount != null) {
             resultMap.put("isBind", true);
             resultMap.put("memBankaccount", memBankaccount);
         } else {

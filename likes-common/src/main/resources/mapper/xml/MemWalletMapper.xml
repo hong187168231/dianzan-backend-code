@@ -6,13 +6,13 @@
         SELECT
         mb.email,
         mw.accno AS accno,
-        mbb.waller_id as wallerId,
-        mbb.money_address AS moneyAddress,
-        mbb.`status` AS `status`,
-        mbb.create_time AS createTime
+        mw.wallet_id as walletId,
+        mw.money_address AS moneyAddress,
+        mw.`status` AS `status`,
+        mw.create_time AS createTime
         FROM
-        mem_waller mw
-        INNER JOIN mem_baseinfo mb ON mb.accno = mbb.accno
+        mem_wallet mw
+        INNER JOIN mem_baseinfo mb ON mb.accno = mw.accno
         <if test="req.email != null and req.email != '' ">
             and mb.email = #{req.email}
         </if>

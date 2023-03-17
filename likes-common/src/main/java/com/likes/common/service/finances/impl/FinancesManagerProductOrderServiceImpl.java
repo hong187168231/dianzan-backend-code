@@ -119,7 +119,7 @@ public class FinancesManagerProductOrderServiceImpl implements IFinancesManagerP
                     Map<String, Object> params1 = new HashMap<>();
                     params1.put("userId", loginUser.getAccno());
                     params1.put("financesProductId", financesManagerProductOrderDto.getFinancesProductId());
-                    params1.put("levelConfigLevel", loginUser.getMemlevel());
+//                    params1.put("levelConfigLevel", loginUser.getMemlevel());
                     Integer countOrders = financesManagerProductOrderMapper.countOrder(params1);
                     if (countOrders >= setting.getBuyNumber()) {
                         response = ResultInfo.error(StatusCode.FINANCE_FAILED_1062.getCode(), "用户已经达到最大购买次数");

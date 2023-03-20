@@ -736,6 +736,7 @@ public class IncarnateServiceImpl implements IncarnateService {
         traOrderinfom.setPaywechat(null);
         if(req.getTakeType() == 1  && StringUtils.isNotBlank(req.getMoneyAddress())){
             traOrderinfom.setPayimg(req.getMoneyAddress());
+            traOrderinfom.setTakeType(1);
         }
         traOrderinfom.setPaydate(null);
         traOrderinfom.setOrdernote("用户[" + loginUserAPP.getNickname() + "]提现");

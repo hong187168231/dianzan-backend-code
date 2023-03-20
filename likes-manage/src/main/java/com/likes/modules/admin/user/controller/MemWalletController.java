@@ -30,7 +30,7 @@ public class MemWalletController {
 
 
     @ApiOperation(value = "分页查询",response = MemBankVO.class)
-    @PostMapping(value = "/page")
+    @GetMapping(value = "/page")
     public ResultInfo page(MemWalletPageReq req, PageBounds pageBounds) {
         long start = System.currentTimeMillis();
         ResultInfo response = ResultInfo.ok();

@@ -250,7 +250,7 @@
                                     oldamt, sumamt, realamt,
                                     isinvoice, orderstatus, accountstatus,payimg, paywechat, ordernote,
                                     create_user, update_user,
-                                    source) value ( #{mealid,jdbcType=BIGINT}, #{memBankId,jdbcType=BIGINT},#{ordertype,jdbcType=DECIMAL},
+                                    source,take_type) value ( #{mealid,jdbcType=BIGINT}, #{memBankId,jdbcType=BIGINT},#{ordertype,jdbcType=DECIMAL},
             #{orderno,jdbcType=VARCHAR},
             #{accno,jdbcType=VARCHAR}, #{paycode,jdbcType=VARCHAR},
             #{orderdate,jdbcType=TIMESTAMP}, #{expiredate,jdbcType=TIMESTAMP},
@@ -260,7 +260,7 @@
             #{accountstatus,jdbcType=VARCHAR},#{payimg,jdbcType=VARCHAR},
             #{paywechat,jdbcType=VARCHAR}, #{ordernote,jdbcType=VARCHAR},
             #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR},
-            #{source,jdbcType=VARCHAR}
+            #{source,jdbcType=VARCHAR}, #{takeType,jdbcType=INTEGER}
             )
     </insert>
 
@@ -1680,6 +1680,7 @@
         AND t.orderstatus = #{orderstatus}
     </if>
     AND t.ordertype = 4
+        and t.take_type != 1
     ) AS A
     INNER JOIN tra_applycash tr ON A.orderid = tr.orderid AND tr.is_delete = b'0'
     INNER JOIN mem_baseinfo mbase ON A.accno = mbase.accno
@@ -1751,12 +1752,12 @@
             AND t.orderstatus = #{orderstatus}
         </if>
         AND t.ordertype = 4
+        and t.take_type = 1
         ) AS A
         INNER JOIN tra_applycash tr ON A.orderid = tr.orderid AND tr.is_delete = b'0'
         INNER JOIN mem_baseinfo mbase ON A.accno = mbase.accno
         ) AS B
         WHERE 1 = 1
-        and take_type = 1
         <if test="accno != null and  accno !='' ">
             and B.accno=#{accno}
         </if>

@@ -323,7 +323,7 @@ public class TraOrderinfomServiceImpl implements TraOrderinfomService {
 
     @Override
     public Page<IncarnateOrderResponse> incarnateOrderListBySuperUsdt(IncarnateOrderReq req, RowBounds rowBounds) {
-        return traOrderinfomMapperExt.incarnateOrderListBySuper(req, rowBounds);
+        return traOrderinfomMapperExt.incarnateOrderListBySuperUsdt(req, rowBounds);
     }
     @Override
     @DS("slave")

@@ -1,6 +1,7 @@
 package com.likes.common.model.bank;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -35,9 +36,11 @@ public class MemWalletVO {
     @ApiModelProperty(value = "修改人")
     private String updateUser;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+7")
     @ApiModelProperty(value = "修改时间")
     private Date updateTime;
 

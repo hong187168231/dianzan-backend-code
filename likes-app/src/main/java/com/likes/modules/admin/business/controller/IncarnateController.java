@@ -140,4 +140,44 @@ public class IncarnateController extends BaseController {
         return response;
     }
 
+
+    @ResponseBody
+    @RequestMapping(name = "用户申请提现", value = "/v2/doIncarnateUsdt", method = RequestMethod.POST)
+    public ResultInfo doIncarnateV2Usdt(IncarnateRequest req) {
+        req.setTakeType(1);
+        long start = System.currentTimeMillis();
+        ResultInfo response = ResultInfo.ok();
+        RedisLock lock = new RedisLock(RedisLock.FINANCE_APP_WITHDRAWAL_APPLY_LOCK, 0, 100 * 1000);
+        try {
+            if (StringUtils.isEmpty(req.getPaypassword()) || null == req.getApycamt()) {
+                return ResultInfo.paramsError();
+            }
+            LoginUser loginUserAPP = getLoginUserAPP();
+            // 控制频率
+            String keySuffix = RedisLock.FINANCE_APP_WITHDRAWAL_APPLY + loginUserAPP.getMemid();
+            if (redisTemplate.hasKey(keySuffix)) {
+                new BusinessException(StatusCode.LIVE_ERROR_501.getCode(), "提现操作频繁，请稍后再试！");
+            }
+            boolean haveAuth = redisTemplate.opsForValue().setIfAbsent(keySuffix, "1", 10, TimeUnit.SECONDS);
+            if (!haveAuth) {
+                new BusinessException(StatusCode.LIVE_ERROR_501.getCode(), "提现操作频繁，请稍后再试！");
+            }
+            if (!lock.lock()) {
+                new BusinessException(StatusCode.LIVE_ERROR_501.getCode(), "提现操作频繁，请稍后再试！");
+            }
+            response.setData(incarnateService.doIncarnateUsdt(loginUserAPP, req));
+            LogUtils.logUserModifyOperates(getClass().getName() + ".doIncarnateV2", req, loginUserAPP);
+        } catch (BusinessException e) {
+            response.setResultInfo(e.getCode(), e.getMessage());
+            logger.error("失败:{}", e.getMessage());
+        } catch (Exception e) {
+            response.setResultInfo("100000001", null);
+            logger.error("doIncarnateV2 error", e);
+        } finally {
+            lock.unlock();
+        }
+        logger.info("/doIncarnateV2耗时{}毫秒", (System.currentTimeMillis() - start));
+        return response;
+    }
+
 }

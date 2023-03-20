@@ -107,6 +107,8 @@ public class TraOrderinfom implements Serializable {
 
     private Long buyVip;
 
+    private  Integer takeType;
+
     private static final long serialVersionUID = 1L;
 
 

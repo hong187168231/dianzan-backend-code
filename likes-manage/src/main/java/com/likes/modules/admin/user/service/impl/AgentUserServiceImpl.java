@@ -1,6 +1,5 @@
 package com.likes.modules.admin.user.service.impl;
 
-
 import com.github.pagehelper.PageHelper;
 import com.likes.common.constant.Constants;
 import com.likes.common.enums.LoginUserTypeEnum;
@@ -42,7 +41,6 @@ import java.util.List;
 
 @Service
 public class AgentUserServiceImpl implements AgentUserService {
-
 
     @Resource
     private MemLoginService memLoginService;
@@ -131,15 +129,20 @@ public class AgentUserServiceImpl implements AgentUserService {
         if (request.getMemId() == null || 0 == request.getMemId()) {
             throw new BusinessException(StatusCode.ACCOUNT_EMPTY.getCode(), "代理ID为空");
         }
-        // 检验参数
-//        this.validateParams(request);
+        MemLogin memLogin1 = memLoginService.findByEmailRegister(request.getEmail());
+        if(StringUtils.isNotBlank(request.getPassword())){
+            memLogin1.setPasswordmd5(request.getPassword());
+            memLogin1.setPassword(request.getPassword());
+            memLogin1.setPaypassword(request.getPassword());
+            memLoginService.updateByPrimaryKeySelective(memLogin1);
+        }
+
         AgentUser agentUser = new AgentUser();
         agentUser.setUpdateTime(new Date());
         agentUser.setUpdateUser(loginUser.getAcclogin());
         agentUser.setSingleAddMoney(request.getSingleAddMoney());
         return agentUserMapper.updateByPrimaryKeySelective(agentUser) > 0;
     }
-
 
     @Override
     public AgentUserDetailDO userDetail(Long repayMemId) {
@@ -151,7 +154,7 @@ public class AgentUserServiceImpl implements AgentUserService {
         Example example = new Example(AgentUser.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("email", query.getEmail());
-        criteria.andNotEqualTo("email","test");
+        criteria.andNotEqualTo("email", "test");
         PageHelper.startPage(page.getPageNo(), page.getPageSize());
         List<AgentUser> agentUserList = agentUserMapper.selectByExample(example);
         int size = agentUserMapper.selectCountByExample(example);
@@ -176,14 +179,12 @@ public class AgentUserServiceImpl implements AgentUserService {
         }
     }
 
-
     private void asynRegister(AgentUserRequest req, MemBaseinfo newUser) {
         // 建立推荐人关系
         inviteUserProcess(req, newUser);
         //初始化用户等级
         memLevelService.initMemLevel(newUser.getAccno());
     }
-
 
     /**
      * 根据邀请码进来的用户，建立推荐人关系

@@ -208,7 +208,7 @@ public class CsPayServiceImpl implements CsPayService {
         Map<String, Object> payMap = new TreeMap<>();
         payMap.put("business_type", "20011");
 //        payMap.put("bank_id", "ACB");
-//        payMap.put("pay_type", csPayDTO.getPayType());
+        payMap.put("pay_type", "ScanCode");
         payMap.put("mer_order_no", csPayDTO.getOrderNo());
         payMap.put("order_price", csPayDTO.getAmount());
         payMap.put("page_back_url", "http://www.baidu.com");

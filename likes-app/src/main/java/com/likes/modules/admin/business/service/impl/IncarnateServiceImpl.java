@@ -536,6 +536,7 @@ public class IncarnateServiceImpl implements IncarnateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String doIncarnateUsdt(LoginUser loginUserAPP, IncarnateRequest req) {
+        logger.error("新来的日志");
         try {
             logger.info("{}doIncarnateV2 entry user:{}, req:{}, local ip:{}", loginUserAPP.getMemid(), JSONObject.toJSONString(loginUserAPP), JSONObject.toJSONString(req), InetAddress.getLocalHost().getHostAddress());
         } catch (Exception e) {

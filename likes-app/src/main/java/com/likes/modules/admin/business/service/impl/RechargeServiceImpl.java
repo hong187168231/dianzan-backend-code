@@ -391,9 +391,9 @@ public class RechargeServiceImpl implements RechargeService {
         if (ObjectUtil.isNull(req.getAmount())) {
             throw new BusinessException(StatusCode.LIVE_ERROR_102.getCode(), "付款金额为空");
         }
-//        if (!payacount.getSysStatus()) {
-//            throw new BusinessException(StatusCode.LIVE_ERROR_1115.getCode(), "该收款账户已经停用");
-//        }
+        if (req.getAmount().intValue() <350000) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_9991.getCode(), "usdt最低充值金额不得小于35万");
+        }
         //查询该用户是否存在 未支付的订单
 //        TraOrderinfom weiTraOrderinfom = traOrderinfomMapperService.selectWeiZhifuOne(loginUserAPP.getAccno(), req.getPrice());
 //        if (weiTraOrderinfom != null) {

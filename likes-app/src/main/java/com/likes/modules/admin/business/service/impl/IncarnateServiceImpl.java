@@ -554,6 +554,9 @@ public class IncarnateServiceImpl implements IncarnateService {
         if (new BigDecimal(req.getApycamt().intValue()).compareTo(req.getApycamt()) != 0) {
             throw new BusinessException(StatusCode.LIVE_ERROR_1107.getCode(), "提现金额不能为小数");
         }
+        if (req.getApycamt().intValue() <300000) {
+            throw new BusinessException(StatusCode.LIVE_ERROR_9992.getCode(), "usdt最低提现金额不得小于30万");
+        }
         Integer xyf = memCreditService.selectCreditByMemNo(loginUserAPP.getAccno());
         if (xyf < 60) {
             throw new BusinessException(StatusCode.LIVE_ERROR_160.getCode(), "信誉分太低,不能进行该操作！");

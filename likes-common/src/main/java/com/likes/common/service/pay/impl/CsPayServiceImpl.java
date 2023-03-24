@@ -211,14 +211,14 @@ public class CsPayServiceImpl implements CsPayService {
         payMap.put("pay_type", "ScanCode");
         payMap.put("mer_order_no", csPayDTO.getOrderNo());
         payMap.put("order_price", csPayDTO.getAmount());
-        payMap.put("page_back_url", "http://www.baidu.com");
+        payMap.put("page_back_url", "https://wegrty.com/#/home");
         payMap.put("notify_url", csPayDTO.getNotifyUrl());
         payMap.put("timestamp", timestamp);
 
         String sign = PaySignUtil.getSignLower(payMap, key);
         log.info("CS获取收银台支付token    (收款接口)输入加密前,sign：{}", sign);
 
-        log.info("铭文" + JSON.toJSONString(payMap));
+        log.info("CS获取收银台支付token    (收款接口)map：{}", JSON.toJSONString(payMap));
         payMap.put("sign", sign);
 
         String params = base64(DESUtil.encrypt(JSONObject.toJSONString(payMap), key));
